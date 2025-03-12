@@ -1,11 +1,16 @@
-function App() {
-  // const [count, setCount] = useState(0);
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import AdminLogin from "./Pages/AdminLogin";
+// import Dashboard from "./Dashboard"; // Example dashboard component
 
+const App: React.FC = () => {
   return (
-    <>
-      <div className="text-red-200">TPMS</div>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<AdminLogin />} />
+        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
