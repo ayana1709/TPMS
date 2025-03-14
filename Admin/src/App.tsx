@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AdminLogin from "../../Admin/src/pages/AdminLogin";
+import Dashboard from "./pages/Dashboard";
 // import Dashboard from "./Dashboard"; // Example dashboard component
 
 const App: React.FC = () => {
@@ -7,6 +8,7 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         <Route path="/" element={<AdminLogin />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}
       </Routes>
     </Router>

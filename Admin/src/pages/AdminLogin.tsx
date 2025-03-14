@@ -1,20 +1,18 @@
-// import { useState } from "react";
 import { useState } from "react";
-import { HiMiniEyeSlash } from "react-icons/hi2";
-import { HiOutlineEye } from "react-icons/hi2";
+import { useNavigate } from "react-router-dom";
+import { HiMiniEyeSlash, HiOutlineEye } from "react-icons/hi2";
 import { motion } from "framer-motion";
-import axios from "axios";
+import api from "../api";
 
 const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ username: "", password: "" });
-  // const [loading, setLoading] = useState(false);
-  console.log(formData);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate(); // Use navigate for redirection
 
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   // Handle form submission
@@ -23,31 +21,33 @@ const LoginPage: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        "https://your-backend.com/api/login",
-        formData,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await api.post("/login", formData, {
+        headers: { "Content-Type": "application/json" },
+      });
 
       console.log("Login Successful:", response.data);
-      alert("Login Successful!"); // Replace with better UX like redirecting
-    } catch (error) {
-      console.error("Login Failed:", error);
-      alert("Login Failed. Please try again.");
+
+      // Store token in local storage
+      localStorage.setItem("token", response.data.token);
+
+      alert("Login Successful!");
+      navigate("/dashboard"); // Redirect to dashboard
+    } catch (error: any) {
+      console.error("Login Failed:", error.response?.data || error.message);
+      alert(error.response?.data?.message || "Invalid username or password.");
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="flex h-screen overflow-hidden">
       <div className="flex bg-white w-[98%] h-[95%] m-auto border border-green-500 rounded-md overflow-hidden">
         {/* Left Side */}
         <motion.div
-          initial={{ x: "100vw", opacity: 0 }} // Start off-screen (right)
-          animate={{ x: 0, opacity: 1 }} // Move to final position
-          exit={{ x: "-100vw", opacity: 0 }} // Exit to the left (optional)
+          initial={{ x: "100vw", opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: "-100vw", opacity: 0 }}
           transition={{ type: "tween", duration: 0.9, ease: "easeOut" }}
           className="w-1/2 bg-login bg-center bg-cover text-white flex flex-col justify-center items-center p-10 rounded-md"
         >
@@ -55,26 +55,26 @@ const LoginPage: React.FC = () => {
             Traffic Police Management System
           </h1>
           <p className="mt-4 text-left text-lg font-poppins">
-            The Traffic Penalty Management System simplifies tracking, managing,
-            and processing traffic fines, ensuring efficiency and transparency
-            for both authorities and the public.
+            Manage traffic fines efficiently and transparently.
           </p>
         </motion.div>
+
         {/* Right Side */}
         <motion.div
-          initial={{ x: "-100vw", opacity: 0 }} // Start off-screen (left)
-          animate={{ x: 0, opacity: 1 }} // Move to final position
-          exit={{ x: "100vw", opacity: 0 }} // Exit animation (optional)
+          initial={{ x: "-100vw", opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: "100vw", opacity: 0 }}
           transition={{ type: "tween", duration: 0.9, ease: "easeOut" }}
           className="w-1/2 h-screen flex flex-col justify-center items-center"
         >
           <form
             onSubmit={handleSubmit}
-            className="w-[65%] p-4 h-[70%] flex flex-col justify-around border border-green-500 rounded-md hover:shadow-sm shadow-green-200 transition-all duration-500"
+            className="w-[65%] p-4 h-[70%] flex flex-col justify-around border border-green-500 rounded-md"
           >
             <h2 className="text-3xl font-semibold font-poppins mb-6 text-green-600">
               Sign In
             </h2>
+
             <div className="relative">
               <input
                 type="text"
@@ -82,21 +82,22 @@ const LoginPage: React.FC = () => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                className="placeholder:text-lg w-full bg-transparent outline-none ring-0 border-2 border-green-600 focus:border-green-700 p-3 rounded-lg mb-4 transition-all duration-200"
+                className="w-full bg-transparent outline-none border-2 border-green-600 focus:border-green-700 p-3 rounded-lg mb-4"
               />
             </div>
+
             <div className="relative">
               <input
-                type={`${showPassword ? "password" : "text"}`}
+                type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full placeholder:text-lg bg-transparent outline-none ring-0 border-2 border-green-600 focus:border-green-700 p-3 rounded-lg mb-4 transition-all duration-200"
+                className="w-full bg-transparent outline-none border-2 border-green-600 focus:border-green-700 p-3 rounded-lg mb-4"
               />
               <div
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-[40%] right-4 -translate-y-1/2 cursor-pointer"
+                className="absolute top-[40%] right-4 cursor-pointer"
               >
                 {showPassword ? (
                   <HiOutlineEye size={20} className="text-green-600" />
@@ -105,14 +106,10 @@ const LoginPage: React.FC = () => {
                 )}
               </div>
             </div>
-            <div>
-              <button className="w-full font-poppins bg-green-600 text-white p-3 rounded-lg hover:bg-green-700">
-                Login
-              </button>
-              <p className="mt-4 text-gray-500 cursor-pointer font-poppins">
-                Forgot your password?
-              </p>
-            </div>
+
+            <button className="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700">
+              {loading ? "Logging in..." : "Login"}
+            </button>
           </form>
         </motion.div>
       </div>
