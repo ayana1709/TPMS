@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AdminLogin from "./Pages/AdminLogin";
+import AdminLogin from "../../Admin/src/pages/AdminLogin";
 // import Dashboard from "./Dashboard"; // Example dashboard component
 
 const App: React.FC = () => {
