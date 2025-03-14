@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+
 class LoginRegisterController extends Controller
 {
     /**
@@ -20,16 +21,8 @@ class LoginRegisterController extends Controller
         ]);
     }
 
-    /**
-     * Display a registration form.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function register()
-    {
-        return view('auth.register');
-    }
-
+    
+   
     /**
      * Store a new user.
      *
@@ -40,18 +33,15 @@ class LoginRegisterController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:250',
-            'email' => 'required|email|max:250|unique:users',
             'password' => 'required|min:8|confirmed'
-
-           //otherfields related with tpms
 
         ]);
 
         User::create([
             'name' => $request->name,
-            'email' => $request->email,
+           
             'password' => Hash::make($request->password)
-            //otherfields related with tpms
+           
         ]);
 
         $credentials = $request->only('email', 'password');
@@ -61,15 +51,18 @@ class LoginRegisterController extends Controller
         ->withSuccess('You have successfully registered & logged in!');
     }
 
+    public function register()
+    {
+
+        $register =User::all();
+        return response()->json($register);    }
+
     /**
      * Display a login form.
      *
      * @return \Illuminate\Http\Response
      */
-    public function login()
-    {
-        return view('auth.login');
-    }
+  
 
     /**
      * Authenticate the user.
@@ -97,11 +90,6 @@ class LoginRegisterController extends Controller
 
     } 
     
-    /**
-     * Display a dashboard to authenticated users.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function dashboard()
     {
         if(Auth::check())
@@ -115,12 +103,7 @@ class LoginRegisterController extends Controller
         ])->onlyInput('email');
     } 
     
-    /**
-     * Log out the user from application.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+   
     public function logout(Request $request)
     {
         Auth::logout();
@@ -129,5 +112,28 @@ class LoginRegisterController extends Controller
         return redirect()->route('login')
             ->withSuccess('You have logged out successfully!');;
     }    
+
+
+
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (!Auth::attempt($credentials)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
+
+        $user = Auth::user();
+        // $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login successful',
+            'user' => $user,
+            // 'token' => $token,
+        ]);
+    }
 
 }
