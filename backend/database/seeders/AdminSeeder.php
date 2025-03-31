@@ -11,8 +11,10 @@ class AdminSeeder extends Seeder
     public function run()
     {
         User::create([
-            'username' => 'admin',  // Use username instead of email
-            'password' => Hash::make('admin'), // Securely hash the password
+             // Ensure your User model has a 'name' field
+            'username' => 'admin', 
+            'email' => 'admin@example.com', // Ensure an email is provided if required
+            'password' => Hash::make('admin'), // Hash password securely
         ]);
     }
 }
