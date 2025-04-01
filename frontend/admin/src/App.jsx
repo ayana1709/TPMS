@@ -8,10 +8,12 @@ import "./charts/ChartjsConfig";
 import Dashboard from "./pages/Dashboard";
 import Login from "./components/Login";
 import api from "./api";
+import { StoreProvider, useStores } from "./contexts/storeContext";
 
 function App() {
   const location = useLocation();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // const { isAuthenticated } = useStores();
+  // console.log(isAuthenticated);
 
   useEffect(() => {
     document.querySelector("html").style.scrollBehavior = "auto";
@@ -19,22 +21,14 @@ function App() {
     document.querySelector("html").style.scrollBehavior = "";
   }, [location.pathname]); // triggered on route change
 
-  useEffect(() => {
-    api
-      .get("/user")
-      .then(() => setIsAuthenticated(true))
-      .catch(() => setIsAuthenticated(false));
-  }, []);
-
   return (
     <>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/"
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
-        />
-      </Routes>
+      <StoreProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Dashboard />} />
+        </Routes>
+      </StoreProvider>
     </>
   );
 }
