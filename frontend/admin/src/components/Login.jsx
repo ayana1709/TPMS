@@ -12,7 +12,6 @@ export default function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { isAuthenticated, setIsAuthenticated } = useStores();
-  // console.log(isAuthenticated);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -20,59 +19,60 @@ export default function Login() {
 
     try {
       const response = await api.post("/login", { username, password });
-      console.log(response);
       localStorage.setItem("adminToken", response.data.token);
-      setIsAuthenticated(true); // Update authentication state
+      setIsAuthenticated(true);
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
       setIsAuthenticated(false);
     }
   };
+
   if (isAuthenticated) {
     navigate("/");
   }
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 className="text-2xl font-bold text-center mb-4 text-blue-500 tracking-wide uppercase">
+    <div className="relative flex justify-center items-center h-screen bg-[#082f49]">
+      <div className="absolute right-20 h-[90%] w-[40%] bg-sky-900 p-8 rounded-xl shadow-2xl overflow-hidden">
+        <h2 className="text-4xl font-bold text-center mb-2 text-white tracking-widest uppercase">
           Login
         </h2>
-        {error && <p className="text-red-500 text-center">{error}</p>}
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="text" className="text-blue-500 ">
-              User Name
-            </Label>
-
-            <input
-              type="text"
-              className="w-full border-3 border-blue-500 focus:border-blue-600 rounded-sm focus:outline-none focus:ring-0 transition-all duration-100"
-              placeholder="User Name"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        <form onSubmit={handleLogin} className="relative h-full">
+          <div className="flex flex-col gap-4 absolute w-[80%] top-[30%] left-1/2 transform -translate-y-1/2 -translate-x-1/2">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="text" className="text-xl text-white">
+                User Name
+              </Label>
+              <Input
+                type="text"
+                className="w-full py-6 border-2 border-gray-200 focus:border-green-500 rounded-md focus:outline-none focus:ring-0 transition-all duration-150"
+                placeholder="User Name"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="password" className="text-xl text-white">
+                Password
+              </Label>
+              <Input
+                type="password"
+                placeholder="Password"
+                className="inline-block w-full border-2 py-6 border-gray-200 focus:border-green-500 rounded-md focus:outline-none focus:ring-0 transition-all duration-150"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full py-6 bg-sky-800 text-white tracking-wide uppercase hover:bg-sky-950 cursor-pointer rounded-lg transition-all duration-200"
+            >
+              Login
+            </Button>
           </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="password" className="text-blue-500">
-              Password
-            </Label>
-            <input
-              type="password"
-              placeholder="password"
-              className="w-full border-3 border-blue-500 focus:border-blue-600 rounded-sm focus:outline-none focus:ring-0 transition-all duration-100"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <Button
-            type="submit"
-            className="w-full bg-blue-500 text-white tracking-wider uppercase hover:bg-blue-700 cursor-pointer"
-          >
-            Login
-          </Button>
         </form>
       </div>
     </div>
