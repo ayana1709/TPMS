@@ -1,35 +1,49 @@
-import React, { useEffect, useState } from "react";
-import { Routes, Route, useLocation, Navigate } from "react-router-dom";
-// Import the axios instance
+import React, { useState } from "react";
+import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import "./css/style.css";
 import "./charts/ChartjsConfig";
 
 // Import pages
 import Dashboard from "./pages/Dashboard";
 import Login from "./components/Login";
-import api from "./api";
-import { StoreProvider, useStores } from "./contexts/storeContext";
+import { StoreProvider } from "./contexts/storeContext";
+import Header from "./partials/Header";
+import Sidebar from "./partials/Sidebar"; // Ensure this is correctly imported
 
-function App() {
-  const location = useLocation();
-  // const { isAuthenticated } = useStores();
-  // console.log(isAuthenticated);
-
-  // useEffect(() => {
-  //   document.querySelector("html").style.scrollBehavior = "auto";
-  //   window.scroll({ top: 0 });
-  //   document.querySelector("html").style.scrollBehavior = "";
-  // }, [location.pathname]); // triggered on route change
+function ProtectedLayout() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <>
-      <StoreProvider>
-        <Routes>
-          <Route path="/" element={<Login />} />
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar */}
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+
+      {/* Content area */}
+      <div className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+        {/* Site header */}
+        <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+
+        {/* Outlet will render the nested route (Dashboard, etc.) */}
+        <Outlet />
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <StoreProvider>
+      <Routes>
+        {/* Login Page (No Sidebar/Header) */}
+        <Route path="/" element={<Login />} />
+
+        {/* Protected Layout for Other Pages */}
+        <Route element={<ProtectedLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
-        </Routes>
-      </StoreProvider>
-    </>
+          <Route path="*" element={<Navigate to="/dashboard" />} />
+        </Route>
+      </Routes>
+    </StoreProvider>
   );
 }
 
