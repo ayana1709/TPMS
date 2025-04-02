@@ -38,9 +38,26 @@ export default function Login() {
         <motion.img
           src="/images/kido.png" // Replace with your actual image URL
           alt="Moving Image"
-          className="absolute -bottom-6 w-60 h-auto"
-          animate={{ x: ["-100vw", "100vw"] }} // Moves from left to right infinitely
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} // Loops infinitely
+          className="absolute z-[99] -bottom-6 w-30 h-auto"
+          animate={{ x: ["-100vw", "43vw", "43vw", "100vw"] }} // Moves in 3 stages
+          transition={{
+            duration: 20, // Total duration for the movement
+            times: [0, 0.4, 0.6, 1], // When each stage happens (0% -> 50% -> 100%)
+            ease: "linear", // Smooth movement
+            repeat: Infinity, // Repeat forever
+          }}
+        />
+        <img
+          src="/images/traffic.png" // Replace with your actual image URL
+          alt="Moving Image"
+          className="absolute z-[9] left-[53%] -translate-x-1/2 bottom-2 w-55 h-auto"
+          animate={{ x: ["-100vw", "5vw", "5vw", "100vw"] }} // Moves in 3 stages
+          transition={{
+            duration: 20, // Total duration for the movement
+            times: [0, 0.4, 0.6, 1], // When each stage happens (0% -> 50% -> 100%)
+            ease: "linear", // Smooth movement
+            repeat: Infinity, // Repeat forever
+          }}
         />
         <div class="absolute z-[9] inset-0 bg-gradient-to-b from-black/50 to-black/50"></div>
 
