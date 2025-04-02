@@ -6,10 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useStores } from "@/contexts/storeContext";
 import { motion } from "framer-motion";
+import { ClipLoader } from "react-spinners";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); // Add loading state
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { isAuthenticated, setIsAuthenticated } = useStores();
@@ -17,20 +19,24 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true); // Start loading
 
     try {
       const response = await api.post("/login", { username, password });
       localStorage.setItem("adminToken", response.data.token);
       setIsAuthenticated(true);
+      navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
       setIsAuthenticated(false);
+    } finally {
+      setLoading(false); // Stop loading after request completes
     }
   };
 
-  if (isAuthenticated) {
-    navigate("/");
-  }
+  // if (isAuthenticated) {
+  //   navigate("/dashboard");
+  // }
 
   return (
     <div className="relative w-full flex justify-center items-center h-screen bg-[#082f49] overflow-hidden">
@@ -101,9 +107,10 @@ export default function Login() {
               </div>
               <Button
                 type="submit"
-                className="w-full py-6 bg-gray-900 text-white tracking-[4px] uppercase hover:bg-gray-950 cursor-pointer rounded-lg transition-all duration-500"
+                // disabled={loading}
+                className="w-full py-6 bg-gray-900 text-white tracking-[4px] uppercase hover:bg-gray-950 disabled:opacity-50 cursor-pointer rounded-lg transition-all duration-500"
               >
-                Login
+                {loading ? <ClipLoader size={20} color="#fff" /> : "Login"}
               </Button>
             </div>
           </form>

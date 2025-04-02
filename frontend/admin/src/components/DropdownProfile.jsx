@@ -51,7 +51,7 @@ function DropdownProfile({ align }) {
       .then((response) => {
         console.log("logout successfull");
         localStorage.removeItem("adminToken");
-        navigate("/login");
+        navigate("/");
       })
       .catch((error) => {
         console.log(error);
