@@ -9,6 +9,7 @@ import Login from "./components/Login";
 import { StoreProvider } from "./contexts/storeContext";
 import Header from "./partials/Header";
 import Sidebar from "./partials/Sidebar"; // Ensure this is correctly imported
+import CreateManager from "./pages/CreateManager";
 
 function ProtectedLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -40,6 +41,7 @@ function App() {
         {/* Protected Layout for Other Pages */}
         <Route element={<ProtectedLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/create-account" element={<CreateManager />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Route>
       </Routes>
