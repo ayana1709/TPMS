@@ -27,7 +27,7 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       console.warn("Unauthorized! Logging out...");
       localStorage.removeItem("adminToken"); // Clear expired token
-      window.location.href = "/login"; // Redirect to login
+      // window.location.href = "/login"; // Redirect to login
     }
     return Promise.reject(error);
   }

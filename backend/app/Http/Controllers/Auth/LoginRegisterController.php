@@ -19,7 +19,7 @@ class LoginRegisterController extends Controller
     
         // Attempt login using username and password
         if (!Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']])) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json(['message' => 'Invalid credentials, please eneter the right credintials and try agian!'], 401);
         }
     
         // Get the authenticated user and generate token

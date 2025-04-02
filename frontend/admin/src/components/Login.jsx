@@ -72,7 +72,11 @@ export default function Login() {
           <h2 className="text-4xl font-bold text-center mb-2 text-white tracking-widest uppercase">
             Login
           </h2>
-          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+          {error && (
+            <p className="text-red-800 text-xl tracking-wider text-center mb-4 bg-[rgba(0,0,0,0.3)] py-2 p-2 w-[90%] mx-auto rounded-sm">
+              {error}
+            </p>
+          )}
           <form onSubmit={handleLogin} className="relative h-full">
             <div className="flex flex-col gap-6 absolute w-[80%] top-[30%] left-1/2 transform -translate-y-1/2 -translate-x-1/2">
               <div className="flex flex-col gap-2">
