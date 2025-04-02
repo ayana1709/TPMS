@@ -28,15 +28,11 @@ export default function Login() {
       navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
-      setIsAuthenticated(false);
+      // setIsAuthenticated(false);
     } finally {
       setLoading(false); // Stop loading after request completes
     }
   };
-
-  // if (isAuthenticated) {
-  //   navigate("/dashboard");
-  // }
 
   return (
     <div className="relative w-full flex justify-center items-center h-screen bg-[#082f49] overflow-hidden">
@@ -65,7 +61,7 @@ export default function Login() {
             repeat: Infinity, // Repeat forever
           }}
         />
-        <div class="absolute z-[9] inset-0 bg-gradient-to-b from-black/50 to-black/50"></div>
+        <div className="absolute z-[9] inset-0 bg-gradient-to-b from-black/50 to-black/50"></div>
 
         <motion.div
           initial={{ x: -300, opacity: 0 }} // Start 200px left and invisible
