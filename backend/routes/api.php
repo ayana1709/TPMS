@@ -35,7 +35,7 @@ Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
 
 Route::get('/fetch-regions', [OSMController::class, 'fetchRegions']);
 Route::get('/fetch-zones/{regionOsmId}', [OSMController::class, 'fetchZones']);
-Route::get('/fetch-woredas/{zoneOsmId}', [OSMController::class, 'fetchWoredas']);
+Route::get('/fetch-woredas/{zoneOsmId}', [OSMController::class, 'fetchTowns']);
 
 
 

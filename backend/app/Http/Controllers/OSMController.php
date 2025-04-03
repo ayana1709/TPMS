@@ -64,21 +64,46 @@ class OSMController extends Controller
     
 
     // Fetch and store woredas inside a zone
-    public function fetchWoredas($zoneOsmId) {
-        $url = "https://overpass-api.de/api/interpreter?data=[out:json];relation($zoneOsmId)[\"admin_level\"=\"6\"];out body;";
+    public function fetchTowns($zoneOsmId) {
+        // Convert zone OSM ID to area ID
+        $areaId = 3600000000 + $zoneOsmId;
+    
+        // Overpass API query to get towns, cities, and villages
+        $url = "https://overpass-api.de/api/interpreter?data=[out:json];
+        area($areaId)->.zone;
+        (
+          node[\"place\"=\"town\"](area.zone);
+          node[\"place\"=\"city\"](area.zone);
+          node[\"place\"=\"village\"](area.zone);
+        );
+        out body;";
+    
+        // Fetch data
         $response = Http::get($url)->json();
-
-        foreach ($response['elements'] as $woreda) {
-            Woreda::updateOrCreate([
-                'osm_id' => $woreda['id']
-            ], [
-                'name' => $woreda['tags']['name'],
-                'zone_id' => $zoneOsmId
-            ]);
+        \Log::info('Overpass API Response:', $response); // ✅ Log response
+    
+        if (!isset($response['elements']) || empty($response['elements'])) {
+            return response()->json(['error' => 'No towns found in OSM for this zone'], 404);
         }
-
-        // **Return the stored woredas for the selected zone**
+    
+        // Store or update towns
+        foreach ($response['elements'] as $town) {
+            if (isset($town['tags']['name'])) {
+                Woreda::updateOrCreate(
+                    ['osm_id' => $town['id']],
+                    [
+                        'name' => $town['tags']['name'],
+                        'zone_id' => $zoneOsmId
+                    ]
+                );
+            }
+        }
+    
         return response()->json(Woreda::where('zone_id', $zoneOsmId)->get());
     }
+    
+    
+    
+    
 }
 

@@ -35,8 +35,8 @@ export default function CreateManager() {
     username: "",
   });
 
-  console.log(selectedRegion);
-  console.log(zones);
+  console.log(formData);
+  console.log(woredas);
 
   // Fetch regions from Laravel backend
   useEffect(() => {
@@ -73,6 +73,47 @@ export default function CreateManager() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Update selected region & formData
+  const handleRegionChange = (value) => {
+    const selectedRegionObj = regions.find(
+      (region) => region.osm_id.toString() === value
+    );
+
+    setSelectedRegion(value); // Keep the selected region ID for fetching zones
+    setFormData((prev) => ({
+      ...prev,
+      region: selectedRegionObj ? selectedRegionObj.name : "", // Store region name
+      zone: "",
+      woreda: "",
+    }));
+  };
+
+  // Update selected zone & formData
+  const handleZoneChange = (value) => {
+    const selectedZoneObj = zones.find(
+      (zone) => zone.osm_id.toString() === value
+    );
+
+    setSelectedZone(value); // Keep the selected zone ID for fetching woredas
+    setFormData((prev) => ({
+      ...prev,
+      zone: selectedZoneObj ? selectedZoneObj.name : "", // Store zone name
+      woreda: "",
+    }));
+  };
+
+  // Update selected woreda
+  const handleWoredaChange = (value) => {
+    const selectedWoredaObj = woredas.find(
+      (woreda) => woreda.osm_id.toString() === value
+    );
+
+    setFormData((prev) => ({
+      ...prev,
+      woreda: selectedWoredaObj ? selectedWoredaObj.name : "", // Store woreda name
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -134,7 +175,7 @@ export default function CreateManager() {
           />
 
           <Select
-            onValueChange={(value) => setSelectedRegion(value)}
+            onValueChange={handleRegionChange}
             value={selectedRegion}
             required
           >
@@ -162,7 +203,7 @@ export default function CreateManager() {
           </Select>
 
           <Select
-            onValueChange={(value) => setSelectedZone(value)}
+            onValueChange={handleZoneChange}
             value={selectedZone}
             disabled={!selectedRegion}
             required
@@ -187,7 +228,11 @@ export default function CreateManager() {
             </SelectContent>
           </Select>
 
-          <Select disabled={!selectedZone}>
+          <Select
+            onValueChange={handleWoredaChange}
+            value={formData.woreda}
+            disabled={!selectedZone}
+          >
             <SelectTrigger className="w-full py-6 dark:border-gray-200">
               <SelectValue placeholder="Select Woreda" />
             </SelectTrigger>
@@ -195,7 +240,10 @@ export default function CreateManager() {
               <SelectGroup>
                 {woredas.length > 0 ? (
                   woredas.map((woreda) => (
-                    <SelectItem key={woreda.id} value={woreda.osm_id}>
+                    <SelectItem
+                      key={woreda.id}
+                      value={woreda.osm_id.toString()}
+                    >
                       {woreda.name}
                     </SelectItem>
                   ))

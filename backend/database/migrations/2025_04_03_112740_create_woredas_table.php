@@ -10,8 +10,9 @@ return new class extends Migration {
         Schema::create('woredas', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('osm_id')->unique();
+            $table->bigInteger('zone_id');
             $table->string('name');
-            $table->foreignId('zone_id')->constrained()->onDelete('cascade');
+            $table->foreign('zone_id')->references('osm_id')->on('zones')->onDelete('cascade');
             $table->timestamps();
         });
     }
