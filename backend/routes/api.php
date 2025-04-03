@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\OSMController;
 // use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -29,4 +30,12 @@ Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
         'message' => 'Logged out successfully'
     ], 200);
 });
+
+//Routes for storing the regions, zones and weredas data
+
+Route::get('/fetch-regions', [OSMController::class, 'fetchRegions']);
+Route::get('/fetch-zones/{regionOsmId}', [OSMController::class, 'fetchZones']);
+Route::get('/fetch-woredas/{zoneOsmId}', [OSMController::class, 'fetchWoredas']);
+
+
 
