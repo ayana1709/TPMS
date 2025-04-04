@@ -35,7 +35,7 @@ export default function CreateManager() {
     username: "",
   });
 
-  console.log(formData);
+  console.log(regions);
   console.log(woredas);
 
   // Fetch regions from Laravel backend
@@ -106,9 +106,11 @@ export default function CreateManager() {
 
   // Update selected woreda
   const handleWoredaChange = (value) => {
+    console.log(value.toString());
     const selectedWoredaObj = woredas.find(
       (woreda) => woreda.osm_id.toString() === value
     );
+    console.log(selectedWoredaObj);
 
     setFormData((prev) => ({
       ...prev,
@@ -119,10 +121,16 @@ export default function CreateManager() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("/api/managers", formData);
+      await api.post("/managers", formData);
       setCreatedManager(formData);
     } catch (error) {
-      alert("Error creating manager. Try again.");
+      if (error.response?.status === 422) {
+        alert(
+          "Validation Error: " + JSON.stringify(error.response.data.errors)
+        );
+      } else {
+        alert("Something went wrong");
+      }
     }
   };
 
@@ -230,7 +238,7 @@ export default function CreateManager() {
 
           <Select
             onValueChange={handleWoredaChange}
-            value={formData.woreda}
+            // value={formData.woreda}
             disabled={!selectedZone}
           >
             <SelectTrigger className="w-full py-6 dark:border-gray-200">

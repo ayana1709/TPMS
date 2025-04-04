@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\OSMController;
+use App\Http\Controllers\ManagerController;
 // use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +37,9 @@ Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
 Route::get('/fetch-regions', [OSMController::class, 'fetchRegions']);
 Route::get('/fetch-zones/{regionOsmId}', [OSMController::class, 'fetchZones']);
 Route::get('/fetch-woredas/{zoneOsmId}', [OSMController::class, 'fetchTowns']);
+
+//Route for registering managers
+Route::post('/managers', [ManagerController::class, 'store']);
 
 
 
