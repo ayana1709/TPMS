@@ -35,7 +35,7 @@ export default function CreateManager() {
     username: "",
   });
 
-  console.log(regions);
+  console.log(formData);
   console.log(woredas);
 
   // Fetch regions from Laravel backend
