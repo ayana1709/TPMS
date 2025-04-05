@@ -38,10 +38,10 @@ export default function Login() {
     <div className="relative w-full flex justify-center items-center h-screen bg-[#082f49] overflow-hidden">
       <div className="bg-[url('/images/addis.png')] bg-cover bg-center w-[95%] h-[95%] rounded-lg p-4">
         <motion.img
-          src="/images/kido.png" // Replace with your actual image URL
+          src="/images/car.png" // Replace with your actual image URL
           alt="Moving Image"
-          className="absolute z-[99] -bottom-6 w-30 h-auto"
-          animate={{ x: ["-100vw", "43vw", "43vw", "100vw"] }} // Moves in 3 stages
+          className="absolute z-[99] -bottom-6 w-70 h-auto"
+          animate={{ x: ["-100vw", "40vw", "43vw", "100vw"] }} // Moves in 3 stages
           transition={{
             duration: 20, // Total duration for the movement
             times: [0, 0.4, 0.6, 1], // When each stage happens (0% -> 50% -> 100%)
