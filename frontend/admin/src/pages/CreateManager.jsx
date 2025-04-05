@@ -350,7 +350,7 @@ export default function CreateManager() {
 
       {/* Manager Info Layout */}
       <div className="bg-white dark:bg-gray-800 flex flex-col gap-6 rounded-md p-4">
-        <div className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-sm border p-2">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border p-2">
           <h2 className="text-xl font-semibold mb-4 tracking-wider">
             Admin Controls
           </h2>
@@ -365,6 +365,7 @@ export default function CreateManager() {
 
             <div className="flex gap-2">
               <Input
+                type="password"
                 name="password"
                 value={formData.password}
                 placeholder="Enter or Generate Password"

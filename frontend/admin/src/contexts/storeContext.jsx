@@ -7,7 +7,7 @@ const StoreContext = createContext({});
 function StoreProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isManagerSuccessModalOpen, setIsManagerSuccessModalOpen] =
-    useState(true);
+    useState(false);
   return (
     <StoreContext.Provider
       value={{
