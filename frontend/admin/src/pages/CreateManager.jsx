@@ -28,6 +28,7 @@ export default function CreateManager() {
   const [regionVaidation, setRegionValidation] = useState("");
   const [zoneVaidation, setZoneValidation] = useState("");
   const [woredaVaidation, setWoredaValidation] = useState("");
+
   const { isManagerSuccessModalOpen, setIsManagerSuccessModalOpen } =
     useStores();
   const [formData, setFormData] = useState({
@@ -77,7 +78,12 @@ export default function CreateManager() {
   }, [selectedZone]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   // Update selected region & formData
@@ -198,13 +204,25 @@ export default function CreateManager() {
           Create Manager
         </h2>
         <div className="flex flex-col gap-8 border p-4 rounded-sm mt-6">
-          <Input
-            name="name"
-            placeholder="Full Name"
-            onChange={handleChange}
-            className="py-6 dark:border-gray-200"
-            required
-          />
+          <div className="relative z-0">
+            <Input
+              name="name"
+              placeholder="Full Name"
+              onChange={handleChange}
+              value={formData.name}
+              className={`py-6 dark:border-gray-200 ${
+                formData.name && !/^[A-Za-z\s]+$/.test(formData.name)
+                  ? "disabled border-3 border-red-500 dark:border-red-500 outline-none dark:outline-none ring-0 dark:ring-0"
+                  : ""
+              }`}
+              required
+            />
+            {formData.name && !/^[A-Za-z\s]+$/.test(formData.name) && (
+              <p className="absolute z-[999] -bottom-6 text-md text-red-500 mt-1">
+                Only letters and spaces allowed.
+              </p>
+            )}
+          </div>
           <Input
             name="phone"
             placeholder="Phone Number"
