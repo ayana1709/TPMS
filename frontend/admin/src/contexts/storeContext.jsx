@@ -6,11 +6,15 @@ const StoreContext = createContext({});
 
 function StoreProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isManagerSuccessModalOpen, setIsManagerSuccessModalOpen] =
+    useState(true);
   return (
     <StoreContext.Provider
       value={{
         isAuthenticated,
         setIsAuthenticated,
+        isManagerSuccessModalOpen,
+        setIsManagerSuccessModalOpen,
       }}
     >
       {children}
