@@ -223,20 +223,47 @@ export default function CreateManager() {
               </p>
             )}
           </div>
-          <Input
-            name="phone"
-            placeholder="Phone Number"
-            onChange={handleChange}
-            className="py-6 dark:border-gray-200"
-            required
-          />
-          <Input
-            name="email"
-            placeholder="Email (Optional)"
-            onChange={handleChange}
-            className="py-6 dark:border-gray-100"
-            required
-          />
+          <div className="relative">
+            <Input
+              name="phone"
+              placeholder="Phone Number"
+              onChange={handleChange}
+              value={formData.phone}
+              maxLength={13} // Optional: prevent input longer than allowed
+              className={`py-6 dark:border-gray-200 ${
+                formData.phone && !/^(\+251|0)?9\d{0,8}$/.test(formData.phone)
+                  ? "disabled border-3 border-red-500 dark:border-red-500 outline-none dark:outline-none ring-0 dark:ring-0"
+                  : ""
+              }`}
+              required
+            />
+            {formData.phone && !/^(\+251|0)?9\d{0,8}$/.test(formData.phone) && (
+              <p className="absolute z-[999] -bottom-6 text-md text-red-500 mt-1">
+                Enter a valid Ethiopian phone number (e.g. +2519XXXXXXXX or
+                09XXXXXXXX).
+              </p>
+            )}
+          </div>
+          <div className="relative">
+            <Input
+              name="email"
+              placeholder="Email (Optional)"
+              onChange={handleChange}
+              className={`py-6 dark:border-gray-200 ${
+                formData.email &&
+                !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)
+                  ? "disabled border-3 border-red-500 dark:border-red-500 outline-none dark:outline-none ring-0 dark:ring-0"
+                  : ""
+              }`}
+              required
+            />
+            {formData.email &&
+              !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email) && (
+                <p className="absolute z-[999] -bottom-6 text-md text-red-500 mt-1">
+                  Enter a valid email address.
+                </p>
+              )}
+          </div>
 
           <div className="relative">
             <Select
