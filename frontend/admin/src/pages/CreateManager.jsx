@@ -28,6 +28,7 @@ export default function CreateManager() {
   const [regionVaidation, setRegionValidation] = useState("");
   const [zoneVaidation, setZoneValidation] = useState("");
   const [woredaVaidation, setWoredaValidation] = useState("");
+  const [isUsernameValid, setIsUsernameValid] = useState(true);
 
   const { isManagerSuccessModalOpen, setIsManagerSuccessModalOpen } =
     useStores();
@@ -79,6 +80,9 @@ export default function CreateManager() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "username") {
+      setIsUsernameValid(/^[a-zA-Z0-9_]{4,20}$/.test(value));
+    }
 
     setFormData((prev) => ({
       ...prev,
@@ -400,13 +404,26 @@ export default function CreateManager() {
             Admin Controls
           </h2>
           <div className="flex flex-col gap-4">
-            <Input
-              name="username"
-              placeholder="Username"
-              onChange={handleChange}
-              className="py-6 dark:border-gray-200"
-              required
-            />
+            <div className={`relative ${!isUsernameValid ? "mb-10" : ""}`}>
+              <Input
+                name="username"
+                placeholder="Username"
+                onChange={handleChange}
+                className={`py-6 dark:border-gray-200 ${
+                  !isUsernameValid
+                    ? "disabled border-3 border-red-500 dark:border-red-500 outline-none dark:outline-none ring-0 dark:ring-0"
+                    : ""
+                }`}
+                required
+                value={formData.username}
+              />
+              {formData.username && !isUsernameValid && (
+                <p className="absolute z-[999] -bottom-12 text-md text-red-500 mt-1">
+                  Username must be 4–20 characters long and contain only
+                  letters, numbers, or underscores.
+                </p>
+              )}
+            </div>
 
             <div className="flex gap-2">
               <Input
