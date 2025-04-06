@@ -40,6 +40,8 @@ Route::get('/fetch-woredas/{zoneOsmId}', [OSMController::class, 'fetchTowns']);
 
 //Route for registering managers
 Route::post('/managers', [ManagerController::class, 'store']);
+Route::post('/managers/{username}/send-info', [ManagerController::class, 'sendInfoEmail']);
+
 
 
 

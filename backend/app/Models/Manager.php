@@ -17,6 +17,7 @@ class Manager extends Model
         'woreda',
         'username',
         'password',
+        "temp_password"
     ];
     
 }
