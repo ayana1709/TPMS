@@ -25,12 +25,18 @@ import {
 } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
 import api from "@/api";
-import { ArrowUp, ArrowDown, ChevronsUpDown } from "lucide-react";
+import {
+  ArrowUp,
+  ArrowDown,
+  ChevronsUpDown,
+  MoreHorizontal,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
+  DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 export const ManagerTable = () => {
   const [sorting, setSorting] = useState([]);
@@ -132,13 +138,42 @@ export const ManagerTable = () => {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <div className="flex gap-2">
-          <Button size="sm" variant="secondary">
-            Action
-          </Button>
+        <div className="flex justify-center items-center min-h-[40px] w-full">
+          <DropdownMenu className="text-center">
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="text-center w-[180px] p-8"
+            >
+              <DropdownMenuItem
+                onClick={() => console.log("View", row.original)}
+                className="text-center text-lg"
+              >
+                View
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => console.log("Edit", row.original)}
+                className="text-center text-lg"
+              >
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => console.log("Delete", row.original)}
+                className="text-center text-red-500 text-lg"
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ),
     });
+
     return [selectionColumn, ...dynamicColumns];
   }, [managers]);
 
