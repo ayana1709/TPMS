@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import "./css/style.css";
 import "./charts/ChartjsConfig";
-
+import "react-toastify/dist/ReactToastify.css";
 // Import pages
 import Dashboard from "./pages/Dashboard";
 import Login from "./components/Login";
@@ -11,6 +11,7 @@ import Header from "./partials/Header";
 import Sidebar from "./partials/Sidebar"; // Ensure this is correctly imported
 import CreateManager from "./pages/CreateManager";
 import ViewManagers from "./pages/ViewManagers";
+import { ToastContainer } from "react-toastify";
 
 function ProtectedLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -35,6 +36,7 @@ function ProtectedLayout() {
 function App() {
   return (
     <StoreProvider>
+      <ToastContainer />
       <Routes>
         {/* Login Page (No Sidebar/Header) */}
         <Route path="/" element={<Login />} />

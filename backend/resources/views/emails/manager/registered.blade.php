@@ -11,7 +11,7 @@ Here are your credentials:
 - **Username:** {{ $manager->username }}
 - **Password:** {{ $plainPassword }}
 
-You can now login using the credentials above.
+You can now request to activate your manager account to login.
 
 Thanks,<br>
 {{ config('app.name') }}

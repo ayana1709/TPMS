@@ -14,6 +14,7 @@ import { Copy } from "lucide-react";
 import api from "@/api";
 import { useStores } from "@/contexts/storeContext";
 import CreateManagerModal from "./CreateManagermodal";
+import { toast } from "react-toastify";
 
 export default function CreateManager() {
   const [regions, setRegions] = useState([]);
@@ -199,9 +200,9 @@ export default function CreateManager() {
     console.log(username);
     try {
       await api.post(`/managers/${username}/send-info`);
-      alert("Manager info sent successfully!");
+      toast.success("Manager info sent successfully!");
     } catch (error) {
-      alert("Failed to send manager info.");
+      toast.error("Failed to send manager info.");
     }
   };
 
@@ -512,7 +513,7 @@ export default function CreateManager() {
                 <p className="text-xl text-gray-800 dark:text-gray-200">
                   Status:
                   <span className="text-md tracking-wider text-purple-800 dark:text-purple-400 ml-2">
-                    {createdManager.status || "Haramaya"}
+                    {createdManager.status || "Inactive"}
                   </span>{" "}
                 </p>
               </div>
@@ -524,7 +525,7 @@ export default function CreateManager() {
       </form>
       <div className="w-[35%] absolute left-[77%] z-[999999] top-[38%]">
         <Button
-          onClick={() => sendManagerInfo("betsegaw")}
+          onClick={() => sendManagerInfo(createdManager.username)}
           className="w-[50%] m-auto py-6 text-lg cursor-pointer hover:bg-gray-950 hover:text-gray-200 transition-all duration-400"
         >
           Send Manager Info
