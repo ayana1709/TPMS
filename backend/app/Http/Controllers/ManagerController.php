@@ -115,13 +115,26 @@ public function update(Request $request, $oldUsername)
     }
 }
 
+public function destroy($username)
+{
+    try {
+        $manager = Manager::where('username', $username)->firstOrFail();
+        $manager->delete();
+
+        return response()->json([
+            'message' => 'Manager deleted successfully.'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Delete failed.',
+            'details' => $e->getMessage(),
+        ], 500);
+    }
+}
 
 
 
-
-
-
-    
+ 
 public function sendInfoEmail($username)
 {
     $manager = Manager::where('username', $username)->first();

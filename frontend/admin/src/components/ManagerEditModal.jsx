@@ -12,7 +12,13 @@ import { useState, useEffect } from "react";
 import api from "@/api";
 import { toast } from "react-toastify";
 
-export function ManagerEditModal({ manager, open, onOpenChange, onSubmit }) {
+export function ManagerEditModal({
+  manager,
+  open,
+  onOpenChange,
+  onSubmit,
+  setManagers,
+}) {
   const [formData, setFormData] = useState({});
 
   console.log(formData);
@@ -23,7 +29,10 @@ export function ManagerEditModal({ manager, open, onOpenChange, onSubmit }) {
       setFormData(manager);
     }
   }, [manager]);
-
+  const fetchManagers = async () => {
+    const res = await api.get("/managers");
+    setManagers(res.data);
+  };
   const handleChange = (key, value) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
@@ -60,6 +69,8 @@ export function ManagerEditModal({ manager, open, onOpenChange, onSubmit }) {
         });
       //   onSubmit(res.data);
       onOpenChange(false);
+      // After submit
+      await fetchManagers();
     } catch (error) {
       console.error("Failed:", error);
       alert("Something went wrong.");

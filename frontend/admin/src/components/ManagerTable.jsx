@@ -38,8 +38,20 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 import { ManagerDetailsModal } from "./ManagerDetailsModal";
 import { ManagerEditModal } from "./ManagerEditModal";
+import { toast } from "react-toastify";
 export const ManagerTable = () => {
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -173,12 +185,35 @@ export const ManagerTable = () => {
               >
                 Edit
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => console.log("Delete", row.original)}
-                className="text-center text-red-500 text-lg cursor-pointer"
-              >
-                Delete
-              </DropdownMenuItem>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  {/* This is important: avoid auto-close */}
+                  <button className="w-full cursor-pointer bg-white text-left text-red-500 text-lg py-2 px-2 rounded-md hover:bg-gray-100">
+                    Delete
+                  </button>
+                </AlertDialogTrigger>
+
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-3xl">
+                      Are you sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="text-lg">
+                      This will permanently delete{" "}
+                      <strong>{row.original.name}</strong>.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
+                      onClick={() => handleDelete(row.original.username)}
+                    >
+                      Yes, Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -234,6 +269,16 @@ export const ManagerTable = () => {
       body: rows,
     });
     doc.save("managers.pdf");
+  };
+  const handleDelete = async (username) => {
+    try {
+      await api.delete(`/managers/${username}`);
+      setManagers((prev) => prev.filter((m) => m.username !== username));
+      toast.success("manager deleted successfully!");
+    } catch (error) {
+      console.error("Failed to delete:", error);
+      toast.error("Error while deleting manager.");
+    }
   };
 
   return (
@@ -298,6 +343,7 @@ export const ManagerTable = () => {
           manager={selectedManager}
           open={editOpen}
           onOpenChange={setEditOpen}
+          setManagers={setManagers}
           onSubmit={(updatedData) => {
             console.log("Update manager:", updatedData);
             // call your update API or state handler here
