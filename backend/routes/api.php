@@ -44,6 +44,7 @@ Route::get('/fetch-woredas/{zoneOsmId}', [OSMController::class, 'fetchTowns']);
 Route::post('/managers', [ManagerController::class, 'store']);
 Route::post('/managers/{username}/send-info', [ManagerController::class, 'sendInfoEmail']);
 Route::get('/managers', [ManagerController::class, 'index']);
+Route::put('/managers/{username}', [ManagerController::class, 'update']);
 
 
 // Route::apiResource('traffic-users', TrafficUserController::class);

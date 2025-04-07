@@ -39,6 +39,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { ManagerDetailsModal } from "./ManagerDetailsModal";
+import { ManagerEditModal } from "./ManagerEditModal";
 export const ManagerTable = () => {
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -47,7 +48,7 @@ export const ManagerTable = () => {
   const [rowSelection, setRowSelection] = useState({});
   const [selectedManager, setSelectedManager] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+  const [editOpen, setEditOpen] = useState(false);
   const [managers, setManagers] = useState([]);
 
   useEffect(() => {
@@ -164,7 +165,10 @@ export const ManagerTable = () => {
               </DropdownMenuItem>
 
               <DropdownMenuItem
-                onClick={() => console.log("Edit", row.original)}
+                onClick={() => {
+                  setSelectedManager(row.original);
+                  setEditOpen(true);
+                }}
                 className="text-center text-lg cursor-pointer"
               >
                 Edit
@@ -289,6 +293,15 @@ export const ManagerTable = () => {
           manager={selectedManager}
           open={isDialogOpen}
           onOpenChange={setIsDialogOpen}
+        />
+        <ManagerEditModal
+          manager={selectedManager}
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          onSubmit={(updatedData) => {
+            console.log("Update manager:", updatedData);
+            // call your update API or state handler here
+          }}
         />
 
         <Table>
