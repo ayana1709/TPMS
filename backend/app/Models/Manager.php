@@ -18,6 +18,7 @@ class Manager extends Model
         'username',
         'password',
         "temp_password"
+        
     ];
     
 }

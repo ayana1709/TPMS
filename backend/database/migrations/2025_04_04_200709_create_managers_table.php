@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('password');
             $table->string('temp_password')->nullable();
+            $table->string('status')->default('Inactive');
             $table->timestamps();
         });
         
