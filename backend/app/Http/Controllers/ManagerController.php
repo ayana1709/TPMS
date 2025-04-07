@@ -39,6 +39,7 @@ public function store(Request $request)
             'username' => $validated['username'],
             'password' => Hash::make($plainPassword),
             'temp_password' => $plainPassword, // ✅ store plain password for email
+            'status' => 'Inactive', // default status
         ]);
 
         
