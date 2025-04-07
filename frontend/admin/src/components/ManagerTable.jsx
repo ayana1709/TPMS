@@ -38,12 +38,15 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { ManagerDetailsModal } from "./ManagerDetailsModal";
 export const ManagerTable = () => {
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
+  const [selectedManager, setSelectedManager] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const [managers, setManagers] = useState([]);
 
@@ -138,10 +141,10 @@ export const ManagerTable = () => {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <div className="flex justify-center items-center min-h-[40px] w-full">
-          <DropdownMenu className="text-center">
+        <div className="cursor-pointer flex justify-center items-center min-h-[40px] w-full">
+          <DropdownMenu className="text-center cursor-pointer">
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
+              <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
                 <span className="sr-only">Open menu</span>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
@@ -151,20 +154,24 @@ export const ManagerTable = () => {
               className="text-center w-[180px] p-8"
             >
               <DropdownMenuItem
-                onClick={() => console.log("View", row.original)}
-                className="text-center text-lg"
+                onClick={() => {
+                  setSelectedManager(row.original);
+                  setIsDialogOpen(true);
+                }}
+                className="text-center text-lg cursor-pointer"
               >
                 View
               </DropdownMenuItem>
+
               <DropdownMenuItem
                 onClick={() => console.log("Edit", row.original)}
-                className="text-center text-lg"
+                className="text-center text-lg cursor-pointer"
               >
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => console.log("Delete", row.original)}
-                className="text-center text-red-500 text-lg"
+                className="text-center text-red-500 text-lg cursor-pointer"
               >
                 Delete
               </DropdownMenuItem>
@@ -278,6 +285,12 @@ export const ManagerTable = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+        <ManagerDetailsModal
+          manager={selectedManager}
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+        />
+
         <Table>
           <TableHeader className="bg-gray-100 dark:bg-gray-800">
             {table.getHeaderGroups().map((headerGroup) => (
