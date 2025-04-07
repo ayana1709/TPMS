@@ -26,10 +26,19 @@ import {
 import { Card } from "@/components/ui/card";
 import api from "@/api";
 import { ArrowUp, ArrowDown, ChevronsUpDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 export const ManagerTable = () => {
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
+  const [columnVisibility, setColumnVisibility] = useState({});
+  const [rowSelection, setRowSelection] = useState({});
+
   const [managers, setManagers] = useState([]);
 
   useEffect(() => {
@@ -42,6 +51,26 @@ export const ManagerTable = () => {
   const columns = useMemo(() => {
     if (managers.length === 0) return [];
 
+    const selectionColumn = {
+      id: "select",
+      header: ({ table }) => (
+        <input
+          type="checkbox"
+          checked={table.getIsAllPageRowsSelected()}
+          onChange={table.getToggleAllPageRowsSelectedHandler()}
+        />
+      ),
+      cell: ({ row }) => (
+        <input
+          type="checkbox"
+          checked={row.getIsSelected()}
+          disabled={!row.getCanSelect()}
+          onChange={row.getToggleSelectedHandler()}
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    };
     const dynamicColumns = managers[0]
       ? Object.keys(managers[0]).map((key) => {
           if (key === "region") {
@@ -99,8 +128,6 @@ export const ManagerTable = () => {
           };
         })
       : [];
-
-    // Add Actions Column
     dynamicColumns.push({
       id: "actions",
       header: "Actions",
@@ -112,8 +139,7 @@ export const ManagerTable = () => {
         </div>
       ),
     });
-
-    return dynamicColumns;
+    return [selectionColumn, ...dynamicColumns];
   }, [managers]);
 
   const table = useReactTable({
@@ -123,7 +149,12 @@ export const ManagerTable = () => {
       sorting,
       globalFilter,
       pagination,
+      columnVisibility,
+      rowSelection,
     },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
+    onColumnVisibilityChange: setColumnVisibility,
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
@@ -162,25 +193,62 @@ export const ManagerTable = () => {
   return (
     <div className="p-6 space-y-4">
       {/* Search + Export Buttons */}
-      <div className="flex flex-wrap gap-4 items-center">
-        <Input
-          placeholder="Search all columns..."
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          className="w-full max-w-sm"
-        />
-        <Button onClick={exportToExcel}>Export to Excel</Button>
-        <Button onClick={exportToPDF}>Export to PDF</Button>
-      </div>
 
       {/* Data Table */}
       <Card className="p-4 shadow">
+        <div className="flex items-center gap-4">
+          <Input
+            placeholder="Search all columns..."
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="w-full max-w-sm py-[20px] placeholder:text-lg"
+          />
+          <Button
+            onClick={exportToExcel}
+            className="py-[20px] text-lg bg-indigo-950 text-white hover:bg-indigo-900"
+          >
+            Export to Excel
+          </Button>
+          <Button
+            onClick={exportToPDF}
+            className="py-[20px] text-lg bg-indigo-950 text-white hover:bg-indigo-900"
+          >
+            Export to PDF
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="py-6 text-lg ml-auto bg-indigo-950 hover:bg-indigo-900 dark:bg-indigo-950 hover:dark:bg-indigo-900 border-none text-white hover:text-white"
+              >
+                Toggle Columns
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-gray-100 dark:bg-gray-800">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="">
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="py-4">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -196,7 +264,7 @@ export const ManagerTable = () => {
             {table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} className="py-3 text-md">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
