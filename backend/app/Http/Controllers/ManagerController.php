@@ -57,6 +57,14 @@ public function store(Request $request)
     }
 }
 
+public function index()
+{
+    $managers = Manager::select('name', 'phone', 'email', 'region', 'zone', 'woreda', 'username', 'status')->get();
+
+    return response()->json($managers);
+}
+
+
     
 public function sendInfoEmail($username)
 {

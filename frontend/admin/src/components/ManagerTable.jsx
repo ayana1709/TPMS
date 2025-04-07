@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -15,6 +15,7 @@ import {
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Card, CardContent } from "./ui/card";
+import api from "@/api";
 
 export const ManagerTable = () => {
   const [sorting, setSorting] = useState([]);
@@ -23,40 +24,56 @@ export const ManagerTable = () => {
     pageIndex: 0,
     pageSize: 5,
   });
-  console.log(typeof new jsPDF().autoTable); // This should log 'function'
+  const [managers, setManagers] = useState([]);
 
-  const data = useMemo(
-    () => [
-      { id: 1, name: "Alice", email: "alice@example.com", role: "admin" },
-      { id: 2, name: "Bob", email: "bob@example.com", role: "user" },
-      { id: 3, name: "Charlie", email: "charlie@example.com", role: "user" },
-      { id: 4, name: "Dave", email: "dave@example.com", role: "admin" },
-      { id: 5, name: "Eva", email: "eva@example.com", role: "user" },
-      { id: 6, name: "Frank", email: "frank@example.com", role: "user" },
-    ],
-    []
-  );
+  useEffect(() => {
+    api
+      .get("/managers")
+      .then((res) => setManagers(res.data))
+      .catch((err) => console.error("Error fetching managers:", err));
+  }, []);
 
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: "name",
-        header: "Name",
+  const columns = useMemo(() => {
+    if (managers.length === 0) return [];
+
+    const dynamicColumns = Object.keys(managers[0]).map((key) => {
+      // Truncate 'region'
+      if (key === "region") {
+        return {
+          accessorKey: key,
+          header: "Region",
+          cell: ({ getValue }) => {
+            const value = getValue();
+            return value.length > 20 ? `${value.slice(0, 20)}...` : value;
+          },
+        };
+      }
+
+      return {
+        accessorKey: key,
+        header: key.charAt(0).toUpperCase() + key.slice(1),
+      };
+    });
+
+    // Add custom Actions column
+    dynamicColumns.push({
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const manager = row.original;
+        return (
+          <div className="flex gap-2">
+            <Button className="bg-indigo-950 px-6 text-lg">Action</Button>
+          </div>
+        );
       },
-      {
-        accessorKey: "email",
-        header: "Email",
-      },
-      {
-        accessorKey: "role",
-        header: "Role",
-      },
-    ],
-    []
-  );
+    });
+
+    return dynamicColumns;
+  }, [managers]);
 
   const table = useReactTable({
-    data,
+    data: managers,
     columns,
     state: {
       sorting,
@@ -101,34 +118,34 @@ export const ManagerTable = () => {
           type="text"
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
-          className="mb-4 p-2 border border-gray-300 rounded w-full max-w-md"
+          className="mb-4 p-6 border border-gray-300 rounded w-full max-w-md"
           placeholder="Search all columns..."
         />
 
         <Button
           onClick={exportToExcel}
-          className="bg-green-600 text-white py-2 px-4 rounded mr-2"
+          className="py-6 px-4 bg-indigo-950 text-lg cursor-pointer hover:shadow-md transition-all duration-300 dark:bg-indigo-900 dark:text-gray-100 hover:dark:bg-gray-950 hover:dark:text-gray-100"
         >
           Export to Excel
         </Button>
         <Button
           onClick={exportToPDF}
-          className="bg-blue-600 text-white py-2 px-4 rounded"
+          className="py-6 px-4 bg-indigo-950 text-lg cursor-pointer hover:shadow-md transition-all duration-300 dark:bg-indigo-900 dark:text-gray-100 hover:dark:bg-gray-950 hover:dark:text-gray-100"
         >
           Export to PDF
         </Button>
       </div>
       {/* Table */}
-      <Card className="overflow-x-auto">
+      <Card className="overflow-x-auto dark:bg-gray-600">
         <CardContent>
-          <table className="min-w-full border border-gray-300">
-            <thead className="bg-gray-100">
+          <table className="min-w-full overflow-x-auto">
+            <thead className="bg-indigo-950 text-white dark:text-gray-200 overflow-hidden">
               {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
+                <tr key={headerGroup.id} className="rounded-2xl">
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="px-4 py-2 text-left border-b"
+                      className="px-4 py-4 text-left border-b"
                     >
                       {header.isPlaceholder
                         ? null
@@ -143,9 +160,9 @@ export const ManagerTable = () => {
             </thead>
             <tbody>
               {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="odd:bg-gray-50 even:bg-white">
+                <tr key={row.id} className="bg-white dark:bg-gray-600">
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-2 border-b">
+                    <td key={cell.id} className="px-4 py-4 border-b">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -172,9 +189,7 @@ export const ManagerTable = () => {
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
           className=""
-        >
-          {"<"}
-        </Button>
+        ></Button>
         <span>
           Page {table.getState().pagination.pageIndex + 1} of{" "}
           {table.getPageCount()}

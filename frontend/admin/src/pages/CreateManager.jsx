@@ -469,7 +469,7 @@ export default function CreateManager() {
           </div>
           {createdManager && (
             <div className="bg-white dark:bg-gray-800 p-10 rounded-lg shadow-sm relative border">
-              <h2 className="text-xl text-gray-100 font-semibold mb-4 tracking-wider">
+              <h2 className="text-xl dark:text-gray-100 font-semibold mb-4 tracking-wider">
                 Manager Information
               </h2>
 
