@@ -7,6 +7,8 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\OSMController;
 use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\TrafficUserController;
+
 // use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -44,4 +46,9 @@ Route::post('/managers/{username}/send-info', [ManagerController::class, 'sendIn
 
 
 
-
+// Route::apiResource('traffic-users', TrafficUserController::class);
+Route::get('/traffic-users', [TrafficUserController::class, 'index']);          // List all users
+Route::post('/traffic-users', [TrafficUserController::class, 'store']);         // Create new user
+Route::get('/traffic-users/{id}', [TrafficUserController::class, 'show']);      // Show single user
+Route::put('/traffic-users/{id}', [TrafficUserController::class, 'update']);    // Update user
+Route::delete('/traffic-users/{id}', [TrafficUserController::class, 'destroy']);

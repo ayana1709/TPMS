@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import api from '@/api';
 
 export default function TrafficAccount() {
   const [formData, setFormData] = useState({
@@ -36,39 +37,43 @@ export default function TrafficAccount() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
+    const payload = {
+      full_name: formData.fullName,
+      badge_number: formData.badgeNumber,
+      rank: formData.rank,
+      phone: formData.phone,
+      email: formData.email,
+      station: formData.station,
+      username: formData.username,
+      password: formData.password,
+    };
+  
     try {
-      const response = await fetch('/api/traffic-users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Add auth headers if needed
-        },
-        body: JSON.stringify(formData),
+      const response = await api.post('/traffic-users', payload);
+  
+      // Axios doesn't use response.ok — success is in try block
+      alert('Account created successfully!');
+      setFormData({
+        fullName: '',
+        badgeNumber: '',
+        rank: '',
+        phone: '',
+        email: '',
+    
+        username: '',
+        password: '',
+        confirmPassword: '',
       });
-
-      if (response.ok) {
-        alert('Account created successfully!');
-        setFormData({
-          fullName: '',
-          badgeNumber: '',
-          rank: '',
-          phone: '',
-          email: '',
-          station: '',
-          username: '',
-          password: '',
-          confirmPassword: '',
-        });
-      } else {
-        const errorData = await response.json();
-        alert('Error: ' + (errorData.message || 'Something went wrong.'));
-      }
     } catch (err) {
       console.error('Submit error:', err);
-      alert('Failed to submit form');
+      const errorMessage =
+        err.response?.data?.message || 'Something went wrong.';
+      alert('Error: ' + errorMessage);
     }
   };
+  
+  
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
@@ -97,7 +102,7 @@ export default function TrafficAccount() {
                 value={formData[name]}
                 onChange={handleChange}
                 placeholder={placeholder}
-                className="w-full px-4 py-2 border border-gray-400 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 required
               />
             </div>
@@ -114,7 +119,7 @@ export default function TrafficAccount() {
               value={formData.username}
               onChange={handleChange}
               placeholder="Choose a username"
-              className="w-full px-4 py-2 border border-gray-400 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full px-4 py-2 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
               required
             />
           </div>
@@ -128,7 +133,7 @@ export default function TrafficAccount() {
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter password"
-              className="w-full px-4 py-2 border border-gray-400 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full px-4 py-2 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
               required
             />
             <div
@@ -148,7 +153,7 @@ export default function TrafficAccount() {
               value={formData.confirmPassword}
               onChange={handleChange}
               placeholder="Re-enter password"
-              className="w-full px-4 py-2 border border-gray-400 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full px-4 py-2 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
               required
             />
             <div
