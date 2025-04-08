@@ -57,7 +57,84 @@ public function store(Request $request)
     }
 }
 
-    
+public function index()
+{
+    $managers = Manager::select('name', 'phone', 'email', 'region', 'zone', 'woreda', 'username', 'status')->get();
+
+    return response()->json($managers);
+}
+
+public function update(Request $request, $oldUsername)
+{
+    try {
+        // Find the manager using the old username
+        $manager = Manager::where('username', $oldUsername)->firstOrFail();
+
+        // Validate the incoming request
+        $validated = $request->validate([
+            'name' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'email' => 'required|email|max:255',
+            'region' => 'required|string|max:255',
+            'zone' => 'required|string|max:255',
+            'woreda' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:managers,username,' . $manager->id,
+            'password' => 'nullable|string|min:6',
+            'status' => 'required|string|in:Active,Inactive',
+        ]);
+
+        // Update the manager info
+        $manager->update([
+            'name' => $validated['name'] ?? null,
+            'phone' => $validated['phone'] ?? null,
+            'email' => $validated['email'],
+            'region' => $validated['region'],
+            'zone' => $validated['zone'],
+            'woreda' => $validated['woreda'],
+            'username' => $validated['username'],
+            'status' => $validated['status'],
+        ]);
+
+        // If new password is provided, hash and update it
+        if (!empty($validated['password'])) {
+            $manager->password = Hash::make($validated['password']);
+            $manager->temp_password = $validated['password'];
+            $manager->save();
+        }
+
+        return response()->json([
+            'message' => 'Manager updated successfully!',
+            'manager' => $manager,
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Update failed.',
+            'details' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+public function destroy($username)
+{
+    try {
+        $manager = Manager::where('username', $username)->firstOrFail();
+        $manager->delete();
+
+        return response()->json([
+            'message' => 'Manager deleted successfully.'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Delete failed.',
+            'details' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+
+
+ 
 public function sendInfoEmail($username)
 {
     $manager = Manager::where('username', $username)->first();
