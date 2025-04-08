@@ -27,9 +27,19 @@ class ShiftController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        //
-    }
+          {
+        $request->validate([
+            'name' => 'required|string',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $shift = Shift::create($request->all());
+
+        return response()->json(['message' => 'Shift created successfully', 'shift' => $shift]);
+         }
 
     /**
      * Display the specified resource.
