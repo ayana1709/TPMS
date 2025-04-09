@@ -38,15 +38,18 @@ class ShiftController extends Controller
 
         $shift = Shift::create($request->all());
 
+        $shift->officers()->attach($validated['officer_ids']);
+
         return response()->json(['message' => 'Shift created successfully', 'shift' => $shift]);
          }
 
     /**
      * Display the specified resource.
      */
-    public function show(Shift $shift)
+    public function  officerShifts($id)
     {
-        //
+        $user = TrafficUser::findOrFail($id);
+        return $user->assignedShifts()->with('location')->get();
     }
 
     /**
