@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\OSMController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\TrafficUserController;
-
+use App\Http\Controllers\ShiftController;
 // use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -54,3 +54,9 @@ Route::post('/traffic-users', [TrafficUserController::class, 'store']);         
 Route::get('/traffic-users/{id}', [TrafficUserController::class, 'show']);      // Show single user
 Route::put('/traffic-users/{id}', [TrafficUserController::class, 'update']);    // Update user
 Route::delete('/traffic-users/{id}', [TrafficUserController::class, 'destroy']);
+
+
+  
+
+
+Route::apiResource('shifts', ShiftController::class);
