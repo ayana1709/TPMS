@@ -193,6 +193,7 @@ export const ManagerTable = () => {
                 >
                   <button
                     onClick={() => sendManagerInfo(row.original.username)}
+                    className="cursor-pointer"
                   >
                     Notification
                   </button>
