@@ -14,6 +14,7 @@ import {
 import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 import TrafficAccount from "./pages/dashboard/TrafficAccount";
+import TrafficAccountsTable from "./pages/dashboard/TrafficAccountsTable";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -33,7 +34,7 @@ export const routes = [
         icon: <UserPlusIcon {...icon} />,
         name: "Traffic Account Setup",
         path: "/traffic-account",
-        element: <TrafficAccount />, // replace with actual component if needed
+        element: <TrafficAccountsTable />, // replace with actual component if needed
       },
       {
         icon: <Cog6ToothIcon {...icon} />,
@@ -88,6 +89,16 @@ export const routes = [
         name: "tables",
         path: "/tables",
         element: <Tables />,
+      },
+    ],
+  },
+  {
+    layout: "dashboard",
+    pages: [
+      {
+        name: "Create Traffic Account (Hidden)",
+        path: "create-account",
+        element: <TrafficAccount />,
       },
     ],
   },

@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('traffic_users', function (Blueprint $table) {
             $table->id();
+
+
+
             $table->string('full_name');
             $table->string('badge_number')->unique();
             $table->string('rank');
@@ -21,6 +24,9 @@ return new class extends Migration
             
             $table->string('username')->unique();
             $table->string('password');
+
+
+            
             $table->timestamps();
         });
     }
