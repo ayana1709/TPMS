@@ -149,9 +149,9 @@ public function sendInfoEmail($username)
         // Send email
         Mail::to($manager->email)->send(new ManagerRegistered($manager, $plainPassword));
 
-        // ✅ Clear temp password after sending the email
-        $manager->temp_password = null;
-        $manager->save();
+        // // ✅ Clear temp password after sending the email
+        // $manager->temp_password = null;
+        // $manager->save();
 
         return response()->json(['message' => 'Manager info sent successfully!']);
     } catch (\Exception $e) {

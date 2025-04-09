@@ -409,13 +409,6 @@ export default function CreateManager() {
                 </p>
               )}
             </div>
-
-            <Button
-              type="submit"
-              className="w-full py-6 text-xl cursor-pointer"
-            >
-              Create Manager
-            </Button>
           </div>
         </div>
 
@@ -425,7 +418,7 @@ export default function CreateManager() {
             <h2 className="text-xl font-semibold mb-4 tracking-wider">
               Admin Controls
             </h2>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-6">
               <div className={`relative ${!isUsernameValid ? "mb-10" : ""}`}>
                 <Input
                   name="username"
@@ -457,13 +450,20 @@ export default function CreateManager() {
                   className="py-6 dark:border-gray-200"
                   required
                 />
+                <Button
+                  type="button"
+                  onClick={generatePassword}
+                  className="py-6 text-lg cursor-pointer"
+                >
+                  Generate Password
+                </Button>
               </div>
+
               <Button
-                type="button"
-                onClick={generatePassword}
-                className="py-6 text-xl"
+                type="submit"
+                className="w-full py-6 text-xl mt-4 cursor-pointer"
               >
-                Generate Password
+                Create Manager
               </Button>
             </div>
           </div>
