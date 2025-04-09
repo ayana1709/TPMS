@@ -77,6 +77,18 @@ export const ManagerTable = () => {
       .catch((err) => console.error("Error fetching managers:", err));
   }, []);
 
+  console.log(managers.username);
+
+  const sendManagerInfo = async (username) => {
+    console.log(username);
+    try {
+      await api.post(`/managers/${username}/send-info`);
+      toast.success("Manager info sent successfully!");
+    } catch (error) {
+      toast.error("Failed to send manager info.");
+    }
+  };
+
   const columns = useMemo(() => {
     if (managers.length === 0) return [];
 
@@ -176,13 +188,14 @@ export const ManagerTable = () => {
               <div className="flex items-center hover:bg-gray-100 cursor-pointer">
                 <IoMdNotificationsOutline className="text-3xl text-gray-900" />
                 <DropdownMenuItem
-                  onClick={() => {
-                    setSelectedManager(row.original);
-                    setIsDialogOpen(true);
-                  }}
+                  onClick={() => sendManagerInfo(row.original.username)}
                   className="w-full text-left text-lg cursor-pointer flex items-center gap-2"
                 >
-                  <span>Notification</span>
+                  <button
+                    onClick={() => sendManagerInfo(row.original.username)}
+                  >
+                    Notification
+                  </button>
                 </DropdownMenuItem>
               </div>
               <div className="flex items-center hover:bg-gray-100 cursor-pointer">
