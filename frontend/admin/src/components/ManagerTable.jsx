@@ -30,7 +30,13 @@ import {
   ArrowDown,
   ChevronsUpDown,
   MoreHorizontal,
+  Bell,
 } from "lucide-react";
+import { IoMdNotificationsOutline } from "react-icons/io";
+import { CiViewList } from "react-icons/ci";
+import { BiEdit } from "react-icons/bi";
+import { AiOutlineDelete } from "react-icons/ai";
+
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -52,6 +58,7 @@ import {
 import { ManagerDetailsModal } from "./ManagerDetailsModal";
 import { ManagerEditModal } from "./ManagerEditModal";
 import { toast } from "react-toastify";
+
 export const ManagerTable = () => {
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -164,33 +171,55 @@ export const ManagerTable = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="text-center w-[180px] p-8"
+              className="text-center w-[180px] p-2 border-b border-b-gray-800"
             >
-              <DropdownMenuItem
-                onClick={() => {
-                  setSelectedManager(row.original);
-                  setIsDialogOpen(true);
-                }}
-                className="text-center text-lg cursor-pointer"
-              >
-                View
-              </DropdownMenuItem>
+              <div className="flex items-center hover:bg-gray-100 cursor-pointer">
+                <IoMdNotificationsOutline className="text-3xl text-gray-900" />
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSelectedManager(row.original);
+                    setIsDialogOpen(true);
+                  }}
+                  className="w-full text-left text-lg cursor-pointer flex items-center gap-2"
+                >
+                  <span>Notification</span>
+                </DropdownMenuItem>
+              </div>
+              <div className="flex items-center hover:bg-gray-100 cursor-pointer">
+                <CiViewList className="text-2xl text-gray-950" />
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSelectedManager(row.original);
+                    setIsDialogOpen(true);
+                  }}
+                  className="text-center text-lg cursor-pointer"
+                >
+                  <span> View</span>
+                </DropdownMenuItem>
+              </div>
 
-              <DropdownMenuItem
-                onClick={() => {
-                  setSelectedManager(row.original);
-                  setEditOpen(true);
-                }}
-                className="text-center text-lg cursor-pointer"
-              >
-                Edit
-              </DropdownMenuItem>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
+              <div className="flex items-center hover:bg-gray-100 cursor-pointer">
+                <BiEdit className="text-2xl text-gray-950" />
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSelectedManager(row.original);
+                    setEditOpen(true);
+                  }}
+                  className="text-center text-lg cursor-pointer"
+                >
+                  <span>Edit</span>
+                </DropdownMenuItem>
+              </div>
+              <AlertDialog className="hover:bg-gray-100">
+                <AlertDialogTrigger asChild className="hover:bg-gray-100">
                   {/* This is important: avoid auto-close */}
-                  <button className="w-full cursor-pointer bg-white text-left text-red-500 text-lg py-2 px-2 rounded-md hover:bg-gray-100">
-                    Delete
-                  </button>
+
+                  <div className="flex gap-2 items-center hover:bg-gray-100 cursor-pointer">
+                    <AiOutlineDelete className="text-3xl text-gray-950" />
+                    <button className="w-full cursor-pointer bg-white text-left text-red-500 hover:bg-gray-100 text-lg py-2 px-2 rounded-md">
+                      Delete
+                    </button>
+                  </div>
                 </AlertDialogTrigger>
 
                 <AlertDialogContent>
