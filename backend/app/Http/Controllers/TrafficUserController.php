@@ -21,7 +21,6 @@ class TrafficUserController extends Controller
             'rank' => 'required|string',
             'phone' => 'required|string',
             'email' => 'required|email|unique:traffic_users',
-            
             'username' => 'required|string|unique:traffic_users',
             'password' => 'required|string|min:6',
         ]);

@@ -12,6 +12,9 @@ import Sidebar from "./partials/Sidebar"; // Ensure this is correctly imported
 import CreateManager from "./pages/CreateManager";
 import ViewManagers from "./pages/ViewManagers";
 import { ToastContainer } from "react-toastify";
+import AdminActivateManagers from "./components/AdminActivateManagers";
+import PendingActivations from "./pages/PendingActivationList";
+import PendingActivationList from "./pages/PendingActivationList";
 
 function ProtectedLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -46,6 +49,9 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/create-account" element={<CreateManager />} />
           <Route path="/view-managers" element={<ViewManagers />} />
+          <Route path="/activate-manager" element={<AdminActivateManagers />} />
+          <Route path="/pending-manager" element={<PendingActivationList />} />
+
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Route>
       </Routes>

@@ -1,13 +1,19 @@
 <?php
 
+
+
+
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Manager extends Model
+class Manager extends Authenticatable
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
+
     protected $fillable = [
         'name',
         'phone',
@@ -17,8 +23,16 @@ class Manager extends Model
         'woreda',
         'username',
         'password',
-        "temp_password"
-        
+        'temp_password',
+        'status',
     ];
+
+    protected $hidden = [
+        'password',
+        'temp_password',
+        'remember_token',
+    ];
+
+
     
 }

@@ -46,6 +46,23 @@ Route::post('/managers/{username}/send-info', [ManagerController::class, 'sendIn
 Route::get('/managers', [ManagerController::class, 'index']);
 Route::put('/managers/{username}', [ManagerController::class, 'update']);
 Route::delete('/managers/{username}', [ManagerController::class, 'destroy']);
+Route::post('/managers/login', [ManagerController::class, 'login']);
+// Route::post('/managers/update-credentials', [ManagerController::class, 'updateCredentials']);
+Route::middleware('auth:sanctum')->post('/managers/update-credentials', [ManagerController::class, 'updateCredentials']);
+// Route::middleware('auth:manager')->post('/request-activation', [ManagerController::class, 'requestActivation']);
+// from manager to  admin 
+Route::post('/managers/request-activation/{username}', [ManagerController::class, 'requestActivation']);
+Route::get('/admin/pending-activations', [ManagerController::class, 'getPendingActivations']);
+Route::post('/admin/activate-manager/{username}', [ManagerController::class, 'activateManager']);
+Route::get('/managers/get-pending-activations', [ManagerController::class, 'getPendingActivations']);
+
+Route::post('/managers/activate-manager/{username}', [ManagerController::class, 'activateManager']);
+
+
+
+
+
+
 
 
 // Route::apiResource('traffic-users', TrafficUserController::class);

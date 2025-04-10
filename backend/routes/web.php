@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -12,6 +14,14 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+
+WebSocketsRouter::webSocket('/app/{appKey}', \BeyondCode\LaravelWebSockets\WebSockets\WebSocketHandler::class);
+
+
+// use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
+
+// WebSocketsRouter::webSocket('/app/{appKey}', \BeyondCode\LaravelWebSockets\Server\WebSocketHandler::class);
 
 Route::get('/', function () {
     return view('welcome');

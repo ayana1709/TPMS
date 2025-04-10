@@ -35,12 +35,23 @@ return [
     |
     */
 
-    'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
+   'guards' => [
+    'web' => [
+        'driver' => 'session',
+        'provider' => 'users',
     ],
+
+    'api' => [
+        'driver' => 'sanctum',
+        'provider' => 'users',
+    ],
+
+    'manager' => [
+        'driver' => 'sanctum',
+        'provider' => 'managers',
+    ],
+],
+
 
     /*
     |--------------------------------------------------------------------------
@@ -59,17 +70,19 @@ return [
     |
     */
 
-    'providers' => [
-        'users' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\User::class,
-        ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+'providers' => [
+    'users' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\User::class,
     ],
+
+    'managers' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\Manager::class,
+    ],
+],
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -113,3 +126,4 @@ return [
     'password_timeout' => 10800,
 
 ];
+
