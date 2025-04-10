@@ -7,7 +7,16 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import axios from "axios";
 import { SelectGroup, SelectValue } from "@radix-ui/react-select";
 import { Copy } from "lucide-react";
@@ -15,6 +24,7 @@ import api from "@/api";
 import { useStores } from "@/contexts/storeContext";
 import CreateManagerModal from "./CreateManagermodal";
 import { toast } from "react-toastify";
+import { IoMdClose } from "react-icons/io";
 
 export default function CreateManager() {
   const [regions, setRegions] = useState([]);
@@ -30,6 +40,7 @@ export default function CreateManager() {
   const [zoneVaidation, setZoneValidation] = useState("");
   const [woredaVaidation, setWoredaValidation] = useState("");
   const [isUsernameValid, setIsUsernameValid] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const { isManagerSuccessModalOpen, setIsManagerSuccessModalOpen } =
     useStores();
@@ -159,7 +170,7 @@ export default function CreateManager() {
     try {
       await api.post("/managers", formData);
       setCreatedManager(formData);
-      setIsManagerSuccessModalOpen(true); // Show success modal
+      setOpen(true);
 
       // Reset the form after successful creation
       // setFormData({
@@ -208,15 +219,50 @@ export default function CreateManager() {
 
   return (
     <div className="relative">
+      <div className="absolute top-0">
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent className="relative">
+            {/* OK button at the top right */}
+            <Button
+              onClick={() => setOpen(false)}
+              className="absolute top-4 right-4"
+              variant="outline"
+            >
+              <IoMdClose size={30} className="text-5xl" />
+            </Button>
+
+            {/* Image and message side by side */}
+            <div className="flex items-center gap-6 mt-6">
+              <img
+                src="/images/admin.gif"
+                className="w-40 h-40 object-contain"
+              />
+              <div>
+                <DialogHeader>
+                  <DialogTitle>Manager Created!</DialogTitle>
+                  <DialogDescription>
+                    The new manager has been successfully added.
+                  </DialogDescription>
+                </DialogHeader>
+              </div>
+            </div>
+
+            {/* Footer button centered */}
+            <DialogFooter className="mt-6">
+              <Button
+                onClick={() => sendManagerInfo(createdManager.username)}
+                className="w-[50%] m-auto py-6 text-lg cursor-pointer hover:bg-gray-950 hover:text-gray-200 transition-all duration-400"
+              >
+                Send Manager Info
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
       <form
         onSubmit={handleSubmit}
         className="relative grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-gray-100 dark:bg-gray-900 min-h-screen"
       >
-        {isManagerSuccessModalOpen && (
-          <div className="absolute z-[999] -top-9 left-12 w-[45%]">
-            <CreateManagerModal />
-          </div>
-        )}
         {/* Form Layout */}
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
           <h2 className="text-lg font-semibold mb-4 text-xl uppercase tracking-wider">
@@ -409,23 +455,15 @@ export default function CreateManager() {
                 </p>
               )}
             </div>
-
-            <Button
-              type="submit"
-              className="w-full py-6 text-xl cursor-pointer"
-            >
-              Create Manager
-            </Button>
           </div>
         </div>
-
         {/* Manager Info Layout */}
         <div className="bg-white dark:bg-gray-800 flex flex-col gap-6 rounded-md p-4">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border p-2">
             <h2 className="text-xl font-semibold mb-4 tracking-wider">
               Admin Controls
             </h2>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-6">
               <div className={`relative ${!isUsernameValid ? "mb-10" : ""}`}>
                 <Input
                   name="username"
@@ -457,13 +495,20 @@ export default function CreateManager() {
                   className="py-6 dark:border-gray-200"
                   required
                 />
+                <Button
+                  type="button"
+                  onClick={generatePassword}
+                  className="py-6 text-lg cursor-pointer"
+                >
+                  Generate Password
+                </Button>
               </div>
+
               <Button
-                type="button"
-                onClick={generatePassword}
-                className="py-6 text-xl"
+                type="submit"
+                className="w-full py-6 text-xl mt-4 cursor-pointer"
               >
-                Generate Password
+                Create Manager
               </Button>
             </div>
           </div>
@@ -523,14 +568,14 @@ export default function CreateManager() {
           )}
         </div>
       </form>
-      <div className="w-[35%] absolute left-[77%] z-[999999] top-[38%]">
+      {/* <div className="w-[35%] absolute left-[77%] z-[999999] top-[38%]">
         <Button
           onClick={() => sendManagerInfo(createdManager.username)}
           className="w-[50%] m-auto py-6 text-lg cursor-pointer hover:bg-gray-950 hover:text-gray-200 transition-all duration-400"
         >
           Send Manager Info
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }

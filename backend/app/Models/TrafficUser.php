@@ -14,5 +14,10 @@ class TrafficUser extends Model
     ];
     
     protected $hidden = ['password'];
+
+
+    public function assignedShifts() {
+        return $this->belongsToMany(Shift::class, 'shift_user');
+    }
     
 }
