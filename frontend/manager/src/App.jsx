@@ -5,6 +5,9 @@ import ManagerLogin from "./pages/ManagerLogin";
 import ManagerWelcome from "./pages/ManagerWelcome";
 import RequestActivation from "./pages/RequestActivation";
 
+import 'leaflet/dist/leaflet.css';
+
+
 
 // Helper component to protect routes
 const ProtectedRoute = ({ children }) => {

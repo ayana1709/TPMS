@@ -9,6 +9,8 @@ use App\Http\Controllers\OSMController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\TrafficUserController;
 use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\CheckpointController;
+
 // use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -76,4 +78,15 @@ Route::delete('/traffic-users/{id}', [TrafficUserController::class, 'destroy']);
   
 
 
-Route::apiResource('shifts', ShiftController::class);
+// Route::apiResource('shifts', ShiftController::class);
+Route::get('/shifts', [ShiftController::class, 'index']);
+Route::post('/shifts', [ShiftController::class, 'store']);
+Route::get('/shifts/{shift}', [ShiftController::class, 'show']);
+Route::put('/shifts/{shift}', [ShiftController::class, 'update']);
+Route::delete('/shifts/{shift}', [ShiftController::class, 'destroy']);
+
+
+
+Route::apiResource('checkpoints', CheckpointController::class);
+Route::post('/checkpoints', [CheckpointController::class, 'store']);
+

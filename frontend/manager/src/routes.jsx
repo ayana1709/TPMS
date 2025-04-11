@@ -15,6 +15,11 @@ import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 import TrafficAccount from "./pages/dashboard/TrafficAccount";
 import TrafficAccountsTable from "./pages/dashboard/TrafficAccountsTable";
+import ShiftManager from "./pages/dashboard/ShiftManager";
+import LocationRegistrationForm from "./pages/dashboard/LocationRegistrationForm";
+import CheckpointTable from "./pages/dashboard/CheckpointTable";
+// import LocationRegistrationForm from "./pages/dashboard/GeoTest";
+// import GeoTest from "./pages/dashboard/LocationRegistrationForm";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -40,13 +45,13 @@ export const routes = [
         icon: <Cog6ToothIcon {...icon} />,
         name: "Shift Management",
         path: "/shift-management",
-        element: <Notifications />,
+        element: <ShiftManager />,
       },
       {
         icon: <MapPinIcon {...icon} />,
         name: "Location Management",
         path: "/location-management",
-        element: <Notifications />,
+        element: <CheckpointTable />,
       },
       {
         icon: <CalendarIcon {...icon} />,
@@ -99,6 +104,11 @@ export const routes = [
         name: "Create Traffic Account (Hidden)",
         path: "create-account",
         element: <TrafficAccount />,
+      },
+      {
+        name: "Location  Registration  (Hidden)",
+        path: "location-registration",
+        element: <LocationRegistrationForm />,
       },
     ],
   },
