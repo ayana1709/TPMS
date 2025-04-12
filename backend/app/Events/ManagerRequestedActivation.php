@@ -15,23 +15,19 @@ class ManagerRequestedActivation implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $manager;
+    // public $manager;
 
-    public function __construct(Manager $manager)
-    {
-        $this->manager = $manager;
-    }
-
-    // 👇 Public channel name
     public function broadcastOn()
     {
         return new Channel('activation-channel');
     }
 
-    // 👇 Optional: customize event name
     public function broadcastAs()
     {
         return 'manager-requested';
     }
+
+    public function __construct(public Manager $manager) {}
+
 }
 

@@ -10,7 +10,14 @@ use Illuminate\Support\Facades\Mail;
 use App\Events\ManagerActivated;
 use App\Events\ManagerActivationRequested;
 use App\Events\ManagerRequestedActivation;
+// use App\Events\ManagerActivated;
+use App\Mail\AccountActivatedMail;
+// use App\Models\Manager;
+// use Illuminate\Support\Facades\Mail;
+
 use ManagerActivated as GlobalManagerActivated;
+use App\Mail\ManagerActivatedMail;
+// use Illuminate\Support\Facades\Mail;
 
 class ManagerController extends Controller
 {
@@ -59,7 +66,6 @@ public function store(Request $request)
         ], 500);
     }
 }
-
 public function index()
 {
     $managers = Manager::select('name', 'phone', 'email', 'region', 'zone', 'woreda', 'username', 'status')->get();
@@ -83,7 +89,7 @@ public function update(Request $request, $oldUsername)
             'woreda' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:managers,username,' . $manager->id,
             'password' => 'nullable|string|min:6',
-            'status' => 'required|string|in:Active,Inactive,Pending',
+            'status' => 'required|string|in:Active,Inactive',
 
         ]);
 
@@ -134,11 +140,7 @@ public function destroy($username)
             'details' => $e->getMessage(),
         ], 500);
     }
-}
-
-
-
- 
+} 
 public function sendInfoEmail($username)
 {
     $manager = Manager::where('username', $username)->first();
@@ -165,9 +167,6 @@ public function sendInfoEmail($username)
         ], 500);
     }
 }
-
-
-
 
 public function login(Request $request)
 {
@@ -196,8 +195,6 @@ public function login(Request $request)
         ],
     ]);
 }
-
-
 public function updateCredentials(Request $request)
 {
     $request->validate([
@@ -221,8 +218,8 @@ public function updateCredentials(Request $request)
     if ($request->filled('username')) {
         $manager->username = $request->username;
     }
-
     $manager->save();
+
 
     return response()->json([
         'status' => 'success',
@@ -230,27 +227,6 @@ public function updateCredentials(Request $request)
         'manager' => $manager
     ]);
 }
-
-
-// Request activation from manager  to admin 
-
-
-
-
-// public function requestActivation($username)
-// {
-//     $manager = Manager::where('username', $username)->first();
-
-//     if (!$manager) {
-//         return response()->json(['message' => 'Manager not found'], 404);
-//     }
-
-//     // Broadcast real-time event to admin
-//     event(new ManagerActivationRequested($manager));
-
-//     return response()->json(['message' => 'Activation request sent successfully']);
-// }
-
 public function requestActivation($username)
 {
     $manager = Manager::where('username', $username)->firstOrFail();
@@ -262,34 +238,15 @@ public function requestActivation($username)
         event(new ManagerRequestedActivation($manager)); // Optional: Trigger event
         return response()->json(['message' => 'Activation request sent.']);
     }
-
     return response()->json(['message' => 'Manager already requested or activated.']);
 }
-
-
-
-
-
-
 public function listInactive()
 {
     $inactiveManagers = Manager::where('status', 'Inactive')->get();
 
     return response()->json($inactiveManagers);
 }
-public function activate($username)
-{
-    $manager = Manager::where('username', $username)->firstOrFail();
-    $manager->status = 'Active';
-    $manager->save();
 
-    event(new GlobalManagerActivated($username)); // Optional: real-time event
-    Mail::to($manager->email)->send(new AccountActivatedMail($manager));
-
-    return response()->json(['message' => 'Manager activated']);
-}
-
-// Get all managers who are requesting activation
 public function getPendingActivations()
 {
     $pendingManagers = Manager::where('status', 'Pending')->get();
@@ -312,6 +269,72 @@ public function activateManager($username)
 
     return response()->json(['message' => 'Manager activated successfully']);
 }
+
+
+
+
+
+
+
+
+
+public function activate($username)
+{
+    try {
+        $manager = Manager::where('username', $username)->firstOrFail();
+        $manager->status = 'Active';
+        $manager->save();
+
+        // Send email
+        Mail::to($manager->email)->send(new ManagerActivatedMail($manager));
+
+        // Optionally trigger an event
+        event(new ManagerActivated($manager));
+
+        return response()->json(['message' => 'Manager activated and email is sent successfully!']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
+
+
+
+
+
+    // Function to deny a manager's activation request (delete manager)
+    public function deny($username)
+    {
+        try {
+            // Find the manager by username
+            $manager = Manager::where('username', $username)->firstOrFail();
+
+            // Delete the manager (deny their activation)
+            $manager->delete();
+
+            // Optionally, you can send an email or trigger events related to denial.
+            return response()->json(['message' => 'Manager denied successfully.']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to deny manager.',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+    public function checkStatus($username)
+{
+    $manager = Manager::where('username', $username)->first();
+
+    if (!$manager) {
+        return response()->json(['error' => 'Manager not found'], 404);
+    }
+
+    return response()->json(['status' => $manager->status]);
+}
+
+
 
 
 }

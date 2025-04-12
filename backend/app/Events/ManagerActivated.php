@@ -1,29 +1,34 @@
 <?php
 
+namespace App\Events;
+
+use App\Models\Manager;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 class ManagerActivated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $username;
+    public array $manager;
 
-    public function __construct($username)
+    public function __construct(Manager $manager)
     {
-        $this->username = $username;
+        $this->manager = $manager->toArray(); // 👈 safely convert model
     }
 
     public function broadcastOn()
     {
-        return new Channel('manager-status');
+        return new Channel('activation-channel');
     }
 
     public function broadcastAs()
     {
-        return 'ManagerActivated';
+        return 'manager-activated';
     }
 }

@@ -51,14 +51,17 @@ Route::delete('/managers/{username}', [ManagerController::class, 'destroy']);
 Route::post('/managers/login', [ManagerController::class, 'login']);
 // Route::post('/managers/update-credentials', [ManagerController::class, 'updateCredentials']);
 Route::middleware('auth:sanctum')->post('/managers/update-credentials', [ManagerController::class, 'updateCredentials']);
-// Route::middleware('auth:manager')->post('/request-activation', [ManagerController::class, 'requestActivation']);
-// from manager to  admin 
 Route::post('/managers/request-activation/{username}', [ManagerController::class, 'requestActivation']);
 Route::get('/admin/pending-activations', [ManagerController::class, 'getPendingActivations']);
 Route::post('/admin/activate-manager/{username}', [ManagerController::class, 'activateManager']);
 Route::get('/managers/get-pending-activations', [ManagerController::class, 'getPendingActivations']);
-
 Route::post('/managers/activate-manager/{username}', [ManagerController::class, 'activateManager']);
+Route::post('/admin/activate/{username}', [ManagerController::class, 'activate']);
+Route::delete('/admin/delete/{username}', [ManagerController::class, 'destroy']);
+// routes/api.php
+Route::get('/managers/status/{username}', [ManagerController::class, 'checkStatus']);
+
+
 
 
 
@@ -75,7 +78,7 @@ Route::put('/traffic-users/{id}', [TrafficUserController::class, 'update']);    
 Route::delete('/traffic-users/{id}', [TrafficUserController::class, 'destroy']);
 
 
-  
+
 
 
 // Route::apiResource('shifts', ShiftController::class);

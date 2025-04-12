@@ -5,7 +5,9 @@ import ManagerLogin from "./pages/ManagerLogin";
 import ManagerWelcome from "./pages/ManagerWelcome";
 import RequestActivation from "./pages/RequestActivation";
 
+
 import 'leaflet/dist/leaflet.css';
+import ManagerWaiting from "./pages/ManagerWaiting";
 
 
 
@@ -39,6 +41,9 @@ function App() {
       <Route path="*" element={<Navigate to="/" replace />} />
 <Route path="/welcome" element={<ManagerWelcome />} />
 <Route path="/request-activation" element={<RequestActivation />} />
+
+<Route path="/manager/waiting" element={<ManagerWaiting />} />
+
 
 
       

@@ -1,14 +1,17 @@
 import Echo from "laravel-echo";
-import { io } from "socket.io-client";
+import Pusher from "pusher-js";
 
-// Make sure `io` is available globally
-window.io = io;
+window.Pusher = Pusher;
 
 const echo = new Echo({
-  broadcaster: "socket.io", // Ensure broadcaster is socket.io
-  client: io, // Pass socket.io client directly
-  host: "http://127.0.0.1:6001", // WebSocket server URL
-  transports: ["websocket"], // Use WebSocket transport
+  broadcaster: "pusher",
+  key: "local", // matches PUSHER_APP_KEY
+  cluster: "mt1",
+  wsHost: "127.0.0.1",
+  wsPort: 6001,
+  forceTLS: false,
+  disableStats: true,
+  enabledTransports: ["ws", "wss"],
 });
 
 export default echo;

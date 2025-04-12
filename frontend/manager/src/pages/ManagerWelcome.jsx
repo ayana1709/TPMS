@@ -7,6 +7,7 @@ import {
   EyeIcon,
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
+import { useNavigate } from "react-router-dom";
 
 const ManagerWelcome = () => {
   const storedUsername = localStorage.getItem("manager_username") || "";
@@ -19,6 +20,7 @@ const ManagerWelcome = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [updated, setUpdated] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -44,16 +46,26 @@ const ManagerWelcome = () => {
     }
   };
 
+
+
   const requestActivation = async () => {
-    console.log("Activation request initiated..."); // Debug log
     try {
-      await api.post(`/managers/request-activation/${storedUsername}`);
-      Swal.fire("Requested!", "Admin will activate your account soon.", "info");
+      const res = await api.post(`/managers/request-activation/${storedUsername}`);
+      Swal.fire("Success", res.data.message, "success").then(() => {
+        navigate("/manager/waiting"); // <-- go to the waiting page
+      });
     } catch (err) {
-      console.error("Request activation failed", err); // Debug error
+      console.error("Request activation failed", err);
       Swal.fire("Error", "Failed to request activation", "error");
     }
   };
+
+
+
+
+
+
+  
   
   
 

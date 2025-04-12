@@ -21,19 +21,19 @@ return [
      * Optionally you can disable client events so clients cannot send
      * messages to each other via the webSockets.
      */
-   'apps' => [
+  'apps' => [
     [
-        'id' => env('PUSHER_APP_ID'),
-        'name' => env('PUSHER_APP_NAME'),
-        'key' => env('PUSHER_APP_KEY'),
-        'secret' => env('PUSHER_APP_SECRET'),
-        'path' => env('LARAVEL_ECHO_SERVER_PATH'),
+        'id' => env('PUSHER_APP_ID', 'local'),
+        'name' => env('APP_NAME', 'Laravel'),
+        'key' => env('PUSHER_APP_KEY', 'local'),
+        'secret' => env('PUSHER_APP_SECRET', 'local'),
+        'path' => '/',
         'capacity' => null,
-        'host' => env('PUSHER_HOST', '127.0.0.1'),
-        'port' => env('PUSHER_PORT', 6001), // Ensure this is 6001
-        'scheme' => env('PUSHER_SCHEME', 'http'),
+        'enable_client_messages' => true,
+        'enable_statistics' => true,
     ],
 ],
+
 
 
     /*
