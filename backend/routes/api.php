@@ -77,8 +77,8 @@ Route::delete('/traffic-users/{id}', [TrafficUserController::class, 'destroy']);
 
   
 
-
 // Route::apiResource('shifts', ShiftController::class);
+
 Route::get('/shifts', [ShiftController::class, 'index']);
 Route::post('/shifts', [ShiftController::class, 'store']);
 Route::get('/shifts/{shift}', [ShiftController::class, 'show']);
