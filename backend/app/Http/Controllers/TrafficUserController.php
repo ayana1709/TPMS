@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 
+
 class TrafficUserController extends Controller
 {
 
@@ -90,4 +91,42 @@ public function store(Request $request)
 
         return response()->json(['message' => 'User deleted']);
     }
+
+
+    //loogin 
+   
+    public function login(Request $request)
+    {
+        $request->validate([
+            'username' => 'required',
+            'password' => 'required',
+        ]);
+    
+        $user = TrafficUser::where('username', $request->username)->first();
+    
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
+    
+        // Optionally deny login if the user is inactive
+        // if ($user->status !== 'Active') {
+        //     return response()->json(['message' => 'Account is not active'], 403);
+        // }
+    
+        $token = $user->createToken('traffic-user-token')->plainTextToken;
+    
+        return response()->json([
+            'status' => 'success',
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'full_name' => $user->full_name,
+                'username' => $user->username,
+                'status' => $user->status,
+                'email' => $user->email,
+            ],
+        ]);
+    }
+    
+
 }
