@@ -2,10 +2,18 @@ import React, { useEffect, useState } from "react";
 import echo from "@/echo";
 import api from "@/api";
 import Swal from "sweetalert2";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const PendingActivationList = () => {
   const [managers, setManagers] = useState([]);
-  const [expandedIndex, setExpandedIndex] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
 
   useEffect(() => {
     const fetchPendingManagers = async () => {
@@ -30,7 +38,7 @@ const PendingActivationList = () => {
         toast: true,
         position: "top-end",
         showConfirmButton: false,
-        timer: 3000,
+        timer: 6000,
       });
     });
 
@@ -54,30 +62,22 @@ const PendingActivationList = () => {
 
   const handleActivate = async (username) => {
     try {
-      const response = await api.post(`/admin/activate/${username}`);
-      console.log("Activation Success:", response.data);
-
+      await api.post(`/admin/activate/${username}`);
       Swal.fire(
         "Activated!",
         `Manager ${username} activated and email sent successfully.`,
         "success"
       );
     } catch (error) {
-      console.error("Activation Error:", error);
-
       let message = "Activation failed.";
       if (error.response) {
-        // Server responded with error
         message =
           error.response.data.error || error.response.data.message || message;
       } else if (error.request) {
-        // Request made but no response
         message = "No response from server.";
       } else {
-        // Error during setting up the request
         message = error.message;
       }
-
       Swal.fire("Error", message, "error");
     }
   };
@@ -101,19 +101,18 @@ const PendingActivationList = () => {
       {managers.length === 0 ? (
         <p className="text-gray-600">No pending requests.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {managers.map((manager, index) => {
-            const isExpanded = expandedIndex === index;
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+          {managers.map((manager) => {
+            const isExpanded = expandedId === manager.id;
+
             return (
-              <div
+              <Card
                 key={manager.id}
-                className="border rounded-2xl shadow-md p-4 bg-white hover:shadow-lg transition-all"
+                className="flex flex-col justify-between min-h-[220px] transition-all duration-300 shadow-sm hover:shadow-md"
               >
-                <div className="flex justify-between items-center mb-2">
-                  <div className="space-y-1 text-sm text-gray-800">
-                    <p>
-                      <strong>Name:</strong> {manager.name}
-                    </p>
+                <CardHeader>
+                  <CardTitle className="text-lg">{manager.name}</CardTitle>
+                  <div className="text-sm text-muted-foreground space-y-1">
                     <p>
                       <strong>Username:</strong> {manager.username}
                     </p>
@@ -121,16 +120,10 @@ const PendingActivationList = () => {
                       <strong>Email:</strong> {manager.email}
                     </p>
                   </div>
-                  <button
-                    className="text-blue-600 text-sm hover:underline"
-                    onClick={() => setExpandedIndex(isExpanded ? null : index)}
-                  >
-                    {isExpanded ? "Hide" : "View More"}
-                  </button>
-                </div>
+                </CardHeader>
 
                 {isExpanded && (
-                  <div className="mt-3 space-y-1 text-sm text-gray-700">
+                  <CardContent className="text-sm text-gray-700 space-y-1">
                     <p>
                       <strong>Phone:</strong> {manager.phone}
                     </p>
@@ -146,23 +139,36 @@ const PendingActivationList = () => {
                     <p>
                       <strong>Status:</strong> {manager.status}
                     </p>
-                    <div className="mt-4 flex gap-3">
-                      <button
-                        onClick={() => handleActivate(manager.username)}
-                        className="bg-green-500 text-white px-4 py-1 rounded-xl hover:bg-green-600"
-                      >
-                        Activate
-                      </button>
-                      <button
-                        onClick={() => handleDeny(manager.username)}
-                        className="bg-red-500 text-white px-4 py-1 rounded-xl hover:bg-red-600"
-                      >
-                        Deny
-                      </button>
-                    </div>
-                  </div>
+                  </CardContent>
                 )}
-              </div>
+
+                <CardFooter className="flex flex-col gap-2 mt-auto">
+                  <div className="flex justify-between w-full">
+                    <Button
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                      onClick={() => handleActivate(manager.username)}
+                    >
+                      Activate
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleDeny(manager.username)}
+                    >
+                      Deny
+                    </Button>
+                  </div>
+                  <button
+                    onClick={() =>
+                      setExpandedId(isExpanded ? null : manager.id)
+                    }
+                    className="text-xs text-blue-600 hover:underline self-start"
+                  >
+                    {isExpanded ? "Hide Details" : "View More"}
+                  </button>
+                </CardFooter>
+              </Card>
             );
           })}
         </div>

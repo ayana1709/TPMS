@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 import SidebarLinkGroup from "./SidebarLinkGroup";
+import api from "@/api";
+import echo from "@/echo";
 
 function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
   const location = useLocation();
@@ -9,6 +11,34 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
 
   const trigger = useRef(null);
   const sidebar = useRef(null);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const res = await api.get("/admin/pending-activations");
+        setPendingCount(res.data.length);
+      } catch (err) {
+        console.error("Failed to fetch pending manager count", err);
+      }
+    };
+
+    fetchCount(); // initial fetch
+
+    const channel = echo.channel("activation-channel");
+
+    channel.listen(".manager-requested", () => {
+      fetchCount(); // re-fetch actual count
+    });
+
+    channel.listen(".manager-activated", () => {
+      fetchCount(); // re-fetch actual count
+    });
+
+    return () => {
+      echo.leave("activation-channel");
+    };
+  }, []);
 
   const storedSidebarExpanded = localStorage.getItem("sidebar-expanded");
   const [sidebarExpanded, setSidebarExpanded] = useState(
@@ -211,7 +241,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
                   );
                 }}
               </SidebarLinkGroup>
-              {/* Community */}
+              {/* view Mangers */}
               <SidebarLinkGroup
                 activecondition={pathname.includes("community")}
               >
@@ -256,51 +286,53 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
                   );
                 }}
               </SidebarLinkGroup>
-
+              {/*  pending  Manager */}
               <SidebarLinkGroup
                 activecondition={pathname.includes("community")}
               >
-                {(handleClick, open) => {
-                  return (
-                    <React.Fragment>
-                      <NavLink
-                        end
-                        to="/pending-manager"
-                        className={({ isActive }) =>
-                          `block text-gray-800 dark:text-gray-100 truncate transition duration-150 ${
-                            isActive
-                              ? "text-violet-500"
-                              : "hover:text-gray-900 dark:hover:text-white"
-                          }`
-                        }
-                        onClick={(e) => {
-                          handleClick();
-                          setSidebarExpanded(true);
-                        }}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <svg
-                              className="shrink-0 fill-current text-gray-400 dark:text-gray-500"
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M9 6.855A3.502 3.502 0 0 0 8 0a3.5 3.5 0 0 0-1 6.855v1.656L5.534 9.65a3.5 3.5 0 1 0 1.229 1.578L8 10.267l1.238.962a3.5 3.5 0 1 0 1.229-1.578L9 8.511V6.855ZM6.5 3.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm4.803 8.095c.005-.005.01-.01.013-.016l.012-.016a1.5 1.5 0 1 1-.025.032ZM3.5 11c.474 0 .897.22 1.171.563l.013.016.013.017A1.5 1.5 0 1 1 3.5 11Z" />
-                            </svg>
-                            <span className="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                              Activate Managers
+                {(handleClick, open) => (
+                  <React.Fragment>
+                    <NavLink
+                      end
+                      to="/pending-manager"
+                      className={({ isActive }) =>
+                        `block text-gray-800 dark:text-gray-100 truncate transition duration-150 ${
+                          isActive
+                            ? "text-violet-500"
+                            : "hover:text-gray-900 dark:hover:text-white"
+                        }`
+                      }
+                      onClick={() => {
+                        handleClick();
+                        setSidebarExpanded(true);
+                      }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <svg
+                            className="shrink-0 fill-current text-gray-400 dark:text-gray-500"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M9 6.855A3.502 3.502 0 0 0 8 0a3.5 3.5 0 0 0-1 6.855v1.656L5.534 9.65a3.5 3.5 0 1 0 1.229 1.578L8 10.267l1.238.962a3.5 3.5 0 1 0 1.229-1.578L9 8.511V6.855ZM6.5 3.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm4.803 8.095c.005-.005.01-.01.013-.016l.012-.016a1.5 1.5 0 1 1-.025.032ZM3.5 11c.474 0 .897.22 1.171.563l.013.016.013.017A1.5 1.5 0 1 1 3.5 11Z" />
+                          </svg>
+                          <span className="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                            Activate Managers
+                          </span>
+                          {pendingCount > 0 && (
+                            <span className="ml-2 inline-flex items-center justify-center text-xs font-semibold bg-red-500 text-white w-5 h-5 rounded-full">
+                              {pendingCount}
                             </span>
-                          </div>
-                          {/* Icon */}
-                          <div className="flex shrink-0 ml-2"></div>
+                          )}
                         </div>
-                      </NavLink>
-                    </React.Fragment>
-                  );
-                }}
+                      </div>
+                    </NavLink>
+                  </React.Fragment>
+                )}
               </SidebarLinkGroup>
+
               {/* Finance */}
               <SidebarLinkGroup activecondition={pathname.includes("finance")}>
                 {(handleClick, open) => {

@@ -319,12 +319,13 @@ public function activate($username)
         try {
             // Find the manager by username
             $manager = Manager::where('username', $username)->firstOrFail();
-
-            // Delete the manager (deny their activation)
-            $manager->delete();
-
-            // Optionally, you can send an email or trigger events related to denial.
-            return response()->json(['message' => 'Manager denied successfully.']);
+    
+            // Update the manager's status to 'inactive'
+            $manager->status = 'Inactive';
+            $manager->save();
+    
+            // Optionally, trigger events or send email here if needed
+            return response()->json(['message' => 'Manager status set to inactive successfully.']);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to deny manager.',
@@ -332,6 +333,7 @@ public function activate($username)
             ], 500);
         }
     }
+    
 
 
     public function checkStatus($username)
