@@ -2,40 +2,64 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import echo from "@/echo";
+import api from "@/api"; // make sure this points to your axios instance
 
 const ManagerWaiting = () => {
   const username = localStorage.getItem("manager_username");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const channel = echo.channel("activation-channel");
+    let pollingInterval = null;
 
+    const handleActivation = () => {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Your account has been activated!",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: "#f0f9ff",
+        color: "#1e3a8a",
+        iconColor: "#22c55e",
+      });
+
+      setTimeout(() => {
+        navigate("/dashboard/home");
+      }, 3000);
+    };
+
+    // 🔄 Start polling every 5 seconds
+    const startPolling = () => {
+      pollingInterval = setInterval(async () => {
+        try {
+          const response = await api.get(`/managers/status/${username}`);
+          if (response.data.status === "Active") {
+            clearInterval(pollingInterval);
+            handleActivation();
+          }
+        } catch (err) {
+          console.error("Polling error:", err);
+        }
+      }, 5000);
+    };
+
+    // ⚡ Listen to WebSocket events
+    const channel = echo.channel("activation-channel");
     channel.listen(".manager-activated", (event) => {
       if (event.manager.username === username) {
-        console.log("✅ Activated manager detected:", event.manager);
-
-        // Show beautiful toast before redirect
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "success",
-          title: "Your account has been activated!",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          background: "#f0f9ff",
-          color: "#1e3a8a",
-          iconColor: "#22c55e",
-        });
-
-        setTimeout(() => {
-          navigate("/dashboard/home");
-        }, 3000);
+        clearInterval(pollingInterval); // Stop polling if socket works
+        handleActivation();
       }
     });
 
+    // Start polling in parallel
+    startPolling();
+
     return () => {
       channel.stopListening(".manager-activated");
+      if (pollingInterval) clearInterval(pollingInterval);
     };
   }, [username, navigate]);
 

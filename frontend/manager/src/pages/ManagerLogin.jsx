@@ -20,16 +20,22 @@ const ManagerLogin = () => {
       });
 
       if (response.data.status === "success") {
-        // Save token
-        localStorage.setItem("manager_token", response.data.token);
-        localStorage.setItem("manager_name", response.data.manager.name);
+        const { token, manager } = response.data;
 
-        // Optional: Set default auth header for future axios requests
-        axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
+        // Save token and manager info
+        localStorage.setItem("manager_token", token);
+        localStorage.setItem("manager_name", manager.name);
+        localStorage.setItem("manager_username", manager.username);
 
-localStorage.setItem("manager_username", response.data.manager.username);
-window.location.href = "/welcome";
+        // Set default auth header for axios
+        // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
+        // Redirect based on manager status
+        if (manager.status === "Active") {
+          window.location.href = "/dashboard/home";
+        } else {
+          window.location.href = "/welcome";
+        }
       } else {
         setError(response.data.message || "Login failed");
       }

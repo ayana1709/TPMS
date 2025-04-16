@@ -166,7 +166,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
                   );
                 }}
               </SidebarLinkGroup>
-              {/* E-Commerce */}
+              {/* Crreate Account  */}
               <SidebarLinkGroup
                 activecondition={pathname.includes("ecommerce")}
               >

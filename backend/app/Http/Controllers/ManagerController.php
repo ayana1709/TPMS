@@ -18,6 +18,8 @@ use App\Mail\AccountActivatedMail;
 use ManagerActivated as GlobalManagerActivated;
 use App\Mail\ManagerActivatedMail;
 // use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
+
 
 class ManagerController extends Controller
 {
@@ -89,7 +91,7 @@ public function update(Request $request, $oldUsername)
             'woreda' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:managers,username,' . $manager->id,
             'password' => 'nullable|string|min:6',
-            'status' => 'required|string|in:Active,Inactive',
+            'status' => 'required|string|in:Active,Pending,Inactive',
 
         ]);
 
@@ -168,6 +170,38 @@ public function sendInfoEmail($username)
     }
 }
 
+// public function login(Request $request)
+// {
+//     $request->validate([
+//         'username' => 'required',
+//         'password' => 'required',
+//     ]);
+
+//     $manager = Manager::where('username', $request->username)->first();
+
+//     if (!$manager || !Hash::check($request->password, $manager->password)) {
+//         return response()->json(['status' => 'fail', 'message' => 'Invalid credentials'], 401);
+//     }
+
+//     // ✅ allow login regardless of status
+//     $token = $manager->createToken('manager_token')->plainTextToken;
+
+//     return response()->json([
+//         'status' => 'success',
+//         'token' => $token,
+//         'manager' => [
+//             'name' => $manager->name,
+//             'username' => $manager->username,
+//             'email' => $manager->email,
+//             'status' => $manager->status, // important
+//         ],
+//     ]);
+// }
+
+
+
+//login
+
 public function login(Request $request)
 {
     $request->validate([
@@ -178,23 +212,29 @@ public function login(Request $request)
     $manager = Manager::where('username', $request->username)->first();
 
     if (!$manager || !Hash::check($request->password, $manager->password)) {
-        return response()->json(['status' => 'fail', 'message' => 'Invalid credentials'], 401);
+        return response()->json(['message' => 'Invalid credentials'], 401);
     }
 
-    // ✅ allow login regardless of status
-    $token = $manager->createToken('manager_token')->plainTextToken;
+    $token = $manager->createToken('manager-token')->plainTextToken;
 
     return response()->json([
         'status' => 'success',
         'token' => $token,
-        'manager' => [
-            'name' => $manager->name,
-            'username' => $manager->username,
-            'email' => $manager->email,
-            'status' => $manager->status, // important
-        ],
+        'manager' => $manager,
     ]);
 }
+
+
+// logout 
+public function logout(Request $request)
+{
+    $request->user()->currentAccessToken()->delete();
+
+    return response()->json(['message' => 'Logged out successfully']);
+}
+
+
+// update creadintials 
 public function updateCredentials(Request $request)
 {
     $request->validate([
@@ -253,30 +293,6 @@ public function getPendingActivations()
     return response()->json($pendingManagers);
 }
 
-public function activateManager($username)
-{
-    $manager = Manager::where('username', $username)->first();
-
-    if (!$manager) {
-        return response()->json(['error' => 'Manager not found'], 404);
-    }
-
-    $manager->status = 'Active';
-    $manager->save();
-
-    // Optionally fire an event or email
-    event(new ManagerActivated($manager));
-
-    return response()->json(['message' => 'Manager activated successfully']);
-}
-
-
-
-
-
-
-
-
 
 public function activate($username)
 {
@@ -296,11 +312,6 @@ public function activate($username)
         return response()->json(['error' => $e->getMessage()], 500);
     }
 }
-
-
-
-
-
 
     // Function to deny a manager's activation request (delete manager)
     public function deny($username)

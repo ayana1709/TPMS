@@ -11,11 +11,50 @@ import ManagerWaiting from "./pages/ManagerWaiting";
 
 
 
-// Helper component to protect routes
+import { useEffect, useState } from "react";
+import axios from "axios";
+import api from "./api";
+import Loading from "./pages/components/Loading";
+
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("manager_token");
-  return token ? children : <Navigate to="/" replace />;
+  const [isAllowed, setIsAllowed] = useState(null);
+
+  useEffect(() => {
+    const checkManager = async () => {
+      if (!token) {
+        setIsAllowed(false);
+        return;
+      }
+
+      try {
+        const response = await api.get("/managers/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data.status === "Active") {
+          setIsAllowed(true); // ✅ can access dashboard
+        } else {
+          window.location.href = "/welcome"; // ❌ send to welcome if not active
+        }
+      } catch (error) {
+        console.error("Auth check failed", error);
+        setIsAllowed(false); // ❌ no access
+      }
+    };
+
+    checkManager();
+  }, [token]);
+
+  if (isAllowed === null) {
+    return <div> <Loading/></div>; // ⏳ loading state
+  }
+
+  return isAllowed ? children : <Navigate to="/" replace />;
 };
+
 
 function App() {
   return (
@@ -35,17 +74,14 @@ function App() {
 
       {/* Public Pages */}
       <Route path="/create-account" element={<TrafficAccount />} />
-      <Route path="/" element={<ManagerLogin />} />
-
-      {/* Default Redirect */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-<Route path="/welcome" element={<ManagerWelcome />} />
-<Route path="/request-activation" element={<RequestActivation />} />
-
-<Route path="/manager/waiting" element={<ManagerWaiting />} />
+      <Route path="/" element={<ManagerLogin />} /> 
+      <Route path="/welcome" element={<ManagerWelcome />} />
+      <Route path="/request-activation" element={<RequestActivation />} />
+      <Route path="/manager/waiting" element={<ManagerWaiting />} />
 
 
-
+  {/* Default Redirect */}
+  <Route path="*" element={<Navigate to="/" replace />} />
       
     </Routes>
   );
