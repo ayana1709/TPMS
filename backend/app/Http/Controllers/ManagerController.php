@@ -68,6 +68,10 @@ public function store(Request $request)
         ], 500);
     }
 }
+
+
+
+
 public function index()
 {
     $managers = Manager::select('name', 'phone', 'email', 'region', 'zone', 'woreda', 'username', 'status')->get();

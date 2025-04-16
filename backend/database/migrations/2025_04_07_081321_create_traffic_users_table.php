@@ -21,9 +21,11 @@ return new class extends Migration
             $table->string('rank');
             $table->string('phone');
             $table->string('email')->unique();
-            
             $table->string('username')->unique();
             $table->string('password');
+            $table->string('status')->default('Inactive');
+
+
 
 
             

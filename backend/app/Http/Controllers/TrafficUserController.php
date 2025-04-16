@@ -6,37 +6,56 @@ use App\Models\TrafficUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
+
 class TrafficUserController extends Controller
 {
+
+    // index
     public function index()
     {
         return TrafficUser::all();
     }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'full_name' => 'required|string',
-            'badge_number' => 'required|string|unique:traffic_users',
-            'rank' => 'required|string',
-            'phone' => 'required|string',
-            'email' => 'required|email|unique:traffic_users',
-            'username' => 'required|string|unique:traffic_users',
-            'password' => 'required|string|min:6',
-        ]);
 
-        $validated['password'] = Hash::make($validated['password']);
+// store 
 
-        $user = TrafficUser::create($validated);
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'full_name' => 'required|string',
+        'badge_number' => 'required|string|unique:traffic_users',
+        'rank' => 'required|string',
+        'phone' => 'required|string',
+        'email' => 'required|email|unique:traffic_users',
+        'username' => 'required|string|unique:traffic_users',
+        'password' => 'required|string|min:6',
+    ]);
 
-        return response()->json($user, 201);
-    }
+    // Hash the password
+    $validated['password'] = Hash::make($validated['password']);
 
+    // Set the default status to "Inactive"
+    $validated['status'] = 'Inactive';
+
+    $user = TrafficUser::create($validated);
+
+    return response()->json($user, 201);
+}
+
+
+
+
+
+
+// show
     public function show($id)
     {
         return TrafficUser::findOrFail($id);
     }
 
+
+
+   //update 
     public function update(Request $request, $id)
     {
         $user = TrafficUser::findOrFail($id);
@@ -63,6 +82,7 @@ class TrafficUserController extends Controller
         return response()->json($user);
     }
 
+    //delte
     public function destroy($id)
     {
         $user = TrafficUser::findOrFail($id);
