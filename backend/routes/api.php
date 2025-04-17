@@ -102,6 +102,7 @@ Route::post('/traffic-user/login', [TrafficUserController::class, 'login']);
 // -------shift----
 
 // Route::apiResource('shifts', ShiftController::class);
+
 Route::get('/shifts', [ShiftController::class, 'index']);
 Route::post('/shifts', [ShiftController::class, 'store']);
 Route::get('/shifts/{shift}', [ShiftController::class, 'show']);
