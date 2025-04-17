@@ -101,9 +101,7 @@ public function store(Request $request)
             'username' => 'required',
             'password' => 'required',
         ]);
-    
         $user = TrafficUser::where('username', $request->username)->first();
-    
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
@@ -114,7 +112,6 @@ public function store(Request $request)
         // }
     
         $token = $user->createToken('traffic-user-token')->plainTextToken;
-    
         return response()->json([
             'status' => 'success',
             'token' => $token,
@@ -127,6 +124,15 @@ public function store(Request $request)
             ],
         ]);
     }
+
+// update credintials 
+
+
+//  request activation 
+
+
+//  cheack its  status 
+
     
 
 }

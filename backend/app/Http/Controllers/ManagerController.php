@@ -271,6 +271,9 @@ public function updateCredentials(Request $request)
         'manager' => $manager
     ]);
 }
+
+
+// request activation 
 public function requestActivation($username)
 {
     $manager = Manager::where('username', $username)->firstOrFail();
@@ -284,12 +287,15 @@ public function requestActivation($username)
     }
     return response()->json(['message' => 'Manager already requested or activated.']);
 }
+//
 public function listInactive()
 {
     $inactiveManagers = Manager::where('status', 'Inactive')->get();
 
     return response()->json($inactiveManagers);
 }
+
+// 
 
 public function getPendingActivations()
 {
