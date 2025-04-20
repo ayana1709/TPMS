@@ -125,7 +125,7 @@ public function store(Request $request)
         ]);
     }
 
-// update credintials 
+
 
 // Update credentials (password change)
 public function updateCredentials(Request $request)
@@ -150,6 +150,30 @@ public function updateCredentials(Request $request)
 
 
 //  request activation 
+
+// TrafficUserController.php
+
+public function requestActivation($username)
+{
+    $user = TrafficUser::where('username', $username)->first();
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found.'], 404);
+    }
+
+    if ($user->status === 'Inactive') {
+        $user->status = 'Pending';
+        $user->save();
+
+        // Optional: dispatch event or notification
+        // event(new TrafficUserRequestedActivation($user));
+
+        return response()->json(['message' => 'Activation request sent.']);
+    }
+
+    return response()->json(['message' => 'Activation already requested or approved.']);
+}
+
 
 
 //  cheack its  status 

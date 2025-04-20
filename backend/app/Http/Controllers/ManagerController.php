@@ -287,6 +287,8 @@ public function requestActivation($username)
     }
     return response()->json(['message' => 'Manager already requested or activated.']);
 }
+
+
 //
 public function listInactive()
 {

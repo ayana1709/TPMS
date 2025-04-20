@@ -51,7 +51,7 @@ const TrafficWelcome = () => {
       const res = await api.post(`/traffic/request-activation/${username}`);
       Swal.fire('Activation Requested', res.data.message, 'success').then(
         () => {
-          navigate('/traffic/waiting');
+          navigate('/pending-activation');
         },
       );
     } catch (err) {

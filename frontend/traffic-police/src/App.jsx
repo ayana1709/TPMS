@@ -16,6 +16,7 @@ import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import TrafficWelcome from './pages/Authentication/TrafficWelcome';
 import SignIn from './pages/Authentication/SignIn';
+import PendingActivation from './pages/Authentication/PendingActivation';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -44,7 +45,7 @@ function App() {
         }
       />
       <Route
-        path="/pending-activation"
+        path="/traffic-welcome"
         element={
           <>
             {/* <PageTitle title="TPMS | Traffic Police Dashboard" /> */}
@@ -52,7 +53,16 @@ function App() {
           </>
         }
       />
-      traffic/waiting
+      <Route
+        path="/pending-activation"
+        element={
+          <>
+            {/* <PageTitle title="TPMS | Traffic Police Dashboard" /> */}
+            <PendingActivation />
+          </>
+        }
+      />
+
       {/* App Routes with DefaultLayout */}
       <Route
         path="*"

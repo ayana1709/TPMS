@@ -30,7 +30,7 @@ const SignIn = () => {
         if (user.status === 'Active') {
           window.location.href = '/dashboard';
         } else {
-          window.location.href = '/pending-activation';
+          window.location.href = '/traffic-welcome';
         }
       } else {
         setError(response.data.message || 'Login failed');
