@@ -10,8 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 
 const TrafficWelcome = () => {
-  const username = localStorage.getItem('manager_username') || '';
-  const name = localStorage.getItem('manager_name') || 'Traffic User';
+  const username = localStorage.getItem('traffic_username') || '';
+  const name = localStorage.getItem('traffic_name') || 'Traffic User';
 
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -32,7 +32,7 @@ const TrafficWelcome = () => {
     }
 
     try {
-      await api.post('/managers/update-credentials', {
+      await api.post('/traffic/update-credentials', {
         username,
         old_password: oldPassword,
         new_password: newPassword,
@@ -48,10 +48,10 @@ const TrafficWelcome = () => {
 
   const handleActivationRequest = async () => {
     try {
-      const res = await api.post(`/managers/request-activation/${username}`);
+      const res = await api.post(`/traffic/request-activation/${username}`);
       Swal.fire('Activation Requested', res.data.message, 'success').then(
         () => {
-          navigate('/manager/waiting');
+          navigate('/traffic/waiting');
         },
       );
     } catch (err) {

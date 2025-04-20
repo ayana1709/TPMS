@@ -3,14 +3,8 @@ import { Dashboard, Auth } from "@/layouts";
 import TrafficAccount from "./pages/dashboard/TrafficAccount";
 import ManagerLogin from "./pages/ManagerLogin";
 import ManagerWelcome from "./pages/ManagerWelcome";
-import RequestActivation from "./pages/RequestActivation";
-
-
 import 'leaflet/dist/leaflet.css';
 import ManagerWaiting from "./pages/ManagerWaiting";
-
-
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import api from "./api";
@@ -55,7 +49,6 @@ const ProtectedRoute = ({ children }) => {
   return isAllowed ? children : <Navigate to="/" replace />;
 };
 
-
 function App() {
   return (
     <Routes>
@@ -73,15 +66,12 @@ function App() {
       <Route path="/auth/*" element={<Auth />} />
 
       {/* Public Pages */}
-      <Route path="/create-account" element={<TrafficAccount />} />
       <Route path="/" element={<ManagerLogin />} /> 
+      <Route path="/create-account" element={<TrafficAccount />} />
       <Route path="/welcome" element={<ManagerWelcome />} />
-      <Route path="/request-activation" element={<RequestActivation />} />
       <Route path="/manager/waiting" element={<ManagerWaiting />} />
-
-
-  {/* Default Redirect */}
-  <Route path="*" element={<Navigate to="/" replace />} />
+       {/* Default Redirect */}
+      <Route path="*" element={<Navigate to="/" replace />} />
       
     </Routes>
   );

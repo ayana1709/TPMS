@@ -127,6 +127,27 @@ public function store(Request $request)
 
 // update credintials 
 
+// Update credentials (password change)
+public function updateCredentials(Request $request)
+{
+    $request->validate([
+        'old_password' => 'required|string',
+        'new_password' => 'required|string|min:6|confirmed',
+    ]);
+
+    $user = auth()->user();
+
+    if (!Hash::check($request->old_password, $user->password)) {
+        return response()->json(['message' => 'Old password is incorrect'], 401);
+    }
+
+    $user->password = Hash::make($request->new_password);
+    $user->save();
+
+    return response()->json(['message' => 'Password updated successfully']);
+}
+
+
 
 //  request activation 
 

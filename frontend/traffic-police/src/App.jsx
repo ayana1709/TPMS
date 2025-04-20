@@ -47,12 +47,12 @@ function App() {
         path="/pending-activation"
         element={
           <>
-            <PageTitle title="TPMS | Traffic Police Dashboard" />
+            {/* <PageTitle title="TPMS | Traffic Police Dashboard" /> */}
             <TrafficWelcome />
           </>
         }
       />
-
+      traffic/waiting
       {/* App Routes with DefaultLayout */}
       <Route
         path="*"

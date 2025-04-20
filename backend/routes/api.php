@@ -43,10 +43,7 @@ Route::get('/fetch-woredas/{zoneOsmId}', [OSMController::class, 'fetchTowns']);
 
 
 
-
-
 //  ------Manager Routes --------
-
 
 
 //Route for registering managers from admin side
@@ -78,12 +75,6 @@ Route::delete('/admin/delete/{username}', [ManagerController::class, 'deny']); /
 
 
 
-
-
-
-
-
-
 // ---- traffic user controller 
 
 // Route for registering traffic user from managers side 
@@ -96,7 +87,13 @@ Route::delete('/traffic-users/{id}', [TrafficUserController::class, 'destroy']);
 // login from traffic user side 
 Route::post('/traffic-user/login', [TrafficUserController::class, 'login']);
 
+Route::post('/traffic/request-activation/{username}', [TrafficUserController::class, 'requestActivation']); // request activation  from manager
+// Route::middleware('auth:sanctum')->post('/traffic/update-credentials', [TrafficUserController::class, 'updateCredentials']); //  update its password  after login 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/traffic/update-credentials', [TrafficUserController::class, 'updateCredentials']);
+});
 
+// Route::post('/traffic/update-credentials', [TrafficUserController::class, 'updateCredentials']);
 
 
 // -------shift----
