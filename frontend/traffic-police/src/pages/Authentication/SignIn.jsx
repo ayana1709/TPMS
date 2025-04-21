@@ -13,16 +13,18 @@ const SignIn = () => {
     setError('');
 
     try {
-      const response = await api.post('/traffic-user/login', {
+      // First: get CSRF cookie
+      await api.get('/sanctum/csrf-cookie');
+
+      // Then: login
+      const response = await api.post('/api/traffic-user/login', {
         username,
         password,
       });
 
       if (response.data.status === 'success') {
-        const { token, user } = response.data;
+        const { user } = response.data;
 
-        // Save token and user info
-        localStorage.setItem('traffic_token', token);
         localStorage.setItem('traffic_name', user.full_name);
         localStorage.setItem('traffic_username', user.username);
 
