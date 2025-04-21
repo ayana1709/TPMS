@@ -15,6 +15,7 @@ import { ToastContainer } from "react-toastify";
 import AdminActivateManagers from "./components/AdminActivateManagers";
 import PendingActivations from "./pages/PendingActivationList";
 import PendingActivationList from "./pages/PendingActivationList";
+import TrafficLaws from "./pages/TrafficLaws";
 
 function ProtectedLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -51,6 +52,7 @@ function App() {
           <Route path="/view-managers" element={<ViewManagers />} />
           <Route path="/activate-manager" element={<AdminActivateManagers />} />
           <Route path="/pending-manager" element={<PendingActivationList />} />
+          <Route path="/traffic-laws" element={<TrafficLaws />} />
 
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Route>

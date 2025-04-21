@@ -1087,6 +1087,50 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
                   );
                 }}
               </SidebarLinkGroup>
+              {/* Traffic Laws */}
+              <SidebarLinkGroup
+                activecondition={pathname.includes("traffic-laws")}
+              >
+                {(handleClick, open) => {
+                  return (
+                    <React.Fragment>
+                      <NavLink
+                        end
+                        to="/traffic-laws"
+                        className={({ isActive }) =>
+                          `block text-gray-800 dark:text-gray-100 truncate transition duration-150 ${
+                            isActive
+                              ? "text-violet-500"
+                              : "hover:text-gray-900 dark:hover:text-white"
+                          }`
+                        }
+                        onClick={(e) => {
+                          handleClick();
+                          setSidebarExpanded(true);
+                        }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <svg
+                              className="shrink-0 fill-current text-gray-400 dark:text-gray-500"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z" />
+                              <path d="M8 4c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
+                            </svg>
+                            <span className="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                              Traffic Laws
+                            </span>
+                          </div>
+                        </div>
+                      </NavLink>
+                    </React.Fragment>
+                  );
+                }}
+              </SidebarLinkGroup>
             </ul>
           </div>
           {/* More group */}
