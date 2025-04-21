@@ -18,6 +18,8 @@ import TrafficAccountsTable from "./pages/dashboard/TrafficAccountsTable";
 import ShiftManager from "./pages/dashboard/ShiftManager";
 import LocationRegistrationForm from "./pages/dashboard/LocationRegistrationForm";
 import CheckpointTable from "./pages/dashboard/CheckpointTable";
+import PendingActivationCard from "./pages/dashboard/PendingActivationCard";
+// import PendingTrafficList fro./pages/dashboard/PendingActivationCardist";
 // import LocationRegistrationForm from "./pages/dashboard/GeoTest";
 // import GeoTest from "./pages/dashboard/LocationRegistrationForm";
 
@@ -40,6 +42,12 @@ export const routes = [
         name: "Traffic Account Setup",
         path: "/traffic-account",
         element: <TrafficAccountsTable />, // replace with actual component if needed
+      },
+      {
+        icon: <UserPlusIcon {...icon} />,
+        name: "Activate traffic account",
+        path: "/activation-page",
+        element: <PendingActivationCard />, // replace with actual component if needed
       },
       {
         icon: <Cog6ToothIcon {...icon} />,
@@ -101,12 +109,12 @@ export const routes = [
     layout: "dashboard",
     pages: [
       {
-        name: "Create Traffic Account (Hidden)",
+        // name: "",
         path: "create-account",
         element: <TrafficAccount />,
       },
       {
-        name: "Location  Registration  (Hidden)",
+        // name: "Location  Registration  (Hidden)",
         path: "location-registration",
         element: <LocationRegistrationForm />,
       },

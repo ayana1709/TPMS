@@ -39,7 +39,18 @@ const TrafficWelcome = () => {
         new_password_confirmation: confirmPassword,
       });
 
-      Swal.fire('Success!', 'Password updated successfully.', 'success');
+      Swal.fire({
+        title: 'Success!',
+        text: 'Password updated successfully.',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        customClass: {
+          popup: 'bg-yellow-200', // Background color
+          confirmButton:
+            'bg-green-500 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300', // Confirm button styling
+        },
+      });
+
       setUpdated(true);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update password');
@@ -49,14 +60,36 @@ const TrafficWelcome = () => {
   const handleActivationRequest = async () => {
     try {
       const res = await api.post(`/traffic/request-activation/${username}`);
-      Swal.fire('Activation Requested', res.data.message, 'success').then(
-        () => {
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Activation Requested',
+        text: res.data.message,
+        timer: 2500, // auto-close after 2.5 seconds
+        timerProgressBar: true,
+        showConfirmButton: true,
+        customClass: {
+          popup: 'bg-gray-200', // Background color
+          confirmButton:
+            'bg-green-500 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300', // Confirm button styling
+        },
+        toast: false,
+        position: 'center',
+        didClose: () => {
           navigate('/pending-activation');
         },
-      );
+      });
     } catch (err) {
       console.error(err);
-      Swal.fire('Error', 'Failed to request activation.', 'error');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to request activation.',
+        timer: 2500,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        position: 'center',
+      });
     }
   };
 

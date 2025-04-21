@@ -72,9 +72,6 @@ Route::post('/admin/activate/{username}', [ManagerController::class, 'activate']
 Route::delete('/admin/delete/{username}', [ManagerController::class, 'deny']); // admin deny activation request
 
 
-
-
-
 // ---- traffic user controller 
 
 // Route for registering traffic user from managers side 
@@ -93,7 +90,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/traffic/update-credentials', [TrafficUserController::class, 'updateCredentials']);
 });
 
-// Route::post('/traffic/update-credentials', [TrafficUserController::class, 'updateCredentials']);
+
+
+
+Route::get('/manager/pending-activations', [TrafficUserController::class, 'getPendingActivations']);  //manger get all pending activations from traffic
+Route::post('/manager/activate/{username}', [TrafficUserController::class, 'activate']);// admin activate  manager 
+Route::delete('/manager/delete/{username}', [TrafficUserController::class, 'deny']); // admin deny activation request
+
+Route::get('/check-activation-status/{username}', [TrafficUserController::class, 'checkActivationStatus']);
+
+
 
 
 // -------shift----

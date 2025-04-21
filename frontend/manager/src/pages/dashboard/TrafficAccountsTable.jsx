@@ -74,12 +74,16 @@ const TrafficAccountsTable = () => {
 
   const columns = useMemo(
     () => [
+      { accessorKey: "id", header: "ID" },
+
       { accessorKey: "full_name", header: "Full Name" },
       { accessorKey: "badge_number", header: "Badge Number" },
       { accessorKey: "rank", header: "Rank" },
       { accessorKey: "phone", header: "Phone" },
       { accessorKey: "email", header: "Email" },
       { accessorKey: "username", header: "Username" },
+      { accessorKey: "status", header: "Status" },
+
       {
         accessorKey: "created_at",
         header: "Created At",
