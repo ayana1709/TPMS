@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Imports\ViolationsImport;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Models\Violation;
+use App\Models\Violations;
 
 class ViolationController extends Controller
 {
