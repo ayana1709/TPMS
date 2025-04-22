@@ -1,16 +1,10 @@
 import { useEffect, useState } from 'react';
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Circle,
-  useMapEvents,
-  useMap,
-} from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
 import api from '@/api';
-import { Navigate } from 'react-router-dom';
+import { MapContainer, TileLayer, Marker, Circle } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { Pencil, Trash2, PlusCircle, List } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 // Fix Leaflet marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -20,180 +14,160 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
 });
 
-const RecenterMap = ({ lat, lng }) => {
-  const map = useMap();
+const CheckpointsList = () => {
+  const [checkpoints, setCheckpoints] = useState([]);
+
   useEffect(() => {
-    if (lat && lng) {
-      map.setView([lat, lng], 15);
-    }
-  }, [lat, lng, map]);
-  return null;
-};
+    const fetchCheckpoints = async () => {
+      try {
+        const response = await api.get('/checkpoints');
+        const data = Array.isArray(response.data) ? response.data : response.data.data;
 
-const LocationRegistrationForm = () => {
-  const [position, setPosition] = useState(null);
-  const [mapCenter, setMapCenter] = useState([9.42349, 42.15766]);
-  const [radius, setRadius] = useState(100);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+        const enriched = data.map((checkpoint) => ({
+          ...checkpoint,
+          isExpanded: false,
+          assignedPolice: [
+            { id: 1, name: 'Officer Abdi', avatar: 'https://randomuser.me/api/portraits/men/32.jpg' },
+            { id: 2, name: 'Officer Hana', avatar: 'https://randomuser.me/api/portraits/women/44.jpg' },
+            { id: 3, name: 'Officer Meron', avatar: 'https://randomuser.me/api/portraits/women/68.jpg' },
+          ],
+        }));
 
-
-  const LocationSelector = () => {
-    useMapEvents({
-      click(e) {
-        setPosition(e.latlng);
-      },
-    });
-    return position ? <Marker position={position} /> : null;
-  };
-
-  const [accuracy, setAccuracy] = useState(null);
-  const [zoom, setZoom] = useState(15); // Start at zoom 15
-
-
-  const fetchUserLocation = () => {
-    if (!navigator.geolocation) {
-      alert("❌ Your browser doesn't support geolocation.");
-      return;
-    }
-  
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude, accuracy } = pos.coords;
-  
-        setAccuracy(accuracy); // Store accuracy if needed
-  
-        // Adjust zoom based on accuracy (or hard set a zoom)
-        if (accuracy < 50) {
-          setZoom(15); // Very accurate, zoom in a bit
-        } else if (accuracy < 500) {
-          setZoom(13); // Moderate accuracy, zoom out slightly
-        } else {
-          setZoom(11); // Low accuracy, zoom out more
-        }
-  
-        setMapCenter([latitude, longitude]);
-        setPosition({ lat: latitude, lng: longitude });
-      },
-      (err) => {
-        console.error("Geolocation error:", err);
-        alert("❌ Failed to get your location. Please allow location access.");
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 0,
+        setCheckpoints(enriched);
+      } catch (error) {
+        console.error('Error fetching checkpoints:', error);
+        setCheckpoints([]);
       }
+    };
+
+    fetchCheckpoints();
+  }, []);
+
+  const handleToggleView = (id) => {
+    setCheckpoints((prev) =>
+      prev.map((c) =>
+        c.id === id ? { ...c, isExpanded: !c.isExpanded } : c
+      )
     );
   };
-  
 
-  
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!position || !name || !radius) {
-      return alert('Please fill in all fields and select a location.');
-    }
-  
-    const payload = {
-      name,
-      latitude: position.lat,
-      longitude: position.lng,
-      radius,
-      description, // ✅ Include it here
-    };
-    
-  
-    try {
-      const response = await api.post('/checkpoints', payload);
-      console.log('✅ Location registered:', response.data);
-      alert('✅ Location registered successfully!');
-      Navigate('dashboard/location-management');
-    } catch (error) {
-      console.error('❌ Error submitting location:', error);
-      alert('❌ Failed to register location.');
+  const handleDelete = async (id) => {
+    if (confirm('Are you sure you want to delete this checkpoint?')) {
+      try {
+        await api.delete(`/checkpoints/${id}`);
+        setCheckpoints((prev) => prev.filter((c) => c.id !== id));
+      } catch (error) {
+        console.error('Failed to delete checkpoint:', error);
+      }
     }
   };
-  
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-xl rounded-2xl">
-      <h2 className="text-2xl font-bold text-center mb-6">📍 Register Traffic Checkpoint</h2>
-
-      <div className="flex justify-end mb-4">
-      <button
-  onClick={fetchUserLocation}
-  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
->
-  📍 Get My Location
-</button>
-
-      </div>
-
-      <div className="h-96 mb-6 rounded-lg overflow-hidden border border-gray-300">
-        <MapContainer center={mapCenter} zoom={zoom} style={{ height: '100%', width: '100%' }}>
-          <TileLayer
-            attribution="&copy; OpenStreetMap contributors"
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          {position && <RecenterMap lat={position.lat} lng={position.lng} />}
-          <LocationSelector />
-          {position && (
-            <Circle
-              center={position}
-              radius={radius}
-              pathOptions={{ color: 'blue', fillColor: '#3b82f6', fillOpacity: 0.2 }}
-            />
-          )}
-        </MapContainer>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Checkpoint Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="e.g., Bole Checkpoint"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Radius (meters)</label>
-          <input
-            type="number"
-            value={radius}
-            onChange={(e) => setRadius(Number(e.target.value))}
-            className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            min={10}
-            required
-          />
-        </div>
-        <div>
-  <label className="block text-sm font-medium text-gray-700">Description</label>
-  <textarea
-    value={description}
-    onChange={(e) => setDescription(e.target.value)}
-    className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-    placeholder="e.g., Located near the roundabout, heavy traffic in peak hours"
-    rows={3}
-  ></textarea>
-</div>
-
-
-        <button
-          type="submit"
-          className="w-full py-3 text-white bg-blue-600 rounded-lg font-semibold hover:bg-blue-700 transition duration-300"
+    <div className="max-w-7xl mx-auto mt-10 p-4">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">📍 Registered Checkpoints</h2>
+        <Link
+          to="/create-checkpoint"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
         >
-          🚀 Register Location
-        </button>
-      </form>
+          <PlusCircle size={18} /> Create Checkpoint
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {checkpoints.map((checkpoint) => (
+          <div key={checkpoint.id} className="bg-white shadow-md rounded-xl p-4 space-y-3 border border-gray-200 hover:shadow-lg transition relative">
+
+            {/* Edit/Delete Buttons Top Right */}
+            <div className="absolute top-3 right-3 flex gap-2">
+              <button
+                onClick={() => alert('Edit functionality coming soon!')}
+                className="text-blue-600 hover:text-blue-800 transition"
+              >
+                <Pencil size={18} />
+              </button>
+              <button
+                onClick={() => handleDelete(checkpoint.id)}
+                className="text-red-600 hover:text-red-800 transition"
+              >
+                <Trash2 size={18} />
+              </button>
+            </div>
+
+            {/* Header */}
+            <div className="text-xl font-semibold text-blue-700 pr-10">{checkpoint.name}</div>
+
+            {/* Map */}
+            <div className="h-48 rounded overflow-hidden border border-gray-300">
+              <MapContainer
+                center={[checkpoint.latitude, checkpoint.longitude]}
+                zoom={13}
+                style={{ height: '100%', width: '100%' }}
+                scrollWheelZoom={false}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker position={[checkpoint.latitude, checkpoint.longitude]} />
+                <Circle
+                  center={[checkpoint.latitude, checkpoint.longitude]}
+                  radius={checkpoint.radius}
+                  pathOptions={{ color: 'blue', fillColor: '#60a5fa', fillOpacity: 0.3 }}
+                />
+              </MapContainer>
+            </div>
+
+            {/* Description under Map */}
+            {checkpoint.description && (
+              <p className="text-gray-600 text-sm mt-1">{checkpoint.description}</p>
+            )}
+
+            {/* Assigned Police Section */}
+            <div className="mt-3 space-y-2">
+              <h4 className="text-sm font-semibold text-gray-700">Assigned to this place:</h4>
+              {checkpoint.isExpanded ? (
+                <ul className="space-y-2">
+                  {checkpoint.assignedPolice.map((officer) => (
+                    <li key={officer.id} className="flex items-center gap-3">
+                      <img src={officer.avatar} className="w-8 h-8 rounded-full" alt={officer.name} />
+                      <span className="text-gray-800 text-sm">{officer.name}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="flex gap-2 overflow-x-auto">
+                  {checkpoint.assignedPolice.map((officer) => (
+                    <div key={officer.id} className="relative group">
+                      <img
+                        src={officer.avatar}
+                        className="w-8 h-8 rounded-full border border-gray-300"
+                        alt={officer.name}
+                      />
+                      <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 scale-0 group-hover:scale-100 transition-all bg-gray-800 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap z-10">
+                        {officer.name}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Toggle Avatar View */}
+            <div className="flex justify-end pt-1 border-t border-gray-200 mt-3 pt-3">
+              <button
+                onClick={() => handleToggleView(checkpoint.id)}
+                className="text-gray-500 hover:text-blue-600 transition"
+              >
+                <List size={20} />
+              </button>
+            </div>
+
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default LocationRegistrationForm;
+export default CheckpointsList;
