@@ -468,4 +468,24 @@ public function activate($username)
             ], 500);
         }
     }
+
+    public function getManagersWithWeredas()
+    {
+        try {
+            $managers = Manager::select('id', 'name', 'email', 'phone', 'woreda')
+                ->whereNotNull('woreda')
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'managers' => $managers
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching managers with woredas: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch managers with woredas: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

@@ -159,5 +159,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/managers/historical', [ManagerController::class, 'getHistoricalData']);
 });
 
+// Get managers with their weredas
+Route::middleware('auth:sanctum')->get('/managers/weredas', [ManagerController::class, 'getManagersWithWeredas']);
+
 
 
