@@ -135,8 +135,11 @@ Route::delete('/shifts/{shift}', [ShiftController::class, 'destroy']);
 
 
 
-Route::apiResource('checkpoints', CheckpointController::class);
+// Route::apiResource('checkpoints', CheckpointController::class);
 Route::post('/checkpoints', [CheckpointController::class, 'store']);
+Route::get('/checkpoints', [CheckpointController::class, 'index']);
+
+
 
 
 
