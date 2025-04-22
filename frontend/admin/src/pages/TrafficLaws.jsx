@@ -49,6 +49,8 @@ const TrafficLaws = () => {
   const [importing, setImporting] = useState(false);
   const [selectedLaw, setSelectedLaw] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [lawToDelete, setLawToDelete] = useState(null);
 
   useEffect(() => {
     fetchLaws();
@@ -113,15 +115,21 @@ const TrafficLaws = () => {
   };
 
   const handleDelete = async (lawId) => {
-    if (window.confirm("Are you sure you want to delete this law?")) {
-      try {
-        await api.delete(`/traffic-laws/${lawId}`);
-        toast.success("Law deleted successfully");
-        fetchLaws();
-      } catch (error) {
-        console.error("Error deleting law:", error);
-        toast.error("Failed to delete law");
-      }
+    setLawToDelete(lawId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await api.delete(`/traffic-laws/${lawToDelete}`);
+      toast.success("Law deleted successfully");
+      fetchLaws();
+    } catch (error) {
+      console.error("Error deleting law:", error);
+      toast.error("Failed to delete law");
+    } finally {
+      setShowDeleteModal(false);
+      setLawToDelete(null);
     }
   };
 
@@ -382,7 +390,7 @@ const TrafficLaws = () => {
       </Card>
 
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[600px] fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
           <DialogHeader>
             <DialogTitle>Edit Traffic Law</DialogTitle>
           </DialogHeader>
@@ -503,7 +511,7 @@ const TrafficLaws = () => {
       </Dialog>
 
       <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[600px] fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
           <DialogHeader>
             <DialogTitle>View Traffic Law</DialogTitle>
           </DialogHeader>
@@ -543,6 +551,28 @@ const TrafficLaws = () => {
           )}
           <DialogFooter>
             <Button onClick={() => setShowViewModal(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Confirm Delete</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-gray-500">
+              Are you sure you want to delete this traffic law? This action
+              cannot be undone.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -24,4 +24,33 @@ class ViolationController extends Controller
     {
         return response()->json(Violations::all());
     }
+
+    public function update(Request $request, $id)
+{
+    $violation = Violations::findOrFail($id);
+
+    $request->validate([
+        'code' => 'required|string',
+        'violation_name' => 'required|string',
+        'category' => 'required|string',
+        'offence_type' => 'required|string',
+        'demerit_points' => 'required|string',
+        'fine_birr' => 'required|numeric',
+        'action_description' => 'nullable|string',
+    ]);
+
+    $violation->update($request->all());
+
+    return response()->json(['message' => 'Violation updated successfully', 'data' => $violation]);
+}
+
+public function destroy($id)
+{
+    $violation = Violations::findOrFail($id);
+    $violation->delete();
+
+    return response()->json(['message' => 'Violation deleted successfully']);
+}
+
+
 }
