@@ -28,6 +28,12 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const TrafficLaws = () => {
   const [laws, setLaws] = useState([]);
@@ -41,6 +47,8 @@ const TrafficLaws = () => {
   const [editingLaw, setEditingLaw] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [selectedLaw, setSelectedLaw] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
 
   useEffect(() => {
     fetchLaws();
@@ -128,6 +136,11 @@ const TrafficLaws = () => {
       console.error("Error updating law:", error);
       toast.error("Failed to update law");
     }
+  };
+
+  const handleView = (law) => {
+    setSelectedLaw(law);
+    setShowViewModal(true);
   };
 
   const filteredLaws = laws.filter((law) => {
@@ -246,20 +259,89 @@ const TrafficLaws = () => {
                         <TableCell>{law.fine_birr}</TableCell>
                         <TableCell>{law.action_description}</TableCell>
                         <TableCell>
-                          <Button
-                            variant="ghost"
-                            onClick={() => handleEdit(law)}
-                            className="text-blue-600 hover:text-blue-900 mr-2"
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            onClick={() => handleDelete(law.id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Delete
-                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="h-4 w-4"
+                                >
+                                  <circle cx="12" cy="12" r="1" />
+                                  <circle cx="12" cy="5" r="1" />
+                                  <circle cx="12" cy="19" r="1" />
+                                </svg>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleView(law)}>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="mr-2 h-4 w-4"
+                                >
+                                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                  <circle cx="12" cy="12" r="3" />
+                                </svg>
+                                View
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleEdit(law)}>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="mr-2 h-4 w-4"
+                                >
+                                  <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                                  <path d="m15 5 4 4" />
+                                </svg>
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleDelete(law.id)}
+                                className="text-red-600"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="mr-2 h-4 w-4"
+                                >
+                                  <path d="M3 6h18" />
+                                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                </svg>
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -417,6 +499,51 @@ const TrafficLaws = () => {
               <Button type="submit">Save Changes</Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>View Traffic Law</DialogTitle>
+          </DialogHeader>
+          {selectedLaw && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Code</Label>
+                  <p className="text-sm">{selectedLaw.code}</p>
+                </div>
+                <div>
+                  <Label>Violation Name</Label>
+                  <p className="text-sm">{selectedLaw.violation_name}</p>
+                </div>
+                <div>
+                  <Label>Category</Label>
+                  <p className="text-sm">{selectedLaw.category}</p>
+                </div>
+                <div>
+                  <Label>Offence Type</Label>
+                  <p className="text-sm">{selectedLaw.offence_type}</p>
+                </div>
+                <div>
+                  <Label>Demerit Points</Label>
+                  <p className="text-sm">{selectedLaw.demerit_points}</p>
+                </div>
+                <div>
+                  <Label>Fine (Birr)</Label>
+                  <p className="text-sm">{selectedLaw.fine_birr}</p>
+                </div>
+                <div className="col-span-2">
+                  <Label>Action Description</Label>
+                  <p className="text-sm">{selectedLaw.action_description}</p>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button onClick={() => setShowViewModal(false)}>Close</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
