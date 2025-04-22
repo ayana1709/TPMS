@@ -16,9 +16,12 @@ import { SignIn, SignUp } from "@/pages/auth";
 import TrafficAccount from "./pages/dashboard/TrafficAccount";
 import TrafficAccountsTable from "./pages/dashboard/TrafficAccountsTable";
 import ShiftManager from "./pages/dashboard/ShiftManager";
-import LocationRegistrationForm from "./pages/dashboard/LocationRegistrationForm";
+// import LocationRegistrationForm from "./pages/dashboard/location/LocationRegistrationFormonForm";
 import CheckpointTable from "./pages/dashboard/CheckpointTable";
 import PendingActivationCard from "./pages/dashboard/PendingActivationCard";
+import ShiftList from "./pages/dashboard/shift/ShiftList";
+import ShiftCreate from "./pages/dashboard/shift/ShiftCreate";
+import LocationRegistrationForm from "./pages/dashboard/location/LocationRegistrationForm";
 // import PendingTrafficList fro./pages/dashboard/PendingActivationCardist";
 // import LocationRegistrationForm from "./pages/dashboard/GeoTest";
 // import GeoTest from "./pages/dashboard/LocationRegistrationForm";
@@ -53,13 +56,13 @@ export const routes = [
         icon: <Cog6ToothIcon {...icon} />,
         name: "Shift Management",
         path: "/shift-management",
-        element: <ShiftManager />,
+        element: <ShiftList />,
       },
       {
         icon: <MapPinIcon {...icon} />,
         name: "Location Management",
         path: "/location-management",
-        element: <CheckpointTable />,
+        element: <LocationRegistrationForm/>,
       },
       {
         icon: <CalendarIcon {...icon} />,
@@ -117,6 +120,11 @@ export const routes = [
         // name: "Location  Registration  (Hidden)",
         path: "location-registration",
         element: <LocationRegistrationForm />,
+      },
+      {
+        // name: "",
+        path: "shifts-create",
+        element: <ShiftCreate />,
       },
     ],
   },

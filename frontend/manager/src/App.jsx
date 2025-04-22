@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import api from "./api";
 import Loading from "./pages/components/Loading";
+import ShiftCreate from "./pages/dashboard/shift/ShiftCreate";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("manager_token");
@@ -70,6 +71,9 @@ function App() {
       <Route path="/create-account" element={<TrafficAccount />} />
       <Route path="/welcome" element={<ManagerWelcome />} />
       <Route path="/manager/waiting" element={<ManagerWaiting />} />
+      {/* <Route path="/shifts/create" element={<ShiftCreate />} /> */}
+
+
        {/* Default Redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
       
