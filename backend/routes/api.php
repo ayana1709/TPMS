@@ -29,17 +29,26 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [LoginRegisterController::class, 'login']);
 
 
-Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
+/*Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
     $request->user()->currentAccessToken()->delete();
 
-    return response()->jYes!  Finally, my hope came true! I wanted to see these main leads together for a long time.
-    ￼
-    Yes!  Finally, my hope came true! I wanted to see these main leads together for a long time.
-￼
-son([
+return response()->json([
+    'message' => 'Logged out successfully';
+], 200);
+}); */
+Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
+    // Delete the current access token
+    $request->user()->currentAccessToken()->delete();
+
+    // Return a proper JSON response
+    return response()->json([
         'message' => 'Logged out successfully'
     ], 200);
 });
+
+
+
+
 
 //Routes for storing the regions, zones and weredas data
 Route::get('/fetch-regions', [OSMController::class, 'fetchRegions']);

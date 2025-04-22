@@ -22,7 +22,7 @@ import { SelectGroup, SelectValue } from "@radix-ui/react-select";
 import { Copy } from "lucide-react";
 import api from "@/api";
 import { useStores } from "@/contexts/storeContext";
-import CreateManagerModal from "./CreateManagermodal";
+import CreateManagerModal from "./CreateManagerModal";
 import { toast } from "react-toastify";
 import { IoMdClose } from "react-icons/io";
 
