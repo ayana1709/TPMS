@@ -23,12 +23,22 @@ export default function Login() {
 
     try {
       const response = await api.post("/login", { username, password });
-      localStorage.setItem("adminToken", response.data.token);
-      setIsAuthenticated(true);
-      navigate("/dashboard");
+      console.log("Login response:", response.data); // Debug log
+
+      if (response.data.token) {
+        localStorage.setItem("adminToken", response.data.token);
+        console.log(
+          "Token stored in localStorage:",
+          localStorage.getItem("adminToken")
+        ); // Debug log
+        setIsAuthenticated(true);
+        navigate("/dashboard");
+      } else {
+        throw new Error("No token received from server");
+      }
     } catch (err) {
+      console.error("Login error:", err); // Debug log
       setError(err.response?.data?.message || "Login failed");
-      // setIsAuthenticated(false);
     } finally {
       setLoading(false); // Stop loading after request completes
     }
