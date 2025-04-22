@@ -32,7 +32,11 @@ Route::post('/login', [LoginRegisterController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
     $request->user()->currentAccessToken()->delete();
 
-    return response()->json([
+    return response()->jYes!  Finally, my hope came true! I wanted to see these main leads together for a long time.
+    ￼
+    Yes!  Finally, my hope came true! I wanted to see these main leads together for a long time.
+￼
+son([
         'message' => 'Logged out successfully'
     ], 200);
 });
