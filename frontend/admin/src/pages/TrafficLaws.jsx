@@ -223,7 +223,9 @@ const TrafficLaws = () => {
                       <TableHead>Code</TableHead>
                       <TableHead>Violation Name</TableHead>
                       <TableHead>Category</TableHead>
-                      <TableHead>Details</TableHead>
+                      <TableHead>Offence Type</TableHead>
+                      <TableHead>Demerit Points</TableHead>
+                      <TableHead>Fine (Birr)</TableHead>
                       <TableHead>Action</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -232,26 +234,17 @@ const TrafficLaws = () => {
                     {currentLaws.map((law) => (
                       <TableRow key={law.id}>
                         <TableCell>{law.code}</TableCell>
-                        <TableCell>{law.violation_name}</TableCell>
+                        <TableCell>
+                          {law.violation_name.split(" ").slice(0, 4).join(" ")}
+                          {law.violation_name.split(" ").length > 4
+                            ? "..."
+                            : ""}
+                        </TableCell>
                         <TableCell>{law.category}</TableCell>
-                        <TableCell>
-                          <div>
-                            <span className="font-medium">Type:</span>{" "}
-                            {law.offence_type}
-                            <br />
-                            <span className="font-medium">Points:</span>{" "}
-                            {law.demerit_points}
-                            <br />
-                            <span className="font-medium">Fine:</span>{" "}
-                            {law.fine_birr} Birr
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <span className="font-medium">Action:</span>{" "}
-                            {law.action_description}
-                          </div>
-                        </TableCell>
+                        <TableCell>{law.offence_type}</TableCell>
+                        <TableCell>{law.demerit_points}</TableCell>
+                        <TableCell>{law.fine_birr}</TableCell>
+                        <TableCell>{law.action_description}</TableCell>
                         <TableCell>
                           <Button
                             variant="ghost"

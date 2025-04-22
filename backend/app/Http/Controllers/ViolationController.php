@@ -22,6 +22,6 @@ class ViolationController extends Controller
 
     public function index()
     {
-        return response()->json(Violation::all());
+        return response()->json(Violations::all());
     }
 }
