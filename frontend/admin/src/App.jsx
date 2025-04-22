@@ -53,7 +53,7 @@ function App() {
           <Route path="/activate-manager" element={<AdminActivateManagers />} />
           <Route path="/pending-manager" element={<PendingActivationList />} />
           <Route path="/traffic-laws" element={<TrafficLaws />} />
-
+          <Route path="/add-laws" element={<TrafficLaws />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Route>
       </Routes>

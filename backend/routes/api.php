@@ -11,6 +11,7 @@ use App\Http\Controllers\TrafficUserController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\CheckpointController;
 use App\Http\Controllers\TrafficLawController;
+use App\Http\Controllers\ViolationController;
 
 // use Illuminate\Support\Facades\Route;
 /*
@@ -112,8 +113,11 @@ Route::delete('/shifts/{shift}', [ShiftController::class, 'destroy']);
 Route::apiResource('checkpoints', CheckpointController::class);
 Route::post('/checkpoints', [CheckpointController::class, 'store']);
 
+
+
+// Traffic laws routes
 Route::middleware('auth:sanctum')->group(function () {
-    // Traffic Laws Routes
-    Route::apiResource('traffic-laws', TrafficLawController::class);
+    Route::post('/import-violations', [ViolationController::class, 'import']);
+    Route::get('/violations', [ViolationController::class, 'index']);
 });
 
