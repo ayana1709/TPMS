@@ -121,7 +121,14 @@ const TrafficLaws = () => {
 
   const confirmDelete = async () => {
     try {
-      await api.delete(`/traffic-laws/${lawToDelete}`);
+      const token = localStorage.getItem("adminToken"); // or sessionStorage.getItem('token')
+
+      await api.delete(`/violations/${lawToDelete}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       toast.success("Law deleted successfully");
       fetchLaws();
     } catch (error) {
