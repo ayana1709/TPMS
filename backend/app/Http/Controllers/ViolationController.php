@@ -2,13 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\IssueViolationRequest;
+use App\Http\Requests\PayViolationRequest;
 use App\Imports\ViolationsImport;
+use App\Models\Violation;
+use App\Models\TrafficLaw;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Models\Violations;
 
 class ViolationController extends Controller
 {
+    /**
+     * Import violations from an Excel file.
+     */
     public function import(Request $request)
     {
         $request->validate([
@@ -20,9 +27,67 @@ class ViolationController extends Controller
         return response()->json(['message' => 'Violations imported successfully']);
     }
 
+    /**
+     * List all violations.
+     */
     public function index()
     {
-        return response()->json(Violations::all());
+        return response()->json(Violation::all());
+    }
+
+    /**
+     * Issue a new violation.
+     */
+    public function issue(IssueViolationRequest $request)
+    {
+        $law = TrafficLaw::findOrFail($request->law_number);
+        $penalty = $law->penalty_amount;
+
+        $violation = Violation::create([
+            'driver_id' => $request->driver_id,
+            'car_id' => $request->car_id,
+            'law_number' => $request->law_number,
+            'officer_id' => Auth::id(),
+            'penalty_amount' => $penalty,
+            'signed' => false,
+            'signed_at' => null,
+            'paid' => false,
+            'paid_at' => null,
+        ]);
+
+        return response()->json([
+            'message' => 'Violation issued successfully',
+            'violation' => $violation,
+        ], 201);
+    }
+
+    /**
+     * Pay a violation.
+     */
+    public function pay(PayViolationRequest $request)
+    {
+        $violation = Violation::findOrFail($request->violation_id);
+
+        $violation->update([
+            'paid' => true,
+            'paid_at' => now(),
+        ]);
+
+        return response()->json(['message' => 'Violation paid']);
+    }
+
+    /**
+     * List violations for the authenticated driver (optional).
+     */
+    public function driverViolations()
+    {
+        $driverId = Auth::id();
+
+        $violations = Violation::with('law', 'car', 'officer')
+            ->where('driver_id', $driverId)
+            ->get();
+
+        return response()->json($violations);
     }
 
     public function update(Request $request, $id)

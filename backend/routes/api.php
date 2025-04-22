@@ -147,20 +147,12 @@ Route::get('/checkpoints', [CheckpointController::class, 'index']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/import-violations', [ViolationController::class, 'import']);
     Route::get('/violations', [ViolationController::class, 'index']);
-    Route::put('/violations/{id}', [ViolationController::class, 'update']);
-    Route::delete('/violations/{id}', [ViolationController::class, 'destroy']);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    // Manager count routes
-    Route::get('/managers/count/total', [ManagerController::class, 'getTotalManagersCount']);
-    Route::get('/managers/count/active', [ManagerController::class, 'getActiveManagersCount']);
-    Route::get('/managers/count/inactive', [ManagerController::class, 'getInactiveManagersCount']);
-    Route::get('/managers/historical', [ManagerController::class, 'getHistoricalData']);
+//violation routes and  payement for penalty routes
+
+Route::middleware( 'auth:sanctum')->group(function () {
+    Route::post('/violations', [ViolationController::class, 'issue']);
+    Route::get('/violations', [ViolationController::class, 'index']);
+    Route::post('/violations/pay', [ViolationController::class, 'pay']);
 });
-
-// Get managers with their weredas
-Route::middleware('auth:sanctum')->get('/managers/weredas', [ManagerController::class, 'getManagersWithWeredas']);
-
-
-
