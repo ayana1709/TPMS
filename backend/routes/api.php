@@ -142,5 +142,9 @@ Route::post('/checkpoints', [CheckpointController::class, 'store']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/import-violations', [ViolationController::class, 'import']);
     Route::get('/violations', [ViolationController::class, 'index']);
+    Route::put('/violations/{id}', [ViolationController::class, 'update']);
+    Route::delete('/violations/{id}', [ViolationController::class, 'destroy']);
 });
+
+
 

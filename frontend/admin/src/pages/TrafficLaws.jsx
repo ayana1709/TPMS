@@ -136,7 +136,14 @@ const TrafficLaws = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await api.put(`/traffic-laws/${editingLaw.id}`, editingLaw);
+      const token = localStorage.getItem("adminToken"); // or sessionStorage.getItem('token')
+
+      await api.put(`/violations/${editingLaw.id}`, editingLaw, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       toast.success("Law updated successfully");
       setShowEditModal(false);
       fetchLaws();
