@@ -26,6 +26,8 @@ const ManagerLogin = () => {
         localStorage.setItem("manager_token", token);
         localStorage.setItem("manager_name", manager.name);
         localStorage.setItem("manager_username", manager.username);
+        localStorage.setItem("manager_username", manager.username);
+        localStorage.setItem("manager_id", manager.id);
 
         // Set default auth header for axios
         // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;

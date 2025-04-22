@@ -13,22 +13,22 @@ class Violation extends Model
         'signed', 'signed_at', 'paid', 'paid_at',
     ];
 
-    public function driver() { 
-        return $this->belongsTo(User::class, 'driver_id');
+    // public function driver() { 
+    //     return $this->belongsTo(User::class, 'driver_id');
                
-    }
-    public function officer() { 
+    // }
+    // public function officer() { 
 
-        return $this->belongsTo(User::class, 'officer_id');
-     }
-    public function car()     { 
-        return $this->belongsTo(Car::class); 
+    //     return $this->belongsTo(User::class, 'officer_id');
+    //  }
+    // public function car()     { 
+    //     return $this->belongsTo(Car::class); 
     
-    }
-    public function rule()    {
+    // }
+    // public function rule()    {
         
-         return $this->belongsTo(TrafficRule::class); 
-        }
+    //      return $this->belongsTo(TrafficRule::class); 
+    //     }
 }
 
 

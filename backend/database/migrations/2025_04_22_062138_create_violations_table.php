@@ -9,22 +9,22 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('violations', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('driver_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('car_id')->constrained()->onDelete('cascade');
-            $table->foreignId('rule_id')->constrained('traffic_laws')->onDelete('cascade');
-            $table->foreignId('officer_id')->constrained('users')->onDelete('cascade');
-            $table->decimal('penalty_amount', 10, 2);
-            $table->boolean('signed')->default(false);
-            $table->timestamp('signed_at')->nullable();
-            $table->boolean('paid')->default(false);
-            $table->timestamp('paid_at')->nullable();
-            $table->timestamps();
-        });
-    }
+    // public function up(): void
+    // {
+    //     Schema::create('violations', function (Blueprint $table) {
+    //         $table->id();
+    //         // $table->foreignId('driver_id')->constrained('users')->onDelete('cascade');
+    //         // $table->foreignId('car_id')->constrained()->onDelete('cascade');
+    //         // $table->foreignId('rule_id')->constrained('traffic_laws')->onDelete('cascade');
+    //         // $table->foreignId('officer_id')->constrained('users')->onDelete('cascade');
+    //         $table->decimal('penalty_amount', 10, 2);
+    //         $table->boolean('signed')->default(false);
+    //         $table->timestamp('signed_at')->nullable();
+    //         $table->boolean('paid')->default(false);
+    //         $table->timestamp('paid_at')->nullable();
+    //         $table->timestamps();
+    //     });
+    // }
 
     /**
      * Reverse the migrations.

@@ -25,20 +25,24 @@ const TrafficAccountsTable = () => {
   useEffect(() => {
     fetchAccounts();
   }, []);
+  const managerId = localStorage.getItem("manager_id");
+
 
   const fetchAccounts = () => {
     setLoading(true);
-    api
-      .get("/traffic-users")
-      .then((res) => {
-        setAccounts(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch traffic users:", err);
-        setLoading(false);
-      });
-  };
+api.get(`/traffic-users?manager_id=${managerId}`, {
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
+})
+.then(res => {
+  setAccounts(res.data);
+  setLoading(false);
+})
+.catch(err => {
+  console.error("Failed to fetch traffic users:", err);
+  setLoading(false);
+});}
 
   const openModal = (type, user) => {
     setSelectedUser(user);

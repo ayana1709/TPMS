@@ -7,19 +7,36 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Events\TrafficActivationRequested;
 use App\Events\TrafficActivationStatusUpdated;
+use Illuminate\Support\Facades\Auth;
+
 
 
 class TrafficUserController extends Controller
 {
 
-    // index
-    public function index()
-    {
-        return TrafficUser::all();
-    }
 
+    public function index(Request $request)
+    {
+        $manager = auth()->user(); // If manager is logged in
+        $users = TrafficUser::where('manager_id', $manager->id)->get();
+    
+        return response()->json($users);
+    }
+    
+    
+
+    
+
+
+
+    // public function index()
+    // {
+    //     return Auth::user()->trafficUsers; // returns only this manager's officers
+    // }
+    
 
 // store 
+
 
 public function store(Request $request)
 {
@@ -33,16 +50,18 @@ public function store(Request $request)
         'password' => 'required|string|min:6',
     ]);
 
-    // Hash the password
     $validated['password'] = Hash::make($validated['password']);
-
-    // Set the default status to "Inactive"
     $validated['status'] = 'Inactive';
+    // $validated['manager_id'] = Auth::id(); // 👈 link to logged-in manager
+    $validated['manager_id'] = auth('manager')->id();
+
+
 
     $user = TrafficUser::create($validated);
 
     return response()->json($user, 201);
 }
+
 
 
 
