@@ -513,44 +513,95 @@ const TrafficLaws = () => {
       <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
         <DialogContent className="sm:max-w-[600px] fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
           <DialogHeader>
-            <DialogTitle>View Traffic Law</DialogTitle>
+            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              Traffic Law Details
+            </DialogTitle>
           </DialogHeader>
           {selectedLaw && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Code</Label>
-                  <p className="text-sm">{selectedLaw.code}</p>
+            <div className="space-y-6 py-4">
+              <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+                <div className="space-y-1">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    {selectedLaw.violation_name}
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Code: {selectedLaw.code}
+                  </p>
                 </div>
-                <div>
-                  <Label>Violation Name</Label>
-                  <p className="text-sm">{selectedLaw.violation_name}</p>
+                <div className="rounded-full bg-blue-100 dark:bg-blue-900 px-3 py-1">
+                  <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                    {selectedLaw.category}
+                  </span>
                 </div>
-                <div>
-                  <Label>Category</Label>
-                  <p className="text-sm">{selectedLaw.category}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Offence Type
+                    </Label>
+                    <div className="rounded-lg bg-gray-50 dark:bg-gray-800 p-3">
+                      <p className="text-sm text-gray-900 dark:text-gray-100">
+                        {selectedLaw.offence_type}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Demerit Points
+                    </Label>
+                    <div className="rounded-lg bg-gray-50 dark:bg-gray-800 p-3">
+                      <p className="text-sm text-gray-900 dark:text-gray-100">
+                        {selectedLaw.demerit_points}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <Label>Offence Type</Label>
-                  <p className="text-sm">{selectedLaw.offence_type}</p>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Fine Amount
+                    </Label>
+                    <div className="rounded-lg bg-gray-50 dark:bg-gray-800 p-3">
+                      <p className="text-sm text-gray-900 dark:text-gray-100">
+                        {selectedLaw.fine_birr} Birr
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Status
+                    </Label>
+                    <div className="rounded-lg bg-green-50 dark:bg-green-900 p-3">
+                      <p className="text-sm text-green-800 dark:text-green-200">
+                        Active
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <Label>Demerit Points</Label>
-                  <p className="text-sm">{selectedLaw.demerit_points}</p>
-                </div>
-                <div>
-                  <Label>Fine (Birr)</Label>
-                  <p className="text-sm">{selectedLaw.fine_birr}</p>
-                </div>
-                <div className="col-span-2">
-                  <Label>Action Description</Label>
-                  <p className="text-sm">{selectedLaw.action_description}</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Action Description
+                </Label>
+                <div className="rounded-lg bg-gray-50 dark:bg-gray-800 p-3">
+                  <p className="text-sm text-gray-900 dark:text-gray-100">
+                    {selectedLaw.action_description}
+                  </p>
                 </div>
               </div>
             </div>
           )}
           <DialogFooter>
-            <Button onClick={() => setShowViewModal(false)}>Close</Button>
+            <Button
+              onClick={() => setShowViewModal(false)}
+              className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
+            >
+              Close
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
