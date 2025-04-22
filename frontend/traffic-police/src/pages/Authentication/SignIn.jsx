@@ -13,18 +13,20 @@ const SignIn = () => {
     setError('');
 
     try {
+      // Login request
       const response = await api.post('/traffic-user/login', {
         username,
         password,
       });
 
       if (response.data.status === 'success') {
-        const { token, user } = response.data;
+        const { user, token } = response.data;
 
-        // Save token and user info
+        // Store token & user info in localStorage
         localStorage.setItem('traffic_token', token);
         localStorage.setItem('traffic_name', user.full_name);
         localStorage.setItem('traffic_username', user.username);
+        localStorage.setItem('traffic_id', user.id);
 
         // Redirect based on status
         if (user.status === 'Active') {

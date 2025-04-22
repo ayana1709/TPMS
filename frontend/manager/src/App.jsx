@@ -73,6 +73,7 @@ function App() {
        {/* Default Redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
       
+      
     </Routes>
   );
 }

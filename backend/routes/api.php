@@ -30,13 +30,26 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [LoginRegisterController::class, 'login']);
 
 
-Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
+/*Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
     $request->user()->currentAccessToken()->delete();
 
+return response()->json([
+    'message' => 'Logged out successfully';
+], 200);
+}); */
+Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
+    // Delete the current access token
+    $request->user()->currentAccessToken()->delete();
+
+    // Return a proper JSON response
     return response()->json([
         'message' => 'Logged out successfully'
     ], 200);
 });
+
+
+
+
 
 //Routes for storing the regions, zones and weredas data
 Route::get('/fetch-regions', [OSMController::class, 'fetchRegions']);
@@ -74,9 +87,6 @@ Route::post('/admin/activate/{username}', [ManagerController::class, 'activate']
 Route::delete('/admin/delete/{username}', [ManagerController::class, 'deny']); // admin deny activation request
 
 
-
-
-
 // ---- traffic user controller 
 
 // Route for registering traffic user from managers side 
@@ -87,15 +97,28 @@ Route::put('/traffic-users/{id}', [TrafficUserController::class, 'update']);    
 Route::delete('/traffic-users/{id}', [TrafficUserController::class, 'destroy']);
 
 // login from traffic user side 
-Route::post('/traffic-user/login', [TrafficUserController::class, 'login']);
-
-Route::post('/traffic/request-activation/{username}', [TrafficUserController::class, 'requestActivation']); // request activation  from manager
-// Route::middleware('auth:sanctum')->post('/traffic/update-credentials', [TrafficUserController::class, 'updateCredentials']); //  update its password  after login 
+Route::middleware('guest')->post('/traffic-user/login', [TrafficUserController::class, 'login']);
+Route::middleware('auth:sanctum')->post('/traffic-user/logout', [TrafficUserController::class, 'logout']);
+Route::middleware('auth:sanctum')->get('/traffic-user/me', function (Request $request) {
+    return response()->json($request->user());
+});
+// after Login
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/traffic/update-credentials', [TrafficUserController::class, 'updateCredentials']);
-});
+    Route::post('/traffic/request-activation/{username}', [TrafficUserController::class, 'requestActivation']); 
 
-// Route::post('/traffic/update-credentials', [TrafficUserController::class, 'updateCredentials']);
+});  
+
+
+
+
+
+Route::get('/manager/pending-activations', [TrafficUserController::class, 'getPendingActivations']);  //manger get all pending activations from traffic
+Route::post('/manager/activate/{username}', [TrafficUserController::class, 'activate']);// admin activate  manager 
+Route::delete('/manager/delete/{username}', [TrafficUserController::class, 'deny']); // admin deny activation request
+Route::get('/check-activation-status/{username}', [TrafficUserController::class, 'checkActivationStatus']);
+
+
 
 
 // -------shift----

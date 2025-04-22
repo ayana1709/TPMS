@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\TrafficUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
+use App\Events\TrafficActivationRequested;
+use App\Events\TrafficActivationStatusUpdated;
 
 
 class TrafficUserController extends Controller
@@ -93,25 +94,34 @@ public function store(Request $request)
     }
 
 
-    //loogin 
-   
+    //login 
     public function login(Request $request)
     {
         $request->validate([
             'username' => 'required',
             'password' => 'required',
         ]);
+    
         $user = TrafficUser::where('username', $request->username)->first();
+    
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid credentials',
+            ], 401);
         }
     
-        // Optionally deny login if the user is inactive
+        // Optional: Uncomment this if you want to restrict login to active users only
         // if ($user->status !== 'Active') {
-        //     return response()->json(['message' => 'Account is not active'], 403);
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => 'Your account is not active.',
+        //     ], 403);
         // }
     
+        // Generate Sanctum token
         $token = $user->createToken('traffic-user-token')->plainTextToken;
+    
         return response()->json([
             'status' => 'success',
             'token' => $token,
@@ -119,11 +129,34 @@ public function store(Request $request)
                 'id' => $user->id,
                 'full_name' => $user->full_name,
                 'username' => $user->username,
-                'status' => $user->status,
                 'email' => $user->email,
+                'status' => $user->status,
             ],
         ]);
     }
+    
+// logout
+
+public function logout(Request $request)
+{
+    $user = $request->user();
+
+    if ($user && $user->currentAccessToken()) {
+        $user->currentAccessToken()->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Logged out successfully',
+        ]);
+    }
+
+    return response()->json([
+        'status' => 'error',
+        'message' => 'No authenticated user',
+    ], 401);
+}
+
+
 
 
 
@@ -151,7 +184,6 @@ public function updateCredentials(Request $request)
 
 //  request activation 
 
-// TrafficUserController.php
 
 public function requestActivation($username)
 {
@@ -165,8 +197,8 @@ public function requestActivation($username)
         $user->status = 'Pending';
         $user->save();
 
-        // Optional: dispatch event or notification
-        // event(new TrafficUserRequestedActivation($user));
+        // Trigger real-time event
+        broadcast(new TrafficActivationRequested($user))->toOthers();
 
         return response()->json(['message' => 'Activation request sent.']);
     }
@@ -175,8 +207,65 @@ public function requestActivation($username)
 }
 
 
+// list of pending status for manager
+public function getPendingActivations()
+{
+    $pendingtrafficUsers = TrafficUser::where('status', 'Pending')->get();
 
-//  cheack its  status 
+    
+    return response()->json($pendingtrafficUsers);
+}
+
+
+public function activate($username)
+{
+    try {
+        $manager = TrafficUser::where('username', $username)->firstOrFail();
+        $manager->status = 'Active';
+        $manager->save();
+
+        event(new TrafficActivationStatusUpdated($manager->username, 'Active'));
+        
+
+
+        return response()->json(['message' => 'Traffic activated and email is sent successfully!']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
+    // Function to deny a manager's activation request (delete manager)
+    public function deny($username)
+    {
+        try {
+            // Find the manager by username
+            $manager = TrafficUser::where('username', $username)->firstOrFail();
+    
+            // Update the manager's status to 'inactive'
+            $manager->status = 'Inactive';
+            $manager->save();
+            event(new TrafficActivationStatusUpdated($manager->username, 'Inactive'));
+
+            // Optionally, trigger events or send email here if needed
+            return response()->json(['message' => 'Traffic status set to inactive successfully.']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to deny manager.',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+
+public function checkActivationStatus($username)
+{
+    $user = TrafficUser::where('username', $username)->first();
+
+    return response()->json([
+        'status' => $user?->status ?? 'Inactive'
+    ]);
+}
 
     
 

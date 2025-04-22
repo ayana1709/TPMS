@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import Header from '../components/Header/index';
 import Sidebar from '../components/Sidebar/index';
-import { useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom'; // ✅ updated here
 
-const DefaultLayout = ({ children }) => {
-
+const DefaultLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
   const location = useLocation();
 
   const excludedRoutes = ['/login', '/signup'];
@@ -15,21 +13,25 @@ const DefaultLayout = ({ children }) => {
   return (
     <div className="dark:bg-boxdark-2 dark:text-bodydark">
       <div className="flex h-screen overflow-hidden">
-        {/*  ----- Sidebar ----- */}
+        {/* Sidebar */}
         {!isExcludedRoute && (
           <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         )}
 
         <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-          {/* ----- Header ----- */}
+          {/* Header */}
           {!isExcludedRoute && (
             <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           )}
 
-          {/* ----- Main Body ----- */}
+          {/* Main Content */}
           <main>
-            <div className={`mx-auto max-w-screen-2xl ${isExcludedRoute ? '' : 'p-4 md:p-6 2xl:p-10'}`}>
-              {children}
+            <div
+              className={`mx-auto max-w-screen-2xl ${
+                isExcludedRoute ? '' : 'p-4 md:p-6 2xl:p-10'
+              }`}
+            >
+              <Outlet /> {/* ✅ This enables nested route rendering */}
             </div>
           </main>
         </div>
