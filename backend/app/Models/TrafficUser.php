@@ -12,7 +12,7 @@ class TrafficUser extends Model
     use HasFactory,   HasApiTokens, Notifiable;
     protected $fillable = [
         'full_name', 'badge_number', 'rank', 'phone', 'email',
-         'username', 'password'
+         'username', 'password','manager_id',
     ];
     
     protected $hidden = ['password'];
@@ -22,4 +22,15 @@ class TrafficUser extends Model
         return $this->belongsToMany(Shift::class, 'shift_user');
     }
     
+
+
+
+
+        // TrafficUser.php
+
+public function manager()
+{
+    return $this->belongsTo(Manager::class);
+}
+
 }

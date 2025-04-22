@@ -90,8 +90,13 @@ Route::delete('/admin/delete/{username}', [ManagerController::class, 'deny']); /
 // ---- traffic user controller 
 
 // Route for registering traffic user from managers side 
-Route::get('/traffic-users', [TrafficUserController::class, 'index']);          // List all users
-Route::post('/traffic-users', [TrafficUserController::class, 'store']);         // Create new user
+// Route::get('/traffic-users', [TrafficUserController::class, 'index']);          // List all users
+// Route::post('/traffic-users', [TrafficUserController::class, 'store']);         // Create new user
+Route::middleware('auth:sanctum')->post('/traffic-users', [TrafficUserController::class, 'store']);
+Route::middleware(['auth:sanctum'])->get('/traffic-users', [TrafficUserController::class, 'index']);
+
+
+
 Route::get('/traffic-users/{id}', [TrafficUserController::class, 'show']);      // Show single user
 Route::put('/traffic-users/{id}', [TrafficUserController::class, 'update']);    // Update user
 Route::delete('/traffic-users/{id}', [TrafficUserController::class, 'destroy']);
@@ -106,10 +111,7 @@ Route::middleware('auth:sanctum')->get('/traffic-user/me', function (Request $re
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/traffic/update-credentials', [TrafficUserController::class, 'updateCredentials']);
     Route::post('/traffic/request-activation/{username}', [TrafficUserController::class, 'requestActivation']); 
-
 });  
-
-
 
 
 

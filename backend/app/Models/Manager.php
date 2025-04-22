@@ -25,6 +25,7 @@ class Manager extends Authenticatable
         'password',
         'temp_password',
         'status',
+        
     ];
 
     protected $hidden = [
@@ -32,6 +33,16 @@ class Manager extends Authenticatable
         'temp_password',
         'remember_token',
     ];
+
+
+
+// Manager.php
+
+public function trafficUsers()
+{
+    return $this->hasMany(TrafficUser::class);
+}
+
 
 
     
