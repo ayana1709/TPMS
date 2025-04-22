@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('latitude', 10, 8);
             $table->decimal('longitude', 11, 8);
             $table->integer('radius');
+            $table->text('description')->nullable(); // ✅ Add this line
             $table->timestamps();
         });
     }
