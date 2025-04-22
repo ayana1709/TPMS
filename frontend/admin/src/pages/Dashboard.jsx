@@ -17,6 +17,7 @@ import DashboardCard10 from "../partials/dashboard/DashboardCard10";
 import DashboardCard11 from "../partials/dashboard/DashboardCard11";
 import DashboardCard12 from "../partials/dashboard/DashboardCard12";
 import DashboardCard13 from "../partials/dashboard/DashboardCard13";
+import ManagerMap from "../partials/dashboard/ManagerMap";
 import Banner from "../partials/Banner";
 
 function Dashboard() {
@@ -64,6 +65,8 @@ function Dashboard() {
             <DashboardCard02 />
             {/* Line chart (Acme Professional) */}
             <DashboardCard03 />
+            {/* Manager Locations Map */}
+            <ManagerMap />
             {/* Bar chart (Direct vs Indirect) */}
             <DashboardCard04 />
             {/* Line chart (Real Time Value) */}
