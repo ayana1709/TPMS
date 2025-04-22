@@ -50,11 +50,13 @@ public function store(Request $request)
             'woreda' => $validated['woreda'],
             'username' => $validated['username'],
             'password' => Hash::make($plainPassword),
-            'temp_password' => $plainPassword, // ✅ store plain password for email
-            'status' => 'Inactive', // default status
+            'temp_password' => $plainPassword,
+            'status' => 'Inactive',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
-        
+        \Log::info("New manager created with timestamp: " . $manager->created_at);
 
         return response()->json([
             'message' => 'Manager created and email sent successfully!',
@@ -62,6 +64,7 @@ public function store(Request $request)
         ], 201);
 
     } catch (\Exception $e) {
+        \Log::error("Error creating manager: " . $e->getMessage());
         return response()->json([
             'error' => 'Something went wrong.',
             'details' => $e->getMessage(),
@@ -349,17 +352,120 @@ public function activate($username)
 
 
     public function checkStatus($username)
-{
-    $manager = Manager::where('username', $username)->first();
+    {
+        $manager = Manager::where('username', $username)->first();
 
-    if (!$manager) {
-        return response()->json(['error' => 'Manager not found'], 404);
+        if (!$manager) {
+            return response()->json(['error' => 'Manager not found'], 404);
+        }
+
+        return response()->json(['status' => $manager->status]);
     }
 
-    return response()->json(['status' => $manager->status]);
-}
+    /**
+     * Get the total number of managers
+     */
+    public function getTotalManagersCount()
+    {
+        try {
+            $totalCount = Manager::count();
+            return response()->json([
+                'status' => 'success',
+                'total_managers' => $totalCount
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to get total managers count',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
+    /**
+     * Get the number of active managers
+     */
+    public function getActiveManagersCount()
+    {
+        try {
+            $activeCount = Manager::where('status', 'Active')->count();
+            return response()->json([
+                'status' => 'success',
+                'active_managers' => $activeCount
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to get active managers count',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
+    /**
+     * Get the number of inactive managers
+     */
+    public function getInactiveManagersCount()
+    {
+        try {
+            $inactiveCount = Manager::where('status', 'Inactive')->count();
+            return response()->json([
+                'status' => 'success',
+                'inactive_managers' => $inactiveCount
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to get inactive managers count',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
-
+    /**
+     * Get historical manager data for the last 12 months
+     */
+    public function getHistoricalData()
+    {
+        try {
+            $data = [];
+            $currentDate = now();
+            
+            for ($i = 11; $i >= 0; $i--) {
+                $date = $currentDate->copy()->subMonths($i);
+                $startOfMonth = $date->copy()->startOfMonth();
+                $endOfMonth = $date->copy()->endOfMonth();
+                
+                // Debug: Log the date range
+                \Log::info("Checking month: " . $date->format('M Y'));
+                \Log::info("Date range: " . $startOfMonth . " to " . $endOfMonth);
+                
+                // Count managers created in this specific month
+                $count = Manager::whereBetween('created_at', [$startOfMonth, $endOfMonth])->count();
+                
+                // Debug: Log the count
+                \Log::info("Manager count for " . $date->format('M Y') . ": " . $count);
+                
+                $data[] = [
+                    'month' => $date->format('M'),
+                    'count' => $count
+                ];
+            }
+            
+            // Debug: Log the final data
+            \Log::info("Final historical data: " . json_encode($data));
+            
+            return response()->json([
+                'status' => 'success',
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            \Log::error("Error in getHistoricalData: " . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to get historical data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

@@ -148,5 +148,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/violations/{id}', [ViolationController::class, 'destroy']);
 });
 
+Route::middleware('auth:sanctum')->group(function () {
+    // Manager count routes
+    Route::get('/managers/count/total', [ManagerController::class, 'getTotalManagersCount']);
+    Route::get('/managers/count/active', [ManagerController::class, 'getActiveManagersCount']);
+    Route::get('/managers/count/inactive', [ManagerController::class, 'getInactiveManagersCount']);
+    Route::get('/managers/historical', [ManagerController::class, 'getHistoricalData']);
+});
+
 
 
