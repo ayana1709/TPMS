@@ -29,13 +29,26 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [LoginRegisterController::class, 'login']);
 
 
-Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
+/*Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
     $request->user()->currentAccessToken()->delete();
 
+return response()->json([
+    'message' => 'Logged out successfully';
+], 200);
+}); */
+Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
+    // Delete the current access token
+    $request->user()->currentAccessToken()->delete();
+
+    // Return a proper JSON response
     return response()->json([
         'message' => 'Logged out successfully'
     ], 200);
 });
+
+
+
+
 
 //Routes for storing the regions, zones and weredas data
 Route::get('/fetch-regions', [OSMController::class, 'fetchRegions']);
