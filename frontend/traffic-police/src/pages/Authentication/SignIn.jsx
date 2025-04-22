@@ -13,20 +13,20 @@ const SignIn = () => {
     setError('');
 
     try {
-      // First: get CSRF cookie
-      await api.get('/sanctum/csrf-cookie');
-
-      // Then: login
-      const response = await api.post('/api/traffic-user/login', {
+      // Login request
+      const response = await api.post('/traffic-user/login', {
         username,
         password,
       });
 
       if (response.data.status === 'success') {
-        const { user } = response.data;
+        const { user, token } = response.data;
 
+        // Store token & user info in localStorage
+        localStorage.setItem('traffic_token', token);
         localStorage.setItem('traffic_name', user.full_name);
         localStorage.setItem('traffic_username', user.username);
+        localStorage.setItem('traffic_id', user.id);
 
         // Redirect based on status
         if (user.status === 'Active') {

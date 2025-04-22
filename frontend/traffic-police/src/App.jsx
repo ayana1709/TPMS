@@ -1,25 +1,35 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createContext } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
-import Calendar from './pages/Calendar';
-import Chart from './pages/Chart';
+
 import Dashboard from './pages/Dashboard/Dashboard';
+import Calendar from './pages/Calendar';
+import Profile from './pages/Profile';
 import FormElements from './pages/Form/FormElements';
 import FormLayout from './pages/Form/FormLayout';
-import Profile from './pages/Profile';
-import Settings from './pages/Settings';
 import Tables from './pages/Tables';
+import Settings from './pages/Settings';
+import Chart from './pages/Chart';
 import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
-import DefaultLayout from './layout/DefaultLayout';
-import TrafficWelcome from './pages/Authentication/TrafficWelcome';
+
 import SignIn from './pages/Authentication/SignIn';
+import TrafficWelcome from './pages/Authentication/TrafficWelcome';
 import PendingActivation from './pages/Authentication/PendingActivation';
+import NotFound from './pages/NotFound'; // 🔥 Create this page!
+
+import DefaultLayout from './layout/DefaultLayout';
+import PrivateRoute from './components/PrivateRoute'; // 🔐 You'll need this HOC/wrapper
+import api from './api';
+
+// Auth context to use globally if needed
+export const AuthContext = createContext();
 
 function App() {
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(true);
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -27,143 +37,69 @@ function App() {
   }, [pathname]);
 
   useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem('token');
+
+        const res = await api.get('/traffic-user/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setUser(res.data); // assuming the API returns user object directly
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setLoadingUser(false);
+      }
+    };
+
+    fetchUser();
   }, []);
 
-  if (loading) return <Loader />;
+  if (loadingUser) return <Loader />;
 
   return (
-    <Routes>
-      {/* Auth Routes (no layout) */}
-      <Route
-        path="/"
-        element={
-          <>
-            <PageTitle title="TPMS | Traffic Police Dashboard" />
-            <SignIn />
-          </>
-        }
-      />
-      <Route
-        path="/traffic-welcome"
-        element={
-          <>
-            {/* <PageTitle title="TPMS | Traffic Police Dashboard" /> */}
-            <TrafficWelcome />
-          </>
-        }
-      />
-      <Route
-        path="/pending-activation"
-        element={
-          <>
-            {/* <PageTitle title="TPMS | Traffic Police Dashboard" /> */}
-            <PendingActivation />
-          </>
-        }
-      />
+    <AuthContext.Provider value={{ user, setUser }}>
+      <Routes>
+        {/* Public Routes */}
+        <Route
+          path="/"
+          element={
+            <>
+              <PageTitle title="TPMS | Login" />
+              <SignIn />
+            </>
+          }
+        />
+        <Route path="/traffic-welcome" element={<TrafficWelcome />} />
+        <Route path="/pending-activation" element={<PendingActivation />} />
 
-      {/* App Routes with DefaultLayout */}
-      <Route
-        path="*"
-        element={
-          <DefaultLayout>
-            <Routes>
-              <Route
-                path="/dashboard"
-                element={
-                  <>
-                    <PageTitle title="TPMS | Traffic Police Dashboard" />
-                    <Dashboard />
-                  </>
-                }
-              />
-              <Route
-                path="/calendar"
-                element={
-                  <>
-                    <PageTitle title="Calendar | TPMS" />
-                    <Calendar />
-                  </>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <>
-                    <PageTitle title="Profile | TPMS" />
-                    <Profile />
-                  </>
-                }
-              />
-              <Route
-                path="/forms/form-elements"
-                element={
-                  <>
-                    <PageTitle title="Form Elements | TPMS" />
-                    <FormElements />
-                  </>
-                }
-              />
-              <Route
-                path="/forms/form-layout"
-                element={
-                  <>
-                    <PageTitle title="Form Layout | TPMS" />
-                    <FormLayout />
-                  </>
-                }
-              />
-              <Route
-                path="/tables"
-                element={
-                  <>
-                    <PageTitle title="Tables | TPMS" />
-                    <Tables />
-                  </>
-                }
-              />
-              <Route
-                path="/settings"
-                element={
-                  <>
-                    <PageTitle title="Settings | TPMS" />
-                    <Settings />
-                  </>
-                }
-              />
-              <Route
-                path="/chart"
-                element={
-                  <>
-                    <PageTitle title="Chart | TPMS" />
-                    <Chart />
-                  </>
-                }
-              />
-              <Route
-                path="/ui/alerts"
-                element={
-                  <>
-                    <PageTitle title="Alerts | TPMS" />
-                    <Alerts />
-                  </>
-                }
-              />
-              <Route
-                path="/ui/buttons"
-                element={
-                  <>
-                    <PageTitle title="Buttons | TPMS" />
-                    <Buttons />
-                  </>
-                }
-              />
-            </Routes>
-          </DefaultLayout>
-        }
-      />
-    </Routes>
+        {/* Protected Routes */}
+        <Route
+          element={
+            <PrivateRoute>
+              <DefaultLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/forms/form-elements" element={<FormElements />} />
+          <Route path="/forms/form-layout" element={<FormLayout />} />
+          <Route path="/tables" element={<Tables />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/chart" element={<Chart />} />
+          <Route path="/ui/alerts" element={<Alerts />} />
+          <Route path="/ui/buttons" element={<Buttons />} />
+        </Route>
+
+        {/* 404 - Not Found */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AuthContext.Provider>
   );
 }
 
