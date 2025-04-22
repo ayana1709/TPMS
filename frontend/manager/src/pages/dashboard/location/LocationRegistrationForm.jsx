@@ -10,6 +10,7 @@ import {
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import api from '@/api';
+import { Navigate } from 'react-router-dom';
 
 // Fix Leaflet marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -108,6 +109,7 @@ const LocationRegistrationForm = () => {
       const response = await api.post('/checkpoints', payload);
       console.log('✅ Location registered:', response.data);
       alert('✅ Location registered successfully!');
+      Navigate('dashboard/location-management');
     } catch (error) {
       console.error('❌ Error submitting location:', error);
       alert('❌ Failed to register location.');

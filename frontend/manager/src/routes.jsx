@@ -123,6 +123,11 @@ export const routes = [
         path: "shifts-create",
         element: <ShiftCreate />,
       },
+      {
+        // name: "",
+        path: "cheackpoint-create",
+        element: <LocationRegistrationForm />,
+      },
     ],
   },
   {
