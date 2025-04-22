@@ -39,15 +39,17 @@ class CheckpointController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'radius' => 'required|integer|min:10',
+            'description' => 'nullable|string', // ✅ Add this
         ]);
-
+    
         $checkpoint = Checkpoint::create($validated);
-
+    
         return response()->json([
             'message' => 'Checkpoint registered successfully.',
             'data' => $checkpoint
         ], 201);
     }
+    
 
     // Update an existing checkpoint
     public function update(Request $request, $id)

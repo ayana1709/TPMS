@@ -34,6 +34,8 @@ const LocationRegistrationForm = () => {
   const [mapCenter, setMapCenter] = useState([9.42349, 42.15766]);
   const [radius, setRadius] = useState(100);
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+
 
   const LocationSelector = () => {
     useMapEvents({
@@ -98,7 +100,9 @@ const LocationRegistrationForm = () => {
       latitude: position.lat,
       longitude: position.lng,
       radius,
+      description, // ✅ Include it here
     };
+    
   
     try {
       const response = await api.post('/checkpoints', payload);
@@ -167,6 +171,17 @@ const LocationRegistrationForm = () => {
             required
           />
         </div>
+        <div>
+  <label className="block text-sm font-medium text-gray-700">Description</label>
+  <textarea
+    value={description}
+    onChange={(e) => setDescription(e.target.value)}
+    className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+    placeholder="e.g., Located near the roundabout, heavy traffic in peak hours"
+    rows={3}
+  ></textarea>
+</div>
+
 
         <button
           type="submit"
