@@ -44,13 +44,12 @@ public function trafficUsers()
 }
 
 
-
 public function shifts()
 {
     return $this->hasMany(Shift::class);
 }
 
-public function cheackpoints()
+public function checkpoints()
 {
     return $this->hasMany(Checkpoint::class);
 }

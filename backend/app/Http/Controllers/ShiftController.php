@@ -11,20 +11,16 @@ use Illuminate\Support\Facades\Auth;
 
 class ShiftController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+   
+    public function index(Request $request)
     {
-        // Returning all shifts as a JSON response.
-        return response()->json(Shift::all());
+        $manager = auth()->user(); // If manager is logged in
+        $users = Shift::where('manager_id', $manager->id)->get();
+    
+        return response()->json($users);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
 
-   // app/Http/Controllers/ShiftController.php
 
 
 public function store(Request $request)

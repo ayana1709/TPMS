@@ -9,13 +9,23 @@ use Illuminate\Support\Facades\Auth;
 class CheckpointController extends Controller
 {
     // List all checkpoints
-    public function index()
+    // public function index()
+    // {
+    //     $checkpoints = Checkpoint::all();
+    //     return response()->json([
+    //         'data' => $checkpoints
+    //     ]);
+    // }
+    public function index(Request $request)
     {
-        $checkpoints = Checkpoint::all();
-        return response()->json([
-            'data' => $checkpoints
-        ]);
+        $manager = auth()->user(); // If manager is logged in
+        $users = Checkpoint::where('manager_id', $manager->id)->get();
+    
+        return response()->json($users);
     }
+
+
+
 
 
 
@@ -32,6 +42,11 @@ class CheckpointController extends Controller
             'data' => $checkpoint
         ]);
     }
+
+
+
+
+    
 
     // Create a new checkpoint
 
