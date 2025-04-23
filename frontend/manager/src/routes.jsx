@@ -21,6 +21,8 @@ import ShiftList from "./pages/dashboard/shift/ShiftList";
 import ShiftCreate from "./pages/dashboard/shift/ShiftCreate";
 import LocationRegistrationForm from "./pages/dashboard/location/LocationRegistrationForm";
 import CheckpointsList from "./pages/dashboard/location/CheckpointsList";
+import AssignOfficer from "./pages/dashboard/Attendance/AssignShiftForm";
+import AssignShiftForm from "./pages/dashboard/Attendance/AssignShiftForm";
 
 
 const icon = {
@@ -65,7 +67,7 @@ export const routes = [
         icon: <CalendarIcon {...icon} />,
         name: "Attendance",
         path: "/attendance",
-        element: <Notifications />,
+        element: <AssignShiftForm />,
       },
       {
         icon: <BellAlertIcon {...icon} />,
@@ -122,6 +124,11 @@ export const routes = [
         // name: "",
         path: "shifts-create",
         element: <ShiftCreate />,
+      },
+      {
+        // name: "",
+        path: "cheackpoint-create",
+        element: <LocationRegistrationForm />,
       },
     ],
   },

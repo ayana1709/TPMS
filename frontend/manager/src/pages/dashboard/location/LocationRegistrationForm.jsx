@@ -10,6 +10,8 @@ import {
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import api from '@/api';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 // Fix Leaflet marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -35,7 +37,7 @@ const LocationRegistrationForm = () => {
   const [radius, setRadius] = useState(100);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-
+  const navigate = useNavigate();
 
   const LocationSelector = () => {
     useMapEvents({
@@ -47,30 +49,23 @@ const LocationRegistrationForm = () => {
   };
 
   const [accuracy, setAccuracy] = useState(null);
-  const [zoom, setZoom] = useState(15); // Start at zoom 15
-
+  const [zoom, setZoom] = useState(15);
 
   const fetchUserLocation = () => {
     if (!navigator.geolocation) {
       alert("❌ Your browser doesn't support geolocation.");
       return;
     }
-  
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude, accuracy } = pos.coords;
-  
-        setAccuracy(accuracy); // Store accuracy if needed
-  
-        // Adjust zoom based on accuracy (or hard set a zoom)
-        if (accuracy < 50) {
-          setZoom(15); // Very accurate, zoom in a bit
-        } else if (accuracy < 500) {
-          setZoom(13); // Moderate accuracy, zoom out slightly
-        } else {
-          setZoom(11); // Low accuracy, zoom out more
-        }
-  
+        setAccuracy(accuracy);
+
+        if (accuracy < 50) setZoom(15);
+        else if (accuracy < 500) setZoom(13);
+        else setZoom(11);
+
         setMapCenter([latitude, longitude]);
         setPosition({ lat: latitude, lng: longitude });
       },
@@ -85,48 +80,51 @@ const LocationRegistrationForm = () => {
       }
     );
   };
-  
-
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!position || !name || !radius) {
-      return alert('Please fill in all fields and select a location.');
+      return Swal.fire('Oops!', 'Please fill in all fields and select a location.', 'warning');
     }
-  
+
     const payload = {
       name,
       latitude: position.lat,
       longitude: position.lng,
       radius,
-      description, // ✅ Include it here
+      description,
     };
-    
-  
+
     try {
       const response = await api.post('/checkpoints', payload);
       console.log('✅ Location registered:', response.data);
-      alert('✅ Location registered successfully!');
+
+      await Swal.fire({
+        title: '✅ Success!',
+        text: 'Location registered successfully!',
+        icon: 'success',
+        confirmButtonText: 'Go to Locations',
+      });
+
+      navigate('/dashboard/location-management');
+
     } catch (error) {
       console.error('❌ Error submitting location:', error);
-      alert('❌ Failed to register location.');
+      Swal.fire('Error', 'Failed to register location.', 'error');
     }
   };
-  
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-xl rounded-2xl">
       <h2 className="text-2xl font-bold text-center mb-6">📍 Register Traffic Checkpoint</h2>
 
       <div className="flex justify-end mb-4">
-      <button
-  onClick={fetchUserLocation}
-  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
->
-  📍 Get My Location
-</button>
-
+        <button
+          onClick={fetchUserLocation}
+          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+        >
+          📍 Get My Location
+        </button>
       </div>
 
       <div className="h-96 mb-6 rounded-lg overflow-hidden border border-gray-300">
@@ -171,17 +169,17 @@ const LocationRegistrationForm = () => {
             required
           />
         </div>
-        <div>
-  <label className="block text-sm font-medium text-gray-700">Description</label>
-  <textarea
-    value={description}
-    onChange={(e) => setDescription(e.target.value)}
-    className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-    placeholder="e.g., Located near the roundabout, heavy traffic in peak hours"
-    rows={3}
-  ></textarea>
-</div>
 
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Description</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="e.g., Located near the roundabout, heavy traffic in peak hours"
+            rows={3}
+          ></textarea>
+        </div>
 
         <button
           type="submit"
