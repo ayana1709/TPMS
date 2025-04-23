@@ -14,7 +14,7 @@ class AdminSeeder extends Seeder
              // Ensure your User model has a 'name' field
             'username' => 'admin', 
             'email' => 'admin@example.com', // Ensure an email is provided if required
-            'password' => Hash::make('admin'), // Hash password securely
+            'password' => Hash::make('admin'), 
         ]);
     }
 }
