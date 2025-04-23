@@ -1,105 +1,64 @@
-import { useEffect, useState, createContext } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
-
-import Loader from './common/Loader';
-import PageTitle from './components/PageTitle';
-
-import Dashboard from './pages/Dashboard/Dashboard';
-import Calendar from './pages/Calendar';
-import Profile from './pages/Profile';
-import FormElements from './pages/Form/FormElements';
-import FormLayout from './pages/Form/FormLayout';
-import Tables from './pages/Tables';
-import Settings from './pages/Settings';
-import Chart from './pages/Chart';
-import Alerts from './pages/UiElements/Alerts';
-import Buttons from './pages/UiElements/Buttons';
-
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import Dashboard from './pages/Dashboard';
+import Fine from './pages/Fine';
+import PenaltyChecking from './pages/PenaltyChecking';
+import WorkAssignment from './pages/WorkAssignment';
+import Order from './pages/Order';
+import Complain from './pages/Complain';
+import ReportAccident from './pages/ReportAccident';
+import RegisterAccident from './pages/RegisterAccident';
 import SignIn from './pages/Authentication/SignIn';
-import TrafficWelcome from './pages/Authentication/TrafficWelcome';
-import PendingActivation from './pages/Authentication/PendingActivation';
-import NotFound from './pages/NotFound'; // 🔥 Create this page!
+import SignUp from './pages/Authentication/SignUp';
+import TrafficLaws from './pages/TrafficLaws';
+import Layout from './components/Layout';
 
-import DefaultLayout from './layout/DefaultLayout';
-import PrivateRoute from './components/PrivateRoute'; // 🔐 You'll need this HOC/wrapper
-import api from './api';
+const PrivateRoute = ({ children }) => {
+  const { user, loading } = useAuth();
 
-// Auth context to use globally if needed
-export const AuthContext = createContext();
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return user ? children : <Navigate to="/signin" />;
+};
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [loadingUser, setLoadingUser] = useState(true);
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = localStorage.getItem('token');
-
-        const res = await api.get('/traffic-user/me', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setUser(res.data); // assuming the API returns user object directly
-      } catch (error) {
-        setUser(null);
-      } finally {
-        setLoadingUser(false);
-      }
-    };
-
-    fetchUser();
-  }, []);
-
-  if (loadingUser) return <Loader />;
-
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthProvider>
+      <Toaster position="top-right" />
       <Routes>
         {/* Public Routes */}
-        <Route
-          path="/"
-          element={
-            <>
-              <PageTitle title="TPMS | Login" />
-              <SignIn />
-            </>
-          }
-        />
-        <Route path="/traffic-welcome" element={<TrafficWelcome />} />
-        <Route path="/pending-activation" element={<PendingActivation />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
 
         {/* Protected Routes */}
         <Route
+          path="/"
           element={
             <PrivateRoute>
-              <DefaultLayout />
+              <Layout />
             </PrivateRoute>
           }
         >
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/calendar" element={<Calendar />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/forms/form-elements" element={<FormElements />} />
-          <Route path="/forms/form-layout" element={<FormLayout />} />
-          <Route path="/tables" element={<Tables />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/chart" element={<Chart />} />
-          <Route path="/ui/alerts" element={<Alerts />} />
-          <Route path="/ui/buttons" element={<Buttons />} />
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="fine" element={<Fine />} />
+          <Route path="penalty-checking" element={<PenaltyChecking />} />
+          <Route path="work-assignment" element={<WorkAssignment />} />
+          <Route path="order" element={<Order />} />
+          <Route path="complain" element={<Complain />} />
+          <Route path="report-accident" element={<ReportAccident />} />
+          <Route path="register-accident" element={<RegisterAccident />} />
+          <Route path="traffic-laws" element={<TrafficLaws />} />
         </Route>
 
-        {/* 404 - Not Found */}
-        <Route path="*" element={<NotFound />} />
+        {/* Catch all route */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
-    </AuthContext.Provider>
+    </AuthProvider>
   );
 }
 

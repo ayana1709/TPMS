@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../api';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { Eye, EyeOff } from 'react-feather';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -7,6 +8,8 @@ import { Label } from '../../components/ui/label';
 import { Switch } from '../../components/ui/switch';
 
 const SignIn = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -43,32 +46,17 @@ const SignIn = () => {
     setError('');
 
     try {
-      const response = await api.post('/traffic-user/login', {
-        username,
-        password,
-      });
-
-      if (response.data.status === 'success') {
-        const { user, token } = response.data;
-        localStorage.setItem('traffic_token', token);
-        localStorage.setItem('traffic_name', user.full_name);
-        localStorage.setItem('traffic_username', user.username);
-        localStorage.setItem('traffic_id', user.id);
-
-        if (user.status === 'Active') {
-          window.location.href = '/dashboard';
-        } else {
-          window.location.href = '/traffic-welcome';
-        }
+      const user = await login(username, password);
+      if (user.status === 'Active') {
+        navigate('/dashboard');
       } else {
-        setError(response.data.message || 'Login failed');
+        navigate('/traffic-welcome');
       }
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || 'Login error');
+      setError(err.response?.data?.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
