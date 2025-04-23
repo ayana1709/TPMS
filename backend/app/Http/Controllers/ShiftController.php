@@ -22,24 +22,30 @@ class ShiftController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate incoming request data
         $request->validate([
             'name' => 'required|string|max:255',
             'start_time' => 'required|date_format:H:i:s',
             'end_time' => 'required|date_format:H:i:s|after:start_time',
             'start_date' => 'required|date_format:Y-m-d',
             'end_date' => 'required|date_format:Y-m-d|after_or_equal:start_date',
+            'manager_id' => 'required|exists:managers,id',
         ]);
-
-        // Create a new shift with the validated data
-        $shift = Shift::create($request->all());
-
-        // Return a success response
+    
+        $shift = Shift::create([
+            'name' => $request->name,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'manager_id' => $request->manager_id,
+        ]);
+    
         return response()->json([
             'message' => 'Shift created successfully',
             'shift' => $shift
         ], 201);
     }
+    
 
     /**
      * Display the specified resource.

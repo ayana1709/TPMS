@@ -10,4 +10,9 @@ class Checkpoint extends Model
     use HasFactory;
     protected $fillable = ['name', 'latitude', 'longitude', 'radius','description'];
 
+
+    public function manager()
+{
+    return $this->belongsTo(Manager::class);
+}
 }

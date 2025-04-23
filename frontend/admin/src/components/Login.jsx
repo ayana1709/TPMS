@@ -28,8 +28,8 @@ export default function Login() {
       if (response.data.token) {
         localStorage.setItem("adminToken", response.data.token);
         console.log(
-          "Token stored in localStorage:",
-          localStorage.getItem("adminToken")
+          "Token stored in localStorage:"
+          // localStorage.getItem("adminToken")
         ); // Debug log
         setIsAuthenticated(true);
         navigate("/dashboard");
