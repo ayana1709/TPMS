@@ -13,13 +13,12 @@ return new class extends Migration
     {
         Schema::create('shifts', function (Blueprint $table) {
             $table->id();
-
             $table->string('name');            
             $table->time('start_time');        
             $table->time('end_time');          
             $table->date('start_date');        
             $table->date('end_date');  
-
+            $table->foreignId('manager_id')->constrained('managers')->onDelete('cascade');
             $table->timestamps();
         });
     }

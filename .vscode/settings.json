@@ -1,3 +1,47 @@
 {
-  "bitoAI.codeCompletion.enableAutoCompletion": false
+  "bitoAI.codeCompletion.enableAutoCompletion": false,
+  "sqltools.connections": [
+    {
+      "mysqlOptions": {
+        "authProtocol": "default",
+        "enableSsl": "Disabled"
+      },
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 3306,
+      "driver": "MySQL",
+      "name": "XAMPP MySQL",
+      "username": "root",
+      "database": "tpms",
+      "password": ""
+    },
+    {
+      "mysqlOptions": {
+        "authProtocol": "default",
+        "enableSsl": "Disabled"
+      },
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 3306,
+      "driver": "MySQL",
+      "username": "root",
+      "name": "local",
+      "database": "*",
+      "password": ""
+    },
+    {
+      "mysqlOptions": {
+        "authProtocol": "default",
+        "enableSsl": "Disabled"
+      },
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 3306,
+      "driver": "MySQL",
+      "name": "local",
+      "database": "tpms",
+      "username": "root",
+      "password": ""
+    }
+  ]
 }
