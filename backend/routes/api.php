@@ -95,14 +95,14 @@ Route::delete('/admin/delete/{username}', [ManagerController::class, 'deny']); /
 Route::middleware('auth:sanctum')->post('/traffic-users', [TrafficUserController::class, 'store']);
 Route::middleware(['auth:sanctum'])->get('/traffic-users', [TrafficUserController::class, 'index']);
 
-
+// Traffic user login route
+Route::post('/traffic-user/login', [TrafficUserController::class, 'login']);
 
 Route::get('/traffic-users/{id}', [TrafficUserController::class, 'show']);      // Show single user
 Route::put('/traffic-users/{id}', [TrafficUserController::class, 'update']);    // Update user
 Route::delete('/traffic-users/{id}', [TrafficUserController::class, 'destroy']);
 
-// login from traffic user side 
-Route::middleware('guest')->post('/traffic-user/login', [TrafficUserController::class, 'login']);
+// Traffic user logout route
 Route::middleware('auth:sanctum')->post('/traffic-user/logout', [TrafficUserController::class, 'logout']);
 Route::middleware('auth:sanctum')->get('/traffic-user/me', function (Request $request) {
     return response()->json($request->user());
