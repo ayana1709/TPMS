@@ -1,24 +1,40 @@
-import React, { useState } from "react";
+import api from "@/api";
+import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css"; // Only for basic structure
-
-const fakeOfficers = [
-  { id: 1, name: "Officer Abebe" },
-  { id: 2, name: "Officer Biniam" },
-  { id: 3, name: "Officer Chaltu" },
-  { id: 4, name: "Officer Dereje" },
-];
-
-const shifts = ["Morning", "Afternoon", "Night"];
-const locations = ["Checkpoint A", "Checkpoint B", "Checkpoint C"];
+import "react-calendar/dist/Calendar.css";
+// import api from "@/utils/api"; // adjust based on your actual api import path
 
 export default function AssignShiftForm() {
+  const [officers, setOfficers] = useState([]);
+  const [shifts, setShifts] = useState([]);
+  const [locations, setLocations] = useState([]);
   const [selectedOfficers, setSelectedOfficers] = useState([]);
   const [selectedDates, setSelectedDates] = useState([]);
   const [rangeValue, setRangeValue] = useState([null, null]);
   const [selectedShift, setSelectedShift] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [mode, setMode] = useState("multiple");
+
+  useEffect(() => {
+    const managerId = localStorage.getItem("manager_id");
+
+    const fetchData = async () => {
+      try {
+        const [officersRes, shiftsRes, locationsRes] = await Promise.all([
+          api.get(`/traffic-users?manager_id=${managerId}`),
+          api.get(`/shifts?manager_id=${managerId}`),
+          api.get(`/checkpoints?manager_id=${managerId}`),
+        ]);
+        setOfficers(officersRes.data);
+        setShifts(shiftsRes.data);
+        setLocations(locationsRes.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleOfficerToggle = (id) => {
     setSelectedOfficers((prev) =>
@@ -87,7 +103,7 @@ export default function AssignShiftForm() {
       <div className="bg-white rounded-xl shadow-md p-5">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Select Officers</h2>
         <div className="space-y-3 max-h-64 overflow-y-auto mb-6">
-          {fakeOfficers.map((officer) => (
+          {officers.map((officer) => (
             <label key={officer.id} className="flex items-center gap-3 text-gray-700">
               <input
                 type="checkbox"
@@ -95,7 +111,7 @@ export default function AssignShiftForm() {
                 onChange={() => handleOfficerToggle(officer.id)}
                 className="form-checkbox text-blue-600 focus:ring-blue-500"
               />
-              {officer.name}
+              {officer.full_name}
             </label>
           ))}
         </div>
@@ -152,9 +168,7 @@ export default function AssignShiftForm() {
               {mode === "multiple" ? (
                 selectedDates.length > 0 ? (
                   selectedDates.map((d, i) => (
-                    <li key={i}>
-                      {d.toDateString()}
-                    </li>
+                    <li key={i}>{d.toDateString()}</li>
                   ))
                 ) : (
                   <li className="italic text-gray-600">No dates selected</li>
@@ -184,8 +198,8 @@ export default function AssignShiftForm() {
             >
               <option value="">-- Select Shift --</option>
               {shifts.map((shift) => (
-                <option key={shift} value={shift}>
-                  {shift}
+                <option key={shift.id} value={shift.name}>
+                  {shift.name}
                 </option>
               ))}
             </select>
@@ -200,8 +214,8 @@ export default function AssignShiftForm() {
             >
               <option value="">-- Select Location --</option>
               {locations.map((loc) => (
-                <option key={loc} value={loc}>
-                  {loc}
+                <option key={loc.id} value={loc.name}>
+                  {loc.name}
                 </option>
               ))}
             </select>
