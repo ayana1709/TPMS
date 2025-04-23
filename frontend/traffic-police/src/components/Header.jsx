@@ -1,11 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { Switch } from './ui/switch';
 
 const Header = ({ sidebarOpen, setSidebarOpen }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      return savedTheme === 'dark';
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode]);
 
   const handleLogout = () => {
     logout();
@@ -48,6 +66,23 @@ const Header = ({ sidebarOpen, setSidebarOpen }) => {
         </div>
 
         <div className="flex items-center gap-3 2xsm:gap-7">
+          {/* Theme Toggle */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3">
+              <Switch
+                id="theme-toggle"
+                checked={isDarkMode}
+                onCheckedChange={setIsDarkMode}
+              />
+              <label
+                htmlFor="theme-toggle"
+                className="hidden text-sm font-medium text-gray-700 dark:text-gray-300 sm:inline-block"
+              >
+                {isDarkMode ? 'Dark' : 'Light'}
+              </label>
+            </div>
+          </div>
+
           {/* User Profile */}
           <div className="relative">
             <button

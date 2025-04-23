@@ -90,7 +90,7 @@ function DashboardCard01() {
               ),
             },
           ]);
-        },
+        },            
         borderColor: getCssVariable("--color-violet-500"),
         borderWidth: 2,
         pointRadius: 0,
