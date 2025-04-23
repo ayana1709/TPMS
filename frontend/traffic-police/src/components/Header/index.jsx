@@ -1,12 +1,31 @@
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Switch } from '../ui/switch';
 import DropdownMessage from './DropdownMessage';
 import DropdownNotification from './DropdownNotification';
 import DropdownUser from './DropdownUser';
 import LogoIcon from '../../images/logo/logo-icon.svg';
-import DarkModeSwitcher from './DarkModeSwitcher';
 import LogoutButton from '../LogoutButton';
 
 const Header = (props) => {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      return savedTheme === 'dark';
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode]);
+
   return (
     <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
       <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
@@ -63,10 +82,6 @@ const Header = (props) => {
 
         <div className="flex items-center gap-3 2xsm:gap-7">
           <ul className="flex items-center gap-2 2xsm:gap-4">
-            {/* <!-- Dark Mode Toggler --> */}
-            <DarkModeSwitcher />
-            {/* <!-- Dark Mode Toggler --> */}
-
             {/* <!-- Notification Menu Area --> */}
             <DropdownNotification />
             {/* <!-- Notification Menu Area --> */}
@@ -76,6 +91,26 @@ const Header = (props) => {
             <LogoutButton />
             {/* <!-- Chat Notification Area --> */}
           </ul>
+
+          {/* <!-- Theme Toggle --> */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center">
+              <Switch
+                id="theme-toggle"
+                checked={isDarkMode}
+                onCheckedChange={setIsDarkMode}
+                className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-200"
+              />
+              <label
+                htmlFor="theme-toggle"
+                className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
+              >
+                {isDarkMode ? 'Dark' : 'Light'}
+              </label>
+            </div>
+          </div>
+
+          {/* <!-- Theme Toggle --> */}
 
           {/* <!-- User Area --> */}
           <DropdownUser />

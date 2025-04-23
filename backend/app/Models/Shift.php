@@ -17,19 +17,15 @@ class Shift extends Model
         'end_time',
         'start_date',
         'end_date',
+        'manager_id',
     ];
 
-    public function location() {
-        return $this->belongsTo(Location::class);
-    }
+public function manager()
+{
+    return $this->belongsTo(Manager::class);
+}
 
-    public function manager() {
-        return $this->belongsTo(Manager::class, 'created_by');
-    }
-
-    public function officers() {
-        return $this->belongsToMany(TrafficUser::class, 'shift_user');
-    }
+   
 }
 
 

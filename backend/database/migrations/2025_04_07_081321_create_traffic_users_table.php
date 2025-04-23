@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('password');
             $table->string('status')->default('Inactive');
-        $table->foreignId('manager_id')->constrained('managers')->onDelete('cascade');
+            $table->foreignId('manager_id')->constrained('managers')->onDelete('cascade');
 
 
 

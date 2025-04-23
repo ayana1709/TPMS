@@ -40,6 +40,8 @@ class CheckpointController extends Controller
             'longitude' => 'required|numeric',
             'radius' => 'required|integer|min:10',
             'description' => 'nullable|string', // ✅ Add this
+             'manager_id' => 'required|exists:managers,id',
+
         ]);
     
         $checkpoint = Checkpoint::create($validated);
