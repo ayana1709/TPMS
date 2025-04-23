@@ -18,7 +18,9 @@ return new class extends Migration
             $table->decimal('longitude', 11, 8);
             $table->integer('radius');
             $table->text('description')->nullable(); // ✅ Add this line
+            // $table->foreignId('manager_id')->constrained('managers')->onDelete('cascade');
             $table->foreignId('manager_id')->constrained('managers')->onDelete('cascade');
+
             $table->timestamps();
         });
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Checkpoint;
+use Illuminate\Support\Facades\Auth;
 
 class CheckpointController extends Controller
 {
@@ -11,11 +12,12 @@ class CheckpointController extends Controller
     public function index()
     {
         $checkpoints = Checkpoint::all();
-
         return response()->json([
             'data' => $checkpoints
         ]);
     }
+
+
 
     // Show a single checkpoint
     public function show($id)
@@ -32,6 +34,7 @@ class CheckpointController extends Controller
     }
 
     // Create a new checkpoint
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -39,19 +42,23 @@ class CheckpointController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'radius' => 'required|integer|min:10',
-            'description' => 'nullable|string', // ✅ Add this
-             'manager_id' => 'required|exists:managers,id',
-
+            'description' => 'nullable|string',
         ]);
-    
+    $validated['manager_id'] = auth('manager')->id();
         $checkpoint = Checkpoint::create($validated);
-    
         return response()->json([
             'message' => 'Checkpoint registered successfully.',
             'data' => $checkpoint
         ], 201);
     }
     
+    
+
+
+
+
+
+
 
     // Update an existing checkpoint
     public function update(Request $request, $id)

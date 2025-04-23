@@ -43,7 +43,7 @@ public function trafficUsers()
     return $this->hasMany(TrafficUser::class);
 }
 
-// app/Models/Manager.php
+
 
 public function shifts()
 {
