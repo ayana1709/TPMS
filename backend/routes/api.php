@@ -10,6 +10,7 @@ use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\TrafficUserController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\CheckpointController;
+use App\Http\Controllers\ShiftAssignmentController;
 use App\Http\Controllers\TrafficLawController;
 use App\Http\Controllers\ViolationController;
 
@@ -147,6 +148,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/import-violations', [ViolationController::class, 'import']);
     Route::get('/violations', [ViolationController::class, 'index']);
 });
+
+// Assigning shifts andd cheackpoints to traffic users 
+Route::post('/assign-shift', [ShiftAssignmentController::class, 'store']);
+
+
+
+
+
+
+
 
 //violation routes and  payement for penalty routes
 
