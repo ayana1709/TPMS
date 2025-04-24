@@ -155,3 +155,10 @@ Route::middleware( 'auth:sanctum')->group(function () {
     Route::get('/violations', [ViolationController::class, 'index']);
     Route::post('/violations/pay', [ViolationController::class, 'pay']);
 });
+
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/fines', [FineController::class, 'store']);
+    Route::get('/fines/driver/{license}', [FineController::class, 'getByDriver']);
+    Route::post('/fines/pay', [FineController::class, 'markAsPaid']);
+});

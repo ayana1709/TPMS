@@ -6,14 +6,7 @@ use Illuminate\Http\Request;
 
 class FineController extends Controller
 {
-    public function index()
-    {
-       
-        $fines = Fine::with(['driver', 'officer', 'car'])->get();
-
-      
-        return response()->json($fines);
-    }
+   
 
     public function show($id)
     {
@@ -71,12 +64,28 @@ class FineController extends Controller
         {
             $driver = Driver::where('license_number', $license)->firstOrFail();
             $fines = Fine::where('driver_id', $driver->id)->get();
+
             return response()->json([
                 'driver' => $driver->name,
                 'license_number' => $driver->license_number,
                 'fines' => $fines
             ]);
         } 
+
+        public function markAsPaid(Request $request)
+    {
+        $request->validate([
+            'fine_id' => 'required|exists:fines,id',
+            'amount_paid' => 'required|numeric',
+            'payment_type' => 'required|string'
+        ]);
+
+        $fine = Fine::findOrFail($request->fine_id);
+        $fine->is_paid = true;
+        $fine->save();
+
+        return response()->json(['message' => 'Fine marked as paid.']);
+    }
          
     }
 
