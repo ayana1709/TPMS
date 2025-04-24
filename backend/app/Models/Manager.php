@@ -1,10 +1,5 @@
 <?php
-
-
-
-
 namespace App\Models;
-
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
@@ -33,26 +28,21 @@ class Manager extends Authenticatable
         'temp_password',
         'remember_token',
     ];
-
-
-
-// Manager.php
-
 public function trafficUsers()
 {
     return $this->hasMany(TrafficUser::class);
 }
-
-// app/Models/Manager.php
-
 public function shifts()
 {
     return $this->hasMany(Shift::class);
 }
-
-public function cheackpoints()
+public function checkpoints()
 {
     return $this->hasMany(Checkpoint::class);
+}
+public function shiftassignments()
+{
+    return $this->hasMany(ShiftAssignment::class);
 }
 
 

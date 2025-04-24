@@ -10,6 +10,7 @@ use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\TrafficUserController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\CheckpointController;
+use App\Http\Controllers\ShiftAssignmentController;
 use App\Http\Controllers\TrafficLawController;
 use App\Http\Controllers\ViolationController;
 
@@ -124,10 +125,8 @@ Route::get('/check-activation-status/{username}', [TrafficUserController::class,
 
 
 // -------shift----
-
-// Route::apiResource('shifts', ShiftController::class);
-
-Route::get('/shifts', [ShiftController::class, 'index']);
+Route::middleware(['auth:sanctum'])->get('/shifts', [ShiftController::class, 'index']);
+// Route::get('/shifts', [ShiftController::class, 'index']);
 Route::post('/shifts', [ShiftController::class, 'store']);
 Route::get('/shifts/{shift}', [ShiftController::class, 'show']);
 Route::put('/shifts/{shift}', [ShiftController::class, 'update']);
@@ -137,7 +136,8 @@ Route::delete('/shifts/{shift}', [ShiftController::class, 'destroy']);
 
 // Route::apiResource('checkpoints', CheckpointController::class);
 Route::post('/checkpoints', [CheckpointController::class, 'store']);
-Route::get('/checkpoints', [CheckpointController::class, 'index']);
+Route::middleware(['auth:sanctum'])->get('/checkpoints', [CheckpointController::class, 'index']);
+
 
 
 
@@ -149,10 +149,27 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/violations', [ViolationController::class, 'index']);
 });
 
+// Assigning shifts andd cheackpoints to traffic users 
+Route::post('/assign-shift', [ShiftAssignmentController::class, 'store']);
+
+
+
+
+
+
+
+
 //violation routes and  payement for penalty routes
 
 Route::middleware( 'auth:sanctum')->group(function () {
     Route::post('/violations', [ViolationController::class, 'issue']);
     Route::get('/violations', [ViolationController::class, 'index']);
     Route::post('/violations/pay', [ViolationController::class, 'pay']);
+});
+
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/fines', [FineController::class, 'store']);
+    Route::get('/fines/driver/{license}', [FineController::class, 'getByDriver']);
+    Route::post('/fines/pay', [FineController::class, 'markAsPaid']);
 });

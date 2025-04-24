@@ -106,7 +106,7 @@ const LocationRegistrationForm = () => {
         confirmButtonText: 'Go to Locations',
       });
 
-      navigate('/dashboard/location-management');
+      navigate('/dashboard/location-management');``
 
     } catch (error) {
       console.error('❌ Error submitting location:', error);

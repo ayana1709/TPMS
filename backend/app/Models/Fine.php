@@ -19,10 +19,16 @@ class Fine extends Model
     }
 
     public function officer() {
-        return $this->belongsTo(User::class, 'traffic_officer_id');
+        return $this->belongsTo(TrafficUser::class, 'traffic_officer_id');
     }
 
     public function car() {
         return $this->belongsTo(Car::class);
     }
+
+    public function violations()
+    {
+        return $this->belongsToMany(Violation::class, 'fine_violation');
+    }
+    
 }

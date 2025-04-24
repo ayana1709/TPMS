@@ -55,8 +55,6 @@ public function store(Request $request)
     // $validated['manager_id'] = Auth::id(); // 👈 link to logged-in manager
     $validated['manager_id'] = auth('manager')->id();
 
-
-
     $user = TrafficUser::create($validated);
 
     return response()->json($user, 201);

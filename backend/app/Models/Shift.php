@@ -1,16 +1,12 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\TrafficOfficer;
-use App\Models\Manager;
-use App\Models\Location;
-
 class Shift extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'name',
         'start_time',
@@ -20,13 +16,18 @@ class Shift extends Model
         'manager_id',
     ];
 
-public function manager()
+    // ✅ A shift belongs to a manager
+    public function manager()
+    {
+        return $this->belongsTo(Manager::class);
+    }
+    public function assignments()
 {
-    return $this->belongsTo(Manager::class);
+    return $this->hasMany(ShiftAssignment::class);
 }
 
-   
 }
+
 
 
 
