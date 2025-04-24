@@ -17,11 +17,13 @@ L.Icon.Default.mergeOptions({
 const CheckpointsList = () => {
   const [checkpoints, setCheckpoints] = useState([]);
   console.log(checkpoints);
+  const managerId = localStorage.getItem("manager_id");
+
 
   useEffect(() => {
     const fetchCheckpoints = async () => {
       try {
-        const response = await api.get('/checkpoints');
+        const response = await api.get(`/checkpoints?manager_id=${managerId}`);
         const data = Array.isArray(response.data) ? response.data : response.data.data;
 
         const enriched = data.map((checkpoint) => ({

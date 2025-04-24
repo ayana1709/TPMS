@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('radius');
             $table->text('description')->nullable(); // ✅ Add this line
             $table->foreignId('manager_id')->constrained('managers')->onDelete('cascade');
+
             $table->timestamps();
         });
     }

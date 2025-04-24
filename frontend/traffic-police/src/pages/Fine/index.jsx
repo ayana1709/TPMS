@@ -12,17 +12,43 @@ import {
   SelectValue,
 } from '../../components/ui/select';
 import { toast } from 'react-hot-toast';
+import { Textarea } from '../../components/ui/textarea';
 
 const Fine = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    driver_id: '',
-    car_id: '',
-    rule_id: '',
-    penalty_amount: '',
-    signed: false,
-    paid: false,
+    // Offender Information
+    fullName: '',
+    address: '',
+    contactNumber: '',
+    driversLicenseNumber: '',
+    vehicleRegistrationNumber: '',
+    vehicleType: '',
+
+    // Offense Details
+    dateOfOffense: '',
+    timeOfOffense: '',
+    location: '',
+    violationType: '',
+    lawViolated: '',
+    incidentDescription: '',
+
+    // Fine Details
+    totalFineAmount: 0,
+    violation1Description: '',
+    violation1Amount: 0,
+    violation2Description: '',
+    violation2Amount: 0,
+    additionalFees: 0,
+    dueDate: '',
+    paymentInstructions: '',
+
+    // Officer Details
+    officerName: user?.full_name || '',
+    badgeNumber: '',
+    policeStation: '',
+    officerSignature: '',
   });
 
   const handleInputChange = (e) => {
@@ -33,28 +59,34 @@ const Fine = () => {
     }));
   };
 
+  const handleSelectChange = (name, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const calculateTotalFine = () => {
+    const violation1 = parseFloat(formData.violation1Amount) || 0;
+    const violation2 = parseFloat(formData.violation2Amount) || 0;
+    const additional = parseFloat(formData.additionalFees) || 0;
+    return violation1 + violation2 + additional;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      const totalAmount = calculateTotalFine();
       const response = await api.post('/violations', {
         ...formData,
-        officer_id: user.id,
-        signed: false,
-        paid: false,
+        totalFineAmount: totalAmount,
       });
 
       if (response.data.status === 'success') {
         toast.success('Fine recorded successfully');
-        setFormData({
-          driver_id: '',
-          car_id: '',
-          rule_id: '',
-          penalty_amount: '',
-          signed: false,
-          paid: false,
-        });
+        // Reset form or redirect
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to record fine');
@@ -67,78 +99,338 @@ const Fine = () => {
     <div className="p-4 md:p-6 2xl:p-10">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-title-md2 font-semibold text-black dark:text-white">
-          Fine Management
+          Traffic Fine Form
         </h2>
       </div>
 
-      <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-          <h3 className="font-medium text-black dark:text-white">
-            Record New Fine
-          </h3>
-        </div>
+      <div className="rounded-[10px] border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <form onSubmit={handleSubmit} className="p-6.5">
-          <div className="mb-4.5 grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="w-full">
-              <Label htmlFor="driver_id">Driver ID</Label>
-              <Input
-                type="text"
-                id="driver_id"
-                name="driver_id"
-                value={formData.driver_id}
-                onChange={handleInputChange}
-                placeholder="Enter driver ID"
-                required
-              />
+          {/* Offender Information */}
+          <div className="mb-6">
+            <h3 className="mb-4 text-xl font-semibold text-black dark:text-white">
+              Offender Information
+            </h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input
+                  id="fullName"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleInputChange}
+                  required
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="address">Address</Label>
+                <Input
+                  id="address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  required
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="contactNumber">Contact Number</Label>
+                <Input
+                  id="contactNumber"
+                  name="contactNumber"
+                  value={formData.contactNumber}
+                  onChange={handleInputChange}
+                  required
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="driversLicenseNumber">
+                  Driver's License Number
+                </Label>
+                <Input
+                  id="driversLicenseNumber"
+                  name="driversLicenseNumber"
+                  value={formData.driversLicenseNumber}
+                  onChange={handleInputChange}
+                  required
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="vehicleRegistrationNumber">
+                  Vehicle Registration Number
+                </Label>
+                <Input
+                  id="vehicleRegistrationNumber"
+                  name="vehicleRegistrationNumber"
+                  value={formData.vehicleRegistrationNumber}
+                  onChange={handleInputChange}
+                  required
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="vehicleType">Vehicle Type</Label>
+                <Select
+                  value={formData.vehicleType}
+                  onValueChange={(value) =>
+                    handleSelectChange('vehicleType', value)
+                  }
+                >
+                  <SelectTrigger className="rounded-[5px]">
+                    <SelectValue placeholder="Select vehicle type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="car">Car</SelectItem>
+                    <SelectItem value="bike">Bike</SelectItem>
+                    <SelectItem value="truck">Truck</SelectItem>
+                    <SelectItem value="bus">Bus</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
+          </div>
 
-            <div className="w-full">
-              <Label htmlFor="car_id">Car ID</Label>
-              <Input
-                type="text"
-                id="car_id"
-                name="car_id"
-                value={formData.car_id}
-                onChange={handleInputChange}
-                placeholder="Enter car ID"
-                required
-              />
+          {/* Offense Details */}
+          <div className="mb-6">
+            <h3 className="mb-4 text-xl font-semibold text-black dark:text-white">
+              Offense Details
+            </h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <Label htmlFor="dateOfOffense">Date of Offense</Label>
+                <Input
+                  type="date"
+                  id="dateOfOffense"
+                  name="dateOfOffense"
+                  value={formData.dateOfOffense}
+                  onChange={handleInputChange}
+                  required
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="timeOfOffense">Time of Offense</Label>
+                <Input
+                  type="time"
+                  id="timeOfOffense"
+                  name="timeOfOffense"
+                  value={formData.timeOfOffense}
+                  onChange={handleInputChange}
+                  required
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleInputChange}
+                  placeholder="Street name or GPS coordinates"
+                  required
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="violationType">Violation Type</Label>
+                <Select
+                  value={formData.violationType}
+                  onValueChange={(value) =>
+                    handleSelectChange('violationType', value)
+                  }
+                >
+                  <SelectTrigger className="block rounded-[5px]">
+                    <SelectValue placeholder="Select violation type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="speeding">Speeding</SelectItem>
+                    <SelectItem value="signal_jump">Signal Jump</SelectItem>
+                    <SelectItem value="no_helmet">No Helmet</SelectItem>
+                    <SelectItem value="drunk_driving">Drunk Driving</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="lawViolated">Law Violated</Label>
+                <Input
+                  id="lawViolated"
+                  name="lawViolated"
+                  value={formData.lawViolated}
+                  onChange={handleInputChange}
+                  placeholder="Legal section number or code"
+                  required
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <Label htmlFor="incidentDescription">
+                  Incident Description
+                </Label>
+                <Textarea
+                  id="incidentDescription"
+                  name="incidentDescription"
+                  value={formData.incidentDescription}
+                  onChange={handleInputChange}
+                  placeholder="Provide a brief description of the incident"
+                  className="h-32 rounded-[5px]"
+                />
+              </div>
             </div>
+          </div>
 
-            <div className="w-full">
-              <Label htmlFor="rule_id">Violation Type</Label>
-              <Select
-                value={formData.rule_id}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, rule_id: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select violation type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">Speeding</SelectItem>
-                  <SelectItem value="2">Running Red Light</SelectItem>
-                  <SelectItem value="3">Illegal Parking</SelectItem>
-                  <SelectItem value="4">No Seat Belt</SelectItem>
-                  <SelectItem value="5">Drunk Driving</SelectItem>
-                </SelectContent>
-              </Select>
+          {/* Fine Details */}
+          <div className="mb-6">
+            <h3 className="mb-4 text-xl font-semibold text-black dark:text-white">
+              Fine Details
+            </h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <Label htmlFor="violation1Description">
+                  Violation 1 Description
+                </Label>
+                <Input
+                  id="violation1Description"
+                  name="violation1Description"
+                  value={formData.violation1Description}
+                  onChange={handleInputChange}
+                  required
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="violation1Amount">Violation 1 Amount</Label>
+                <Input
+                  type="number"
+                  id="violation1Amount"
+                  name="violation1Amount"
+                  value={formData.violation1Amount}
+                  onChange={handleInputChange}
+                  min="0"
+                  required
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="violation2Description">
+                  Violation 2 Description (if applicable)
+                </Label>
+                <Input
+                  id="violation2Description"
+                  name="violation2Description"
+                  value={formData.violation2Description}
+                  onChange={handleInputChange}
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="violation2Amount">Violation 2 Amount</Label>
+                <Input
+                  type="number"
+                  id="violation2Amount"
+                  name="violation2Amount"
+                  value={formData.violation2Amount}
+                  onChange={handleInputChange}
+                  min="0"
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="additionalFees">Additional Fees</Label>
+                <Input
+                  type="number"
+                  id="additionalFees"
+                  name="additionalFees"
+                  value={formData.additionalFees}
+                  onChange={handleInputChange}
+                  min="0"
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="dueDate">Due Date</Label>
+                <Input
+                  type="date"
+                  id="dueDate"
+                  name="dueDate"
+                  value={formData.dueDate}
+                  onChange={handleInputChange}
+                  required
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <Label htmlFor="paymentInstructions">
+                  Payment Instructions
+                </Label>
+                <Textarea
+                  id="paymentInstructions"
+                  name="paymentInstructions"
+                  value={formData.paymentInstructions}
+                  onChange={handleInputChange}
+                  placeholder="Enter payment instructions"
+                  className="h-24 rounded-[5px]"
+                />
+              </div>
             </div>
+          </div>
 
-            <div className="w-full">
-              <Label htmlFor="penalty_amount">Penalty Amount (Birr)</Label>
-              <Input
-                type="number"
-                id="penalty_amount"
-                name="penalty_amount"
-                value={formData.penalty_amount}
-                onChange={handleInputChange}
-                placeholder="Enter penalty amount"
-                required
-                min="0"
-                step="0.01"
-              />
+          {/* Officer Details */}
+          <div className="mb-6">
+            <h3 className="mb-4 text-xl font-semibold text-black dark:text-white">
+              Officer Details
+            </h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <Label htmlFor="officerName">Officer Name</Label>
+                <Input
+                  id="officerName"
+                  name="officerName"
+                  value={formData.officerName}
+                  onChange={handleInputChange}
+                  required
+                  disabled
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="badgeNumber">Badge Number</Label>
+                <Input
+                  id="badgeNumber"
+                  name="badgeNumber"
+                  value={formData.badgeNumber}
+                  onChange={handleInputChange}
+                  required
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="policeStation">Police Station</Label>
+                <Input
+                  id="policeStation"
+                  name="policeStation"
+                  value={formData.policeStation}
+                  onChange={handleInputChange}
+                  required
+                  className="block rounded-[5px]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="officerSignature">Officer Signature</Label>
+                <Input
+                  id="officerSignature"
+                  name="officerSignature"
+                  value={formData.officerSignature}
+                  onChange={handleInputChange}
+                  placeholder="Digital signature or ID"
+                  required
+                  className="block rounded-[5px]"
+                />
+              </div>
             </div>
           </div>
 
@@ -148,16 +440,35 @@ const Fine = () => {
               variant="outline"
               onClick={() =>
                 setFormData({
-                  driver_id: '',
-                  car_id: '',
-                  rule_id: '',
-                  penalty_amount: '',
-                  signed: false,
-                  paid: false,
+                  // Reset all fields to initial state
+                  fullName: '',
+                  address: '',
+                  contactNumber: '',
+                  driversLicenseNumber: '',
+                  vehicleRegistrationNumber: '',
+                  vehicleType: '',
+                  dateOfOffense: '',
+                  timeOfOffense: '',
+                  location: '',
+                  violationType: '',
+                  lawViolated: '',
+                  incidentDescription: '',
+                  totalFineAmount: 0,
+                  violation1Description: '',
+                  violation1Amount: 0,
+                  violation2Description: '',
+                  violation2Amount: 0,
+                  additionalFees: 0,
+                  dueDate: '',
+                  paymentInstructions: '',
+                  officerName: user?.full_name || '',
+                  badgeNumber: '',
+                  policeStation: '',
+                  officerSignature: '',
                 })
               }
             >
-              Clear
+              Clear Form
             </Button>
             <Button type="submit" disabled={loading}>
               {loading ? 'Recording...' : 'Record Fine'}

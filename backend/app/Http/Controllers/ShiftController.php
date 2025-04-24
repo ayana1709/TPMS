@@ -5,46 +5,46 @@ namespace App\Http\Controllers;
 use App\Models\Shift;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+
+
 
 class ShiftController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+   
+    public function index(Request $request)
     {
-        // Returning all shifts as a JSON response.
-        return response()->json(Shift::all());
+        $manager = auth()->user(); // If manager is logged in
+        $users = Shift::where('manager_id', $manager->id)->get();
+    
+        return response()->json($users);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'start_time' => 'required|date_format:H:i:s',
-            'end_time' => 'required|date_format:H:i:s|after:start_time',
-            'start_date' => 'required|date_format:Y-m-d',
-            'end_date' => 'required|date_format:Y-m-d|after_or_equal:start_date',
-            'manager_id' => 'required|exists:managers,id',
-        ]);
-    
-        $shift = Shift::create([
-            'name' => $request->name,
-            'start_time' => $request->start_time,
-            'end_time' => $request->end_time,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'manager_id' => $request->manager_id,
-        ]);
-    
-        return response()->json([
-            'message' => 'Shift created successfully',
-            'shift' => $shift
-        ], 201);
-    }
+
+
+
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'start_time' => 'required|date_format:H:i:s',
+        'end_time' => 'required|date_format:H:i:s|after:start_time',
+        'start_date' => 'required|date_format:Y-m-d',
+        'end_date' => 'required|date_format:Y-m-d|after_or_equal:start_date',
+    ]);
+
+    // ✅ Automatically set manager_id from the logged-in manager
+    $validated['manager_id'] = auth('manager')->id();
+
+
+    $shift = Shift::create($validated);
+
+    return response()->json([
+        'message' => 'Shift created successfully',
+        'shift' => $shift
+    ], 201);
+}
+
     
 
     /**

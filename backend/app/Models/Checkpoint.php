@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Checkpoint extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'latitude', 'longitude', 'radius','description'];
+        
+        protected $fillable = ['name', 'latitude', 'longitude', 'radius','description', 'manager_id'];
 
 
     public function manager()

@@ -12,13 +12,21 @@ const mockUsers = [
 const ShiftList = () => {
   const [shifts, setShifts] = useState([]);
   const [expandedShiftId, setExpandedShiftId] = useState(null);
-  const [userView, setUserView] = useState("avatar"); // avatar | list
+  const [userView, setUserView] = useState("avatar"); 
+  const managerId = localStorage.getItem("manager_id");
 
   const navigate = useNavigate();
 
+
+
+  useEffect(() => {
+
+    fetchShifts();
+  }, []);
+
   const fetchShifts = async () => {
     try {
-      const res = await api.get("/shifts");
+      const res = await api.get(`/shifts?manager_id=${managerId}`);
       setShifts(res.data);
     } catch (err) {
       console.error("Failed to fetch shifts:", err);
@@ -43,9 +51,7 @@ const ShiftList = () => {
     setUserView((prev) => (prev === "avatar" ? "list" : "avatar"));
   };
 
-  useEffect(() => {
-    fetchShifts();
-  }, []);
+ 
 
   return (
     <div className="max-w-5xl mx-auto p-6">
