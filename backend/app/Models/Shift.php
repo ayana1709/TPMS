@@ -1,13 +1,8 @@
 <?php
 
 namespace App\Models;
-// app/Models/Shift.php
-
-
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 class Shift extends Model
 {
     use HasFactory;
@@ -26,6 +21,11 @@ class Shift extends Model
     {
         return $this->belongsTo(Manager::class);
     }
+    public function assignments()
+{
+    return $this->hasMany(ShiftAssignment::class);
+}
+
 }
 
 

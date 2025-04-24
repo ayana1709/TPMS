@@ -18,19 +18,23 @@ class TrafficUser extends Model
     protected $hidden = ['password'];
 
 
-    public function assignedShifts() {
-        return $this->belongsToMany(Shift::class, 'shift_user');
-    }
+    // public function assignedShifts() {
+    //     return $this->belongsToMany(Shift::class, 'shift_user');
+    // }
     
 
-
-
-
-        // TrafficUser.php
 
 public function manager()
 {
     return $this->belongsTo(Manager::class);
 }
+
+public function shiftAssignments()
+{
+    return $this->hasMany(ShiftAssignment::class);
+}
+
+
+
 
 }

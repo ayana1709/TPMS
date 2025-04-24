@@ -9,11 +9,22 @@ class Checkpoint extends Model
 {
     use HasFactory;
         
-        protected $fillable = ['name', 'latitude', 'longitude', 'radius','description', 'manager_id'];
+        protected $fillable = [
+            'name', 
+            'latitude',
+             'longitude',
+              'radius',
+              'description', 
+              'manager_id'];
 
 
     public function manager()
 {
     return $this->belongsTo(Manager::class);
 }
+public function assignments()
+{
+    return $this->hasMany(ShiftAssignment::class);
+}
+
 }
