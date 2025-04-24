@@ -16,9 +16,10 @@ class ShiftAssignment extends Model
         'traffic_user_id',
         'shift_id',
         'checkpoint_id',
-        'assigned_date',
         'manager_id',
+        'assigned_date',
     ];
+    
 
     public function trafficUser()
     {

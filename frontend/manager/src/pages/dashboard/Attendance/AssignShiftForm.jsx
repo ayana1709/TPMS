@@ -42,28 +42,51 @@ export default function AssignShiftForm() {
     );
   };
 
-  const handleAssign = () => {
+  const handleAssign = async () => {
+    if (
+      !selectedShift ||
+      !selectedLocation ||
+      selectedOfficers.length === 0 ||
+      (mode === "range" && (!rangeValue[0] || !rangeValue[1])) ||
+      (mode === "multiple" && selectedDates.length === 0)
+    ) {
+      alert("Please select officers, shift, location, and date(s)");
+      return;
+    }
+  
     const formattedDates =
-      mode === "range" && rangeValue[0] && rangeValue[1]
-        ? [
-            rangeValue[0].toISOString().split("T")[0],
-            rangeValue[1].toISOString().split("T")[0],
-          ]
+      mode === "range"
+        ? getDatesInRange(rangeValue[0], rangeValue[1])
         : selectedDates.map((d) => d.toISOString().split("T")[0]);
-
-    alert(
-      JSON.stringify(
-        {
-          officers: selectedOfficers,
-          dates: formattedDates,
-          shift: selectedShift,
-          location: selectedLocation,
-        },
-        null,
-        2
-      )
-    );
+  
+    // 🛠 Build assignment object per officer with all dates
+    const assignments = selectedOfficers.map((officerId) => ({
+      traffic_user_id: officerId,
+      shift_id: selectedShift,
+      checkpoint_id: selectedLocation,
+      assigned_dates: formattedDates,
+    }));
+  
+    try {
+      await api.post("/shift-assignments/bulk", { assignments });
+  
+      alert("Shift assignments created successfully!");
+  
+      // Reset form
+      setSelectedOfficers([]);
+      setSelectedDates([]);
+      setRangeValue([null, null]);
+      setSelectedShift("");
+      setSelectedLocation("");
+    } catch (error) {
+      console.error("Failed to assign shifts:", error.response?.data || error);
+      alert("Something went wrong. Check the console for details.");
+    }
   };
+ 
+  
+  
+  
 
   const handleDateClick = (date) => {
     if (mode === "multiple") {
@@ -77,6 +100,16 @@ export default function AssignShiftForm() {
       }
     }
   };
+  function getDatesInRange(start, end) {
+    const dates = [];
+    let current = new Date(start);
+    while (current <= end) {
+      dates.push(new Date(current).toISOString().split("T")[0]);
+      current.setDate(current.getDate() + 1);
+    }
+    return dates;
+  }
+  
 
   const tileClassName = ({ date, view }) => {
     if (view !== "month") return "";
@@ -198,9 +231,9 @@ export default function AssignShiftForm() {
             >
               <option value="">-- Select Shift --</option>
               {shifts.map((shift) => (
-                <option key={shift.id} value={shift.name}>
-                  {shift.name}
-                </option>
+               <option key={shift.id} value={shift.id}>
+               {shift.name}
+             </option>
               ))}
             </select>
           </div>
@@ -214,9 +247,9 @@ export default function AssignShiftForm() {
             >
               <option value="">-- Select Location --</option>
               {locations.map((loc) => (
-                <option key={loc.id} value={loc.name}>
-                  {loc.name}
-                </option>
+                <option key={loc.id} value={loc.id}>
+                {loc.name}
+              </option>
               ))}
             </select>
           </div>

@@ -148,9 +148,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/import-violations', [ViolationController::class, 'import']);
     Route::get('/violations', [ViolationController::class, 'index']);
 });
-
 // Assigning shifts andd cheackpoints to traffic users 
 Route::post('/assign-shift', [ShiftAssignmentController::class, 'store']);
+Route::post('/shift-assignments/bulk', [ShiftAssignmentController::class, 'storeBulk']);
+
 
 
 
