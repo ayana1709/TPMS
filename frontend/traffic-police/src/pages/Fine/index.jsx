@@ -70,26 +70,70 @@ const Fine = () => {
     }));
   };
 
-  // inside your Fine component, above `return(...)`:
+  // Inside your Fine component, above return(…):
   const [violations, setViolations] = useState([
     { type: '', description: '', amount: '' },
   ]);
 
+  // Update a violation field
   const handleViolationChange = (index, field, value) => {
-    setViolations((prev) =>
-      prev.map((vi, i) => (i === index ? { ...vi, [field]: value } : vi)),
-    );
+    setViolations((prev) => {
+      const next = prev.map((vi, i) =>
+        i === index ? { ...vi, [field]: value } : vi,
+      );
+      // Recompute total whenever amounts change
+      if (field === 'amount') {
+        const sumAmounts = next.reduce(
+          (sum, v) => sum + (parseFloat(v.amount) || 0),
+          0,
+        );
+        const additional = parseFloat(formData.additionalFees) || 0;
+        setFormData((f) => ({
+          ...f,
+          totalFineAmount: (sumAmounts + additional).toFixed(2),
+        }));
+      }
+      return next;
+    });
   };
 
-  const addViolation = () => {
+  // Add a blank violation
+  const addViolation = () =>
     setViolations((prev) => [
       ...prev,
       { type: '', description: '', amount: '' },
     ]);
+
+  // Remove one violation
+  const removeViolation = (index) => {
+    setViolations((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      // Recompute total after removal
+      const sumAmounts = next.reduce(
+        (sum, v) => sum + (parseFloat(v.amount) || 0),
+        0,
+      );
+      const additional = parseFloat(formData.additionalFees) || 0;
+      setFormData((f) => ({
+        ...f,
+        totalFineAmount: (sumAmounts + additional).toFixed(2),
+      }));
+      return next;
+    });
   };
 
-  const removeViolation = (index) => {
-    setViolations((prev) => prev.filter((_, i) => i !== index));
+  // Recompute when additionalFees change
+  const handleAdditionalFeesChange = (e) => {
+    const value = e.target.value;
+    handleInputChange(e); // updates formData.additionalFees
+    const sumAmounts = violations.reduce(
+      (sum, v) => sum + (parseFloat(v.amount) || 0),
+      0,
+    );
+    setFormData((f) => ({
+      ...f,
+      totalFineAmount: (sumAmounts + (parseFloat(value) || 0)).toFixed(2),
+    }));
   };
 
   const calculateTotalFine = () => {
@@ -279,6 +323,8 @@ const Fine = () => {
           </div>
 
           {/* Fine Details */}
+          {/* …inside your JSX, replacing the previous fine details block… */}
+
           <div className="my-6 border p-4 rounded-[10px]">
             <h3 className="mb-4 text-xl font-semibold inline-block px-4 py-2 rounded-[5px] bg-gray-300">
               Fine Details
@@ -289,6 +335,7 @@ const Fine = () => {
                 key={idx}
                 className="grid grid-cols-1 gap-4 md:grid-cols-4 p-4 border rounded-[5px] mb-4 relative"
               >
+                {/* Violation Type */}
                 <div>
                   <Label htmlFor={`violationType-${idx}`}>Violation Type</Label>
                   <Select
@@ -311,6 +358,7 @@ const Fine = () => {
                   </Select>
                 </div>
 
+                {/* Description */}
                 <div>
                   <Label htmlFor={`violationDesc-${idx}`}>
                     Violation {idx + 1} Description
@@ -326,6 +374,7 @@ const Fine = () => {
                   />
                 </div>
 
+                {/* Amount */}
                 <div>
                   <Label htmlFor={`violationAmt-${idx}`}>
                     Violation {idx + 1} Amount
@@ -337,14 +386,13 @@ const Fine = () => {
                     onChange={(e) =>
                       handleViolationChange(idx, 'amount', e.target.value)
                     }
-                    onBlur={calculateTotalFine}
                     min="0"
                     required
                     className="block rounded-[5px]"
                   />
                 </div>
 
-                {/* Remove button */}
+                {/* Remove */}
                 {violations.length > 1 && (
                   <button
                     type="button"
@@ -367,8 +415,8 @@ const Fine = () => {
               </button>
             </div>
 
-            {/* rest of your Fine Details block (additionalFees, dueDate, paymentInstructions) */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 p-4 border rounded-[5px]">
+            {/* Additional Fees */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 p-4 border rounded-[5px] mb-4">
               <div>
                 <Label htmlFor="additionalFees">Additional Fees</Label>
                 <Input
@@ -376,12 +424,13 @@ const Fine = () => {
                   id="additionalFees"
                   name="additionalFees"
                   value={formData.additionalFees}
-                  onChange={handleInputChange}
-                  onBlur={calculateTotalFine}
+                  onChange={handleAdditionalFeesChange}
                   min="0"
                   className="block rounded-[5px]"
                 />
               </div>
+
+              {/* Due Date */}
               <div>
                 <Label htmlFor="dueDate">Due Date</Label>
                 <Input
@@ -393,21 +442,30 @@ const Fine = () => {
                   className="block rounded-[5px]"
                 />
               </div>
-              <div className="md:col-span-2">
-                <Label htmlFor="paymentInstructions">
-                  Payment Instructions
-                </Label>
-                <Textarea
-                  id="paymentInstructions"
-                  name="paymentInstructions"
-                  value={formData.paymentInstructions}
-                  onChange={handleInputChange}
-                  placeholder="Enter instructions"
-                  className="h-24 rounded-[5px]"
-                />
+            </div>
+
+            {/* Display Total */}
+            <div className="p-4 border rounded-[5px] mb-4">
+              <Label>Total Fine Amount</Label>
+              <div className="mt-1 text-xl font-bold">
+                ${formData.totalFineAmount}
               </div>
             </div>
+
+            {/* Payment Instructions */}
+            <div className="p-4 border rounded-[5px]">
+              <Label htmlFor="paymentInstructions">Payment Instructions</Label>
+              <Textarea
+                id="paymentInstructions"
+                name="paymentInstructions"
+                value={formData.paymentInstructions}
+                onChange={handleInputChange}
+                placeholder="Enter instructions"
+                className="h-24 rounded-[5px]"
+              />
+            </div>
           </div>
+
           {/* Officer Details */}
           <div className="border p-4 rounded-[10px]">
             <div className="mb-6">
