@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Eye, EyeOff } from 'react-feather';
-// import { Button } from '@/components/ui/button';
-
+import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Switch } from '../../components/ui/switch';
@@ -171,7 +170,7 @@ const SignIn = () => {
                   </div>
                 </div>
 
-                <button
+                <Button
                   type="submit"
                   disabled={loading}
                   className={`w-full h-12 font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 ${
@@ -223,7 +222,7 @@ const SignIn = () => {
                       </svg>
                     </span>
                   )}
-                </button>
+                </Button>
               </form>
             </div>
           </div>
