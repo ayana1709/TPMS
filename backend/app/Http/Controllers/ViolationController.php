@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\IssueViolationRequest;
 use App\Http\Requests\PayViolationRequest;
 use App\Imports\ViolationsImport;
-use App\Models\Violation;
+use App\Models\Violations;
 use App\Models\TrafficLaw;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,7 +32,7 @@ class ViolationController extends Controller
      */
     public function index()
     {
-        return response()->json(Violation::all());
+        return response()->json(Violations::all());
     }
 
     /**
@@ -43,7 +43,7 @@ class ViolationController extends Controller
         $law = TrafficLaw::findOrFail($request->law_number);
         $penalty = $law->penalty_amount;
 
-        $violation = Violation::create([
+        $violation = Violations::create([
             'driver_id' => $request->driver_id,
             'car_id' => $request->car_id,
             'law_number' => $request->law_number,
@@ -66,7 +66,7 @@ class ViolationController extends Controller
      */
     public function pay(PayViolationRequest $request)
     {
-        $violation = Violation::findOrFail($request->violation_id);
+        $violation = Violations::findOrFail($request->violation_id);
 
         $violation->update([
             'paid' => true,
@@ -83,7 +83,7 @@ class ViolationController extends Controller
     {
         $driverId = Auth::id();
 
-        $violations = Violation::with('law', 'car', 'officer')
+        $violations = Violations::with('law', 'car', 'officer')
             ->where('driver_id', $driverId)
             ->get();
 

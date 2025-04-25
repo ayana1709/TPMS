@@ -146,6 +146,51 @@ const Fine = () => {
     }));
   };
 
+  const handleViolationCodeInput = async (idx, code, offenseType) => {
+    const updated = [...violations];
+    updated[idx].code = code;
+
+    try {
+      const res = await axios.get(
+        `/api/traffic-laws/${code}?offense=${offenseType}`,
+      );
+      const { type, description, amount } = res.data;
+
+      updated[idx].type = type;
+      updated[idx].description = description;
+      updated[idx].amount = amount;
+    } catch (error) {
+      console.error('Error fetching violation:', error);
+    }
+
+    setViolations(updated);
+  };
+
+  const handleOffenseTypeChange = async (idx, offenseType) => {
+    const updated = [...violations];
+    updated[idx].offenseType = offenseType;
+
+    const code = updated[idx].code;
+
+    if (code) {
+      // Refetch with new offense type
+      try {
+        const res = await axios.get(
+          `/api/traffic-laws/${code}?offense=${offenseType}`,
+        );
+        const { type, description, amount } = res.data;
+
+        updated[idx].type = type;
+        updated[idx].description = description;
+        updated[idx].amount = amount;
+      } catch (error) {
+        console.error('Error fetching updated fine:', error);
+      }
+    }
+
+    setViolations(updated);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -336,44 +381,69 @@ const Fine = () => {
             {violations.map((violation, idx) => (
               <div
                 key={idx}
-                className="grid grid-cols-1 gap-4 md:grid-cols-4 p-4 border rounded-[5px] mb-4 relative"
+                className="grid grid-cols-1 gap-4 md:grid-cols-6 p-4 border rounded-[5px] mb-4 relative"
               >
-                {/* Violation Type */}
+                {/* Violation Code */}
+                <div>
+                  <Label htmlFor={`violationCode-${idx}`}>Violation Code</Label>
+                  <Input
+                    id={`violationCode-${idx}`}
+                    value={violation.code || ''}
+                    onChange={(e) =>
+                      handleViolationCodeInput(
+                        idx,
+                        e.target.value,
+                        violation.offenseType || 'first',
+                      )
+                    }
+                    placeholder="Enter code"
+                    className="rounded-[5px]"
+                  />
+                </div>
+
+                {/* Offense Type */}
+                <div>
+                  <Label htmlFor={`offenseType-${idx}`}>Offense Type</Label>
+                  <select
+                    id={`offenseType-${idx}`}
+                    value={violation.offenseType || 'first'}
+                    onChange={(e) =>
+                      handleOffenseTypeChange(idx, e.target.value)
+                    }
+                    className="rounded-[5px] w-full h-[40px] border px-2"
+                  >
+                    <option value="first">First-time</option>
+                    <option value="second">Second-time</option>
+                  </select>
+                </div>
+
+                {/* Violation Type - text input */}
                 <div>
                   <Label htmlFor={`violationType-${idx}`}>Violation Type</Label>
-                  <Select
+                  <Input
                     id={`violationType-${idx}`}
-                    value={violation.type}
-                    onValueChange={(v) => handleViolationChange(idx, 'type', v)}
-                  >
-                    <SelectTrigger className="rounded-[5px]">
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="speeding">Speeding</SelectItem>
-                      <SelectItem value="signal_jump">Signal Jump</SelectItem>
-                      <SelectItem value="no_helmet">No Helmet</SelectItem>
-                      <SelectItem value="drunk_driving">
-                        Drunk Driving
-                      </SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    value={violation.type || ''}
+                    onChange={(e) =>
+                      handleViolationChange(idx, 'type', e.target.value)
+                    }
+                    placeholder="Enter type"
+                    className="rounded-[5px]"
+                  />
                 </div>
 
                 {/* Description */}
                 <div>
                   <Label htmlFor={`violationDesc-${idx}`}>
-                    Violation {idx + 1} Description
+                    Violation {idx + 1} Law
                   </Label>
                   <Input
                     id={`violationDesc-${idx}`}
-                    value={violation.description}
+                    value={violation.description || ''}
                     onChange={(e) =>
                       handleViolationChange(idx, 'description', e.target.value)
                     }
-                    required
-                    className="block rounded-[5px]"
+                    placeholder="Search or enter description"
+                    className="rounded-[5px]"
                   />
                 </div>
 
@@ -385,13 +455,12 @@ const Fine = () => {
                   <Input
                     type="number"
                     id={`violationAmt-${idx}`}
-                    value={violation.amount}
+                    value={violation.amount || ''}
                     onChange={(e) =>
                       handleViolationChange(idx, 'amount', e.target.value)
                     }
                     min="0"
-                    required
-                    className="block rounded-[5px]"
+                    className="rounded-[5px]"
                   />
                 </div>
 
