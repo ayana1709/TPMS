@@ -25,4 +25,10 @@ class Fine extends Model
     public function car() {
         return $this->belongsTo(Car::class);
     }
+
+    public function violations()
+    {
+        return $this->belongsToMany(Violation::class, 'fine_violation');
+    }
+    
 }

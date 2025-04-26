@@ -1,6 +1,10 @@
+@import 'react-day-picker/dist/style.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* If using Shadcn CLI, include this */
+@import '@/styles/globals.css'; /* or wherever your base styles are */
 
 @layer base {
   :root {

@@ -352,15 +352,15 @@ public function activate($username)
 
 
     public function checkStatus($username)
-    {
-        $manager = Manager::where('username', $username)->first();
+{
+    $manager = Manager::where('username', $username)->first();
 
-        if (!$manager) {
-            return response()->json(['error' => 'Manager not found'], 404);
-        }
-
-        return response()->json(['status' => $manager->status]);
+    if (!$manager) {
+        return response()->json(['error' => 'Manager not found'], 404);
     }
+
+    return response()->json(['status' => $manager->status]);
+}
 
     /**
      * Get the total number of managers

@@ -125,8 +125,10 @@ Route::get('/check-activation-status/{username}', [TrafficUserController::class,
 
 
 // -------shift----
-Route::middleware(['auth:sanctum'])->get('/shifts', [ShiftController::class, 'index']);
-// Route::get('/shifts', [ShiftController::class, 'index']);
+
+// Route::apiResource('shifts', ShiftController::class);
+
+Route::get('/shifts', [ShiftController::class, 'index']);
 Route::post('/shifts', [ShiftController::class, 'store']);
 Route::get('/shifts/{shift}', [ShiftController::class, 'show']);
 Route::put('/shifts/{shift}', [ShiftController::class, 'update']);

@@ -18,4 +18,12 @@ class Violations extends Model
         'fine_birr',
         'action_description',
     ];
+
+    public function fines()
+    {
+        return $this->belongsToMany(Fine::class, 'fine_violation');
+    }
+
+
 }
+
