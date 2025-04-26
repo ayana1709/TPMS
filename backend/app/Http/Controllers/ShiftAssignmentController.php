@@ -63,6 +63,30 @@ public function storeBulk(Request $request)
     return response()->json(['message' => 'Bulk assignments created successfully.']);
 }
 
+public function index()
+{
+    $assignments = ShiftAssignment::with(['trafficUser', 'shift', 'checkpoint'])
+        ->orderBy('assigned_date', 'desc')
+        ->get();
+
+    return response()->json($assignments);
+}
+
+
+
+
+public function getByShiftId($shiftId)
+{
+    $managerId = auth('manager')->id() ?? auth()->id(); // fallback just in case
+
+
+    $assignments = ShiftAssignment::with(['trafficUser', 'checkpoint'])
+        ->where('shift_id', $shiftId)
+        ->where('manager_id', $managerId)
+        ->get();
+
+    return response()->json($assignments);
+}
 
 
 
