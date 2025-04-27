@@ -66,7 +66,7 @@ export const routes = [
       },
       {
         icon: <CalendarIcon {...icon} />,
-        name: "Attendance",
+        name: "Traffic Assignment",
         path: "/attendance",
         element: <ShiftAssignmentTable />,
       },
@@ -130,6 +130,11 @@ export const routes = [
         // name: "",
         path: "cheackpoint-create",
         element: <LocationRegistrationForm />,
+      },
+      {
+        // name: "",
+        path: "assign-traffic-officer",
+        element: <AssignShiftForm />,
       },
     ],
   },

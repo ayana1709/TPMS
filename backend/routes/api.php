@@ -122,7 +122,7 @@ Route::get('/check-activation-status/{username}', [TrafficUserController::class,
 
 // Route::apiResource('shifts', ShiftController::class);
 
-Route::get('/shifts', [ShiftController::class, 'index']);
+Route::middleware(['auth:sanctum'])->get('/shifts', [ShiftController::class, 'index']);
 Route::post('/shifts', [ShiftController::class, 'store']);
 Route::get('/shifts/{shift}', [ShiftController::class, 'show']);
 Route::put('/shifts/{shift}', [ShiftController::class, 'update']);
@@ -134,6 +134,8 @@ Route::delete('/shifts/{shift}', [ShiftController::class, 'destroy']);
 Route::post('/checkpoints', [CheckpointController::class, 'store']);
 Route::middleware(['auth:sanctum'])->get('/checkpoints', [CheckpointController::class, 'index']);
 Route::get('/shift-assignments/by-shift/{shiftId}', [ShiftAssignmentController::class, 'getByShiftId']);
+Route::get('/assigned-traffic-users', [ShiftAssignmentController::class, 'getAssignedTrafficUsers']);
+Route::get('/assigned-traffic-users-for-checkpoint', [ShiftAssignmentController::class, 'getAssignedTrafficUsersForCheckpoint']);
 
 
 
