@@ -692,7 +692,7 @@ const Fine = () => {
                   <Input
                     id="badgeNumber"
                     name="badgeNumber"
-                    value={formData.badgeNumber}
+                    value={user?.badge_number}
                     onChange={handleInputChange}
                     required
                     className="block rounded-[5px]"
