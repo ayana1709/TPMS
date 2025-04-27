@@ -10,6 +10,7 @@ use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\TrafficUserController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\CheckpointController;
+use App\Http\Controllers\ShiftAssignmentController;
 use App\Http\Controllers\TrafficLawController;
 use App\Http\Controllers\ViolationController;
 
@@ -137,7 +138,10 @@ Route::delete('/shifts/{shift}', [ShiftController::class, 'destroy']);
 
 // Route::apiResource('checkpoints', CheckpointController::class);
 Route::post('/checkpoints', [CheckpointController::class, 'store']);
-Route::get('/checkpoints', [CheckpointController::class, 'index']);
+Route::middleware(['auth:sanctum'])->get('/checkpoints', [CheckpointController::class, 'index']);
+Route::get('/shift-assignments/by-shift/{shiftId}', [ShiftAssignmentController::class, 'getByShiftId']);
+
+
 
 
 
@@ -152,6 +156,19 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 });
+// Assigning shifts andd cheackpoints to traffic users 
+Route::post('/assign-shift', [ShiftAssignmentController::class, 'store']);
+Route::post('/shift-assignments/bulk', [ShiftAssignmentController::class, 'storeBulk']);
+Route::get('/shift-assignments', [ShiftAssignmentController::class, 'index']);
+
+
+
+
+
+
+
+
+
 
 //violation routes and  payement for penalty routes
 

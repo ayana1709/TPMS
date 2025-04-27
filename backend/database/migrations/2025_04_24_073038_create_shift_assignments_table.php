@@ -19,7 +19,6 @@ return new class extends Migration
         $table->foreignId('checkpoint_id')->constrained()->onDelete('cascade');
         $table->foreignId('manager_id')->constrained()->onDelete('cascade'); // ✅ New!
         $table->date('assigned_date');
-
         $table->timestamps();
     });
 }

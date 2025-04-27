@@ -3,24 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Pencil, Trash2, List, LayoutGrid } from "lucide-react";
 import api from "@/api";
 
-const mockUsers = [
-  { id: 1, name: "Alice", avatar: "https://i.pravatar.cc/40?img=1" },
-  { id: 2, name: "Bob", avatar: "https://i.pravatar.cc/40?img=2" },
-  { id: 3, name: "Charlie", avatar: "https://i.pravatar.cc/40?img=3" },
-];
-
 const ShiftList = () => {
   const [shifts, setShifts] = useState([]);
   const [expandedShiftId, setExpandedShiftId] = useState(null);
-  const [userView, setUserView] = useState("avatar"); 
+  const [assignments, setAssignments] = useState({});
+  const [userView, setUserView] = useState("avatar");
   const managerId = localStorage.getItem("manager_id");
 
   const navigate = useNavigate();
 
-
-
   useEffect(() => {
-
     fetchShifts();
   }, []);
 
@@ -30,6 +22,18 @@ const ShiftList = () => {
       setShifts(res.data);
     } catch (err) {
       console.error("Failed to fetch shifts:", err);
+    }
+  };
+
+  const fetchAssignedUsers = async (shiftId) => {
+    try {
+      const res = await api.get(`/shift-assignments/by-shift/${shiftId}`);
+      setAssignments((prev) => ({
+        ...prev,
+        [shiftId]: res.data,
+      }));
+    } catch (err) {
+      console.error("Failed to fetch assignments:", err);
     }
   };
 
@@ -44,14 +48,16 @@ const ShiftList = () => {
   };
 
   const toggleView = (id) => {
-    setExpandedShiftId((prev) => (prev === id ? null : id));
+    const newId = expandedShiftId === id ? null : id;
+    setExpandedShiftId(newId);
+    if (newId && !assignments[newId]) {
+      fetchAssignedUsers(newId);
+    }
   };
 
   const toggleUserView = () => {
     setUserView((prev) => (prev === "avatar" ? "list" : "avatar"));
   };
-
- 
 
   return (
     <div className="max-w-5xl mx-auto p-6">
@@ -145,26 +151,37 @@ const ShiftList = () => {
                   </button>
                 </div>
 
-                {userView === "avatar" ? (
-                  <div className="flex -space-x-2">
-                    {mockUsers.map((user) => (
-                      <img
-                        key={user.id}
-                        src={user.avatar}
-                        alt={user.name}
-                        title={user.name}
-                        className="w-9 h-9 rounded-full border-2 border-white shadow hover:scale-105 transition"
-                      />
-                    ))}
-                  </div>
+                {assignments[shift.id] ? (
+                  assignments[shift.id].length === 0 ? (
+                    <p className="text-gray-400 text-sm">No users assigned.</p>
+                  ) : userView === "avatar" ? (
+                    <div className="flex -space-x-2">
+                      {assignments[shift.id].map((assignment) => (
+                        <img
+                          key={assignment.id}
+                          src={`https://ui-avatars.com/api/?name=${assignment.traffic_user.name}`}
+                          alt={assignment.traffic_user.name}
+                          title={assignment.traffic_user.name}
+                          className="w-9 h-9 rounded-full border-2 border-white shadow hover:scale-105 transition"
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <ul className="space-y-1 text-sm text-gray-600">
+                      {assignments[shift.id].map((assignment) => (
+                        <li key={assignment.id} className="flex items-center gap-2">
+                          <span className="font-medium">
+                            {assignment.traffic_user.name}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            ({assignment.checkpoint.name})
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )
                 ) : (
-                  <ul className="space-y-1 text-sm text-gray-600">
-                    {mockUsers.map((user) => (
-                      <li key={user.id} className="flex items-center gap-2">
-                        <span className="font-medium">{user.name}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="text-gray-400 text-sm">Loading...</p>
                 )}
               </div>
             </div>

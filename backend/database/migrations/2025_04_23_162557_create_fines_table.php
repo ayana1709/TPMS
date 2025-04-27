@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('fines', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('driver_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('traffic_officer_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('car_id')->constrained('cars')->onDelete('cascade');
+            // $table->foreignId('driver_id')->constrained('users')->onDelete('cascade');
+            // $table->foreignId('traffic_officer_id')->constrained('users')->onDelete('cascade');
+            // $table->foreignId('car_id')->constrained('cars')->onDelete('cascade');
             $table->string('violation_type');
             $table->decimal('amount', 8, 2);
             $table->boolean('paid')->default(false);
