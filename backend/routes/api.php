@@ -141,6 +141,7 @@ Route::post('/checkpoints', [CheckpointController::class, 'store']);
 Route::middleware(['auth:sanctum'])->get('/checkpoints', [CheckpointController::class, 'index']);
 Route::get('/shift-assignments/by-shift/{shiftId}', [ShiftAssignmentController::class, 'getByShiftId']);
 Route::get('/assigned-traffic-users', [ShiftAssignmentController::class, 'getAssignedTrafficUsers']);
+Route::get('/assigned-traffic-users-for-checkpoint', [ShiftAssignmentController::class, 'getAssignedTrafficUsersForCheckpoint']);
 
 
 

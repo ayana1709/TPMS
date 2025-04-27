@@ -116,5 +116,33 @@ public function getAssignedTrafficUsers(Request $request)
 
 
 
+public function getAssignedTrafficUsersForCheckpoint(Request $request)
+{
+    $validated = $request->validate([
+        'checkpoint_id' => 'required|integer|exists:checkpoints,id', // 👈 checkpoint id instead of shift id
+        'manager_id' => 'required|integer|exists:managers,id',
+    ]);
+
+    $assignments = ShiftAssignment::where('checkpoint_id', $validated['checkpoint_id'])
+        ->where('manager_id', $validated['manager_id'])
+        ->with('trafficUser')
+        ->get();
+
+    $assignedTrafficUsers = $assignments->map(function ($assignment) {
+        return [
+            'id' => $assignment->trafficUser->id,
+            'full_name' => $assignment->trafficUser->full_name,
+        ];
+    })
+    ->unique('id')
+    ->values();
+
+    return response()->json($assignedTrafficUsers);
+}
+
+
+
+
+
 
 }
