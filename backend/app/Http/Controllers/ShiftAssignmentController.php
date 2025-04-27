@@ -39,7 +39,6 @@ public function storeBulk(Request $request)
         'assignments.*.assigned_dates' => 'required|array|min:1',
         'assignments.*.assigned_dates.*' => 'required|date',
     ]);
-
     $managerId = auth('manager')->id() ?? auth()->id(); // fallback if needed
 
     $flattenedAssignments = [];
@@ -63,6 +62,11 @@ public function storeBulk(Request $request)
     return response()->json(['message' => 'Bulk assignments created successfully.']);
 }
 
+
+
+
+
+
 public function index()
 {
     $assignments = ShiftAssignment::with(['trafficUser', 'shift', 'checkpoint'])
@@ -78,8 +82,6 @@ public function index()
 public function getByShiftId($shiftId)
 {
     $managerId = auth('manager')->id() ?? auth()->id(); // fallback just in case
-
-
     $assignments = ShiftAssignment::with(['trafficUser', 'checkpoint'])
         ->where('shift_id', $shiftId)
         ->where('manager_id', $managerId)
@@ -87,6 +89,31 @@ public function getByShiftId($shiftId)
 
     return response()->json($assignments);
 }
+
+public function getAssignedTrafficUsers(Request $request)
+{
+    $validated = $request->validate([
+        'shift_id' => 'required|integer|exists:shifts,id',
+        'manager_id' => 'required|integer|exists:managers,id',
+    ]);
+
+    $assignments = ShiftAssignment::where('shift_id', $validated['shift_id'])
+        ->where('manager_id', $validated['manager_id'])
+        ->with('trafficUser')
+        ->get();
+
+    $assignedTrafficUsers = $assignments->map(function ($assignment) {
+        return [
+            'id' => $assignment->trafficUser->id,
+            'full_name' => $assignment->trafficUser->full_name,
+        ];
+    })
+    ->unique('id') // 🛑 Remove duplicates based on user ID
+    ->values();    // 🔥 Reset the array keys nicely
+
+    return response()->json($assignedTrafficUsers);
+}
+
 
 
 

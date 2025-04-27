@@ -7,11 +7,13 @@ import {
   Rows,
   TableProperties,
 } from "lucide-react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export default function ShiftAssignmentTable() {
   const [groupedAssignments, setGroupedAssignments] = useState({});
   const [openOfficer, setOpenOfficer] = useState(null);
   const [view, setView] = useState("timeline");
+   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAssignments = async () => {
@@ -156,40 +158,55 @@ export default function ShiftAssignmentTable() {
     <div className="p-6 bg-white rounded-xl shadow space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">📋 Shift Assignments</h2>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-4">
+          {/* ➡️ Add the Assign Traffic Button */}
           <button
-            className={`p-2 rounded-lg ${
-              view === "timeline" ? "bg-blue-500 text-white" : "bg-gray-200"
-            }`}
-            onClick={() => setView("timeline")}
-            title="Timeline View"
+            onClick={()=>navigate("/Dashboard/assign-traffic-officer")}
+            className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg shadow"
+            
+            
           >
-            <LayoutList className="w-5 h-5" />
+            + Assign Traffic
           </button>
-          <button
-            className={`p-2 rounded-lg ${
-              view === "accordion" ? "bg-blue-500 text-white" : "bg-gray-200"
-            }`}
-            onClick={() => setView("accordion")}
-            title="Accordion View"
-          >
-            <Rows className="w-5 h-5" />
-          </button>
-          <button
-            className={`p-2 rounded-lg ${
-              view === "table" ? "bg-blue-500 text-white" : "bg-gray-200"
-            }`}
-            onClick={() => setView("table")}
-            title="Table View"
-          >
-            <TableProperties className="w-5 h-5" />
-          </button>
+  
+          {/* View Toggle Buttons */}
+          <div className="flex gap-2">
+            <button
+              className={`p-2 rounded-lg ${
+                view === "timeline" ? "bg-blue-500 text-white" : "bg-gray-200"
+              }`}
+              onClick={() => setView("timeline")}
+              title="Timeline View"
+            >
+              <LayoutList className="w-5 h-5" />
+            </button>
+            <button
+              className={`p-2 rounded-lg ${
+                view === "accordion" ? "bg-blue-500 text-white" : "bg-gray-200"
+              }`}
+              onClick={() => setView("accordion")}
+              title="Accordion View"
+            >
+              <Rows className="w-5 h-5" />
+            </button>
+            <button
+              className={`p-2 rounded-lg ${
+                view === "table" ? "bg-blue-500 text-white" : "bg-gray-200"
+              }`}
+              onClick={() => setView("table")}
+              title="Table View"
+            >
+              <TableProperties className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </div>
-
+  
+      {/* The rest */}
       {view === "timeline" && renderTimelineView()}
       {view === "accordion" && renderAccordionView()}
       {view === "table" && renderTableView()}
     </div>
   );
+  
 }

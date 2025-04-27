@@ -7,7 +7,9 @@ const ShiftList = () => {
   const [shifts, setShifts] = useState([]);
   const [expandedShiftId, setExpandedShiftId] = useState(null);
   const [assignments, setAssignments] = useState({});
-  const [userView, setUserView] = useState("avatar");
+  // const [userView, setUserView] = useState("avatar");
+  const [userViews, setUserViews] = useState({});
+
   const managerId = localStorage.getItem("manager_id");
 
   const navigate = useNavigate();
@@ -15,19 +17,36 @@ const ShiftList = () => {
   useEffect(() => {
     fetchShifts();
   }, []);
+  
+  useEffect(() => {
+    if (shifts.length > 0) {
+      shifts.forEach((shift) => {
+        if (!assignments[shift.id]) {
+          fetchAssignedUsers(shift.id);
+        }
+      });
+    }
+  }, [shifts]);
+  
 
   const fetchShifts = async () => {
     try {
-      const res = await api.get(`/shifts?manager_id=${managerId}`);
-      setShifts(res.data);
-    } catch (err) {
-      console.error("Failed to fetch shifts:", err);
+      const response = await api.get(`/shifts`, { params: { manager_id: managerId } });
+      setShifts(response.data);
+    } catch (error) {
+      console.error("Failed to fetch shifts:", error);
     }
   };
 
   const fetchAssignedUsers = async (shiftId) => {
+    console.log("Fetching assigned users with shiftId:", shiftId, "and managerId:", managerId); // 👈
     try {
-      const res = await api.get(`/shift-assignments/by-shift/${shiftId}`);
+      const res = await api.get(`/assigned-traffic-users`, {
+        params: {
+          shift_id: shiftId,
+          manager_id: managerId,
+        },
+      });
       setAssignments((prev) => ({
         ...prev,
         [shiftId]: res.data,
@@ -36,28 +55,38 @@ const ShiftList = () => {
       console.error("Failed to fetch assignments:", err);
     }
   };
+  
 
   const handleDelete = async (id) => {
-    if (!confirm("Delete this shift?")) return;
+    if (!confirm("Are you sure you want to delete this shift?")) return;
     try {
       await api.delete(`/shifts/${id}`);
       fetchShifts();
-    } catch (err) {
-      console.error("Delete failed:", err);
+    } catch (error) {
+      console.error("Failed to delete shift:", error);
     }
   };
 
-  const toggleView = (id) => {
-    const newId = expandedShiftId === id ? null : id;
-    setExpandedShiftId(newId);
-    if (newId && !assignments[newId]) {
-      fetchAssignedUsers(newId);
-    }
-  };
+  const toggleExpandShift = (id) => {
+    const newExpandedId = expandedShiftId === id ? null : id;
+    setExpandedShiftId(newExpandedId);
 
-  const toggleUserView = () => {
-    setUserView((prev) => (prev === "avatar" ? "list" : "avatar"));
-  };
+  //   if (newExpandedId && !assignments[newExpandedId]) {
+  //     fetchAssignedUsers(newExpandedId);
+  //   }
+};
+
+const toggleUserView = (shiftId) => {
+  setUserViews((prev) => ({
+    ...prev,
+    [shiftId]: prev[shiftId] === "avatar" ? "list" : "avatar",
+  }));
+};
+
+  // if (newExpandedId && !assignments[newExpandedId]) {
+  //   fetchAssignedUsers(newExpandedId);
+  // }
+  
 
   return (
     <div className="max-w-5xl mx-auto p-6">
@@ -80,7 +109,7 @@ const ShiftList = () => {
               key={shift.id}
               className="bg-white rounded-2xl shadow-md border p-4 transition-all"
             >
-              {/* Header */}
+              {/* Shift Header */}
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-lg font-bold text-gray-800">{shift.name}</h3>
                 <div className="flex gap-2 items-center">
@@ -89,14 +118,14 @@ const ShiftList = () => {
                       size={18}
                       className="text-blue-600 cursor-pointer hover:scale-110 transition"
                       title="Hide"
-                      onClick={() => toggleView(shift.id)}
+                      onClick={() => toggleExpandShift(shift.id)}
                     />
                   ) : (
                     <Eye
                       size={18}
                       className="text-blue-600 cursor-pointer hover:scale-110 transition"
                       title="View"
-                      onClick={() => toggleView(shift.id)}
+                      onClick={() => toggleExpandShift(shift.id)}
                     />
                   )}
                   <Pencil
@@ -114,7 +143,7 @@ const ShiftList = () => {
                 </div>
               </div>
 
-              {/* Expanded View */}
+              {/* Expanded Shift Info */}
               {expandedShiftId === shift.id && (
                 <div className="text-sm text-gray-600 space-y-1 mb-4">
                   <div>
@@ -135,55 +164,56 @@ const ShiftList = () => {
               {/* Assigned Users */}
               <div className="mt-4">
                 <div className="flex justify-between items-center mb-2">
-                  <p className="text-sm font-semibold text-gray-700">
-                    Assigned Users
-                  </p>
+                  <p className="text-sm font-semibold text-gray-700">Assigned Users</p>
                   <button
-                    className="text-gray-500 hover:text-black"
-                    onClick={toggleUserView}
-                    title="Toggle View"
-                  >
-                    {userView === "avatar" ? (
-                      <List size={18} />
-                    ) : (
-                      <LayoutGrid size={18} />
-                    )}
-                  </button>
+  onClick={() => toggleUserView(shift.id)}
+  className="text-gray-500 hover:text-black"
+  title="Toggle View"
+>
+  {userViews[shift.id] === "list" ? <LayoutGrid size={18} /> : <List size={18} />}
+</button>
+
                 </div>
 
                 {assignments[shift.id] ? (
-                  assignments[shift.id].length === 0 ? (
-                    <p className="text-gray-400 text-sm">No users assigned.</p>
-                  ) : userView === "avatar" ? (
-                    <div className="flex -space-x-2">
-                      {assignments[shift.id].map((assignment) => (
-                        <img
-                          key={assignment.id}
-                          src={`https://ui-avatars.com/api/?name=${assignment.traffic_user.name}`}
-                          alt={assignment.traffic_user.name}
-                          title={assignment.traffic_user.name}
-                          className="w-9 h-9 rounded-full border-2 border-white shadow hover:scale-105 transition"
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <ul className="space-y-1 text-sm text-gray-600">
-                      {assignments[shift.id].map((assignment) => (
-                        <li key={assignment.id} className="flex items-center gap-2">
-                          <span className="font-medium">
-                            {assignment.traffic_user.name}
-                          </span>
-                          <span className="text-xs text-gray-400">
-                            ({assignment.checkpoint.name})
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  )
-                ) : (
-                  <p className="text-gray-400 text-sm">Loading...</p>
-                )}
+  assignments[shift.id].length === 0 ? (
+    <p className="text-gray-400 text-sm">No users assigned.</p>
+  ) : userViews[shift.id] === "list" ? (
+    <ul className="space-y-1 text-sm text-gray-600">
+      {assignments[shift.id].map((user) => (
+        <li key={user.id} className="flex items-center gap-2">
+          <span>{user.full_name}</span>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <div className="flex -space-x-2">
+      {assignments[shift.id].map((user) => (
+        <img
+          key={user.id}
+          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name)}`}
+          alt={user.full_name}
+          title={user.full_name}
+          className="w-9 h-9 rounded-full border-2 border-white shadow hover:scale-105 transition"
+        />
+      ))}
+    </div>
+  )
+) : (
+  <p className="text-gray-400 text-sm">Loading...</p>
+)}
+
+
+
+
+
+
+
+
               </div>
+
+
+
             </div>
           ))}
         </div>
