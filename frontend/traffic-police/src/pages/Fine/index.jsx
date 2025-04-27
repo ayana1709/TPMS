@@ -38,23 +38,16 @@ const Fine = () => {
     dateOfOffense: null,
     timeOfOffense: '',
     location: '',
-    violationType: '',
-    lawViolated: '',
+
     incidentDescription: '',
 
     // Fine Details
-    totalFineAmount: 0,
-    violation1Description: '',
-    violation1Amount: 0,
-    violation2Description: '',
-    violation2Amount: 0,
-    additionalFees: 0,
+
     dueDate: null,
-    paymentInstructions: '',
 
     // Officer Details
     officerName: user?.full_name || '',
-    badgeNumber: '',
+    badgeNumber: user?.badge_number || '',
     policeStation: '',
     officerSignature: '',
   });
@@ -98,7 +91,7 @@ const Fine = () => {
       ...updated[idx],
       code: violation.code,
       violationName: violation.violation_name,
-      offenseType: violation.offense_type,
+      offenseType: violation.offence_type,
       amount: violation.fine_birr,
       type: violation.category,
       demeritPoint: violation.demerit_points,
@@ -112,10 +105,17 @@ const Fine = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (name === 'dateOfOffense') {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value || null,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSelectChange = (name, value) => {
@@ -171,20 +171,6 @@ const Fine = () => {
       }));
       return next;
     });
-  };
-
-  // Recompute when additionalFees change
-  const handleAdditionalFeesChange = (e) => {
-    const value = e.target.value;
-    handleInputChange(e); // updates formData.additionalFees
-    const sumAmounts = violations.reduce(
-      (sum, v) => sum + (parseFloat(v.amount) || 0),
-      0,
-    );
-    setFormData((f) => ({
-      ...f,
-      totalFineAmount: (sumAmounts + (parseFloat(value) || 0)).toFixed(2),
-    }));
   };
 
   const calculateTotalFine = () => {
@@ -282,7 +268,7 @@ const Fine = () => {
       ...formData,
       violations, // append the violations array here
     };
-    // console.log(data);
+    console.log(data);
 
     try {
       const response = await api.post('/violations', data);
@@ -406,8 +392,22 @@ const Fine = () => {
               </h3>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 border p-4 rounded-[5px]">
                 <div>
-                  <Label htmlFor="timeOfOffense">Time of Offense</Label>
-                  <Input type="date" className="block rounded-[5px]" />
+                  <Label htmlFor="dateOfOffense">Date of Offense</Label>
+                  <Input
+                    id="dateOfOffense"
+                    name="dateOfOffense"
+                    value={formData.dateOfOffense || ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFormData((prev) => ({
+                        ...prev,
+                        dateOfOffense: value || null,
+                      }));
+                    }}
+                    type="date"
+                    required
+                    className="block rounded-[5px]"
+                  />
                 </div>
 
                 <div>
@@ -628,19 +628,6 @@ const Fine = () => {
 
             {/* Additional Fees */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 p-4 border rounded-[5px] mb-4">
-              <div>
-                <Label htmlFor="additionalFees">Additional Fees</Label>
-                <Input
-                  type="number"
-                  id="additionalFees"
-                  name="additionalFees"
-                  value={formData.additionalFees}
-                  onChange={handleAdditionalFeesChange}
-                  min="0"
-                  className="block rounded-[5px]"
-                />
-              </div>
-
               {/* Due Date */}
               <div>
                 <Label htmlFor="dueDate">Due Date</Label>
