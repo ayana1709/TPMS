@@ -31,13 +31,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [LoginRegisterController::class, 'login']);
 
 
-/*Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
-    $request->user()->currentAccessToken()->delete();
 
-return response()->json([
-    'message' => 'Logged out successfully';
-], 200);
-}); */
 Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
     // Delete the current access token
     $request->user()->currentAccessToken()->delete();
@@ -153,6 +147,10 @@ Route::get('/assigned-traffic-users-for-checkpoint', [ShiftAssignmentController:
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/import-violations', [ViolationController::class, 'import']);
     Route::get('/violations', [ViolationController::class, 'index']);
+    Route::get('/violations/code/{code}', [ViolationController::class, 'getByCode']);
+    Route::get('/violations/search', [ViolationController::class, 'searchByName']);
+
+
 });
 // Assigning shifts andd cheackpoints to traffic users 
 Route::post('/assign-shift', [ShiftAssignmentController::class, 'store']);
