@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../api';
 import { Input } from '../../components/ui/input';
@@ -19,10 +19,12 @@ const Fine = () => {
   const [date, setDate] = useState(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  // Inside your Fine component, above return(…):
-  const [violations, setViolations] = useState([
-    { type: '', description: '', amount: '' },
-  ]);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef();
+  const [violations, setViolations] = useState([{ type: '', amount: '' }]);
   const [formData, setFormData] = useState({
     // Offender Information
     fullName: '',
@@ -57,7 +59,56 @@ const Fine = () => {
     officerSignature: '',
   });
 
-  console.log(formData);
+  // console.log(formData);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSearchChange = async (idx, e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    if (value.length < 2) {
+      setSearchResults([]);
+      setShowDropdown(false);
+      return;
+    }
+
+    try {
+      const res = await api.get(`/violations/search?name=${value}`);
+      setSearchResults(res.data);
+      setShowDropdown(true);
+    } catch (error) {
+      console.error('Error searching violations:', error);
+    }
+  };
+
+  const handleSelectViolation = (idx, violation) => {
+    console.log(violation);
+    const updated = [...violations];
+
+    updated[idx] = {
+      ...updated[idx],
+      code: violation.code,
+      violationName: violation.violation_name,
+      offenseType: violation.offense_type,
+      amount: violation.fine_birr,
+      type: violation.category,
+      demeritPoint: violation.demerit_points,
+    };
+
+    setViolations(updated);
+    setSearchTerm(violation.violation_name);
+    setShowDropdown(false);
+  };
+  console.log(violations);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -80,18 +131,19 @@ const Fine = () => {
       const next = prev.map((vi, i) =>
         i === index ? { ...vi, [field]: value } : vi,
       );
-      // Recompute total whenever amounts change
-      if (field === 'amount') {
+
+      // Recompute total whenever an amount changes
+      if (field === 'amount' || field === 'demeritPoint') {
         const sumAmounts = next.reduce(
           (sum, v) => sum + (parseFloat(v.amount) || 0),
           0,
         );
-        const additional = parseFloat(formData.additionalFees) || 0;
         setFormData((f) => ({
           ...f,
-          totalFineAmount: (sumAmounts + additional).toFixed(2),
+          totalFineAmount: sumAmounts.toFixed(2),
         }));
       }
+
       return next;
     });
   };
@@ -146,49 +198,79 @@ const Fine = () => {
     }));
   };
 
-  const handleViolationCodeInput = async (idx, code, offenseType) => {
+  const handleViolationCodeInput = async (idx, code) => {
+    const trimmedCode = code.trim();
+
+    if (!trimmedCode || trimmedCode.length < 6) return; // Minimum valid length check
+
     const updated = [...violations];
-    updated[idx].code = code;
+    updated[idx].code = trimmedCode;
 
     try {
-      const res = await axios.get(
-        `/api/traffic-laws/${code}?offense=${offenseType}`,
-      );
-      const { type, description, amount } = res.data;
+      const res = await api.get(`/violations/code/${trimmedCode}`); // no offense_type in URL anymore
 
-      updated[idx].type = type;
+      const {
+        code: newCode,
+        category,
+        description,
+        fine_birr,
+        demerit_points,
+        offense_type,
+      } = res.data;
+
+      updated[idx].code = newCode;
+      updated[idx].type = category;
       updated[idx].description = description;
-      updated[idx].amount = amount;
+      updated[idx].amount = fine_birr;
+      updated[idx].demeritPoint = demerit_points;
+      updated[idx].offenseType = offense_type; // coming from database
     } catch (error) {
-      console.error('Error fetching violation:', error);
+      if (error.response && error.response.status === 404) {
+        alert('Violation not found.');
+      } else {
+        console.error('Error fetching violation:', error);
+      }
     }
 
     setViolations(updated);
   };
 
+  const updateCodeInput = (value, idx) => {
+    const updated = [...violations];
+    updated[idx].code = value;
+    setViolations(updated);
+  };
+
   const handleOffenseTypeChange = async (idx, offenseType) => {
     const updated = [...violations];
-    updated[idx].offenseType = offenseType;
+    updated[idx].offenseType = offenseType; // 1. Update offenseType immediately
 
-    const code = updated[idx].code;
+    const code = updated[idx]?.code; // 2. Safer to check if it exists
 
     if (code) {
-      // Refetch with new offense type
       try {
-        const res = await axios.get(
-          `/api/traffic-laws/${code}?offense=${offenseType}`,
-        );
-        const { type, description, amount } = res.data;
+        const res = await api.get(`/violations/code/${code}`, {
+          params: { offense_type: offenseType }, // 3. Cleaner way to pass query
+        });
 
-        updated[idx].type = type;
-        updated[idx].description = description;
-        updated[idx].amount = amount;
+        const { code, description, fine_birr, demerit_points, category } =
+          res.data;
+        console.log('Fetched data based on offense type:', res.data);
+
+        updated[idx] = {
+          ...updated[idx],
+          type: category,
+          description,
+          amount: fine_birr,
+          demeritPoint: demerit_points,
+          code,
+        };
       } catch (error) {
         console.error('Error fetching updated fine:', error);
       }
     }
 
-    setViolations(updated);
+    setViolations(updated); // 4. Always update the state outside
   };
 
   const handleSubmit = async (e) => {
@@ -200,7 +282,7 @@ const Fine = () => {
       ...formData,
       violations, // append the violations array here
     };
-    console.log(data);
+    // console.log(data);
 
     try {
       const response = await api.post('/violations', data);
@@ -381,40 +463,78 @@ const Fine = () => {
             {violations.map((violation, idx) => (
               <div
                 key={idx}
-                className="grid grid-cols-1 gap-4 md:grid-cols-6 p-4 border rounded-[5px] mb-4 relative"
+                className="w-full grid grid-cols-1 gap-4 md:grid-cols-6 p-4 border rounded-[5px] mb-4 relative"
               >
+                {/* SEARCH INPUT */}
+                <div className="relative mb-4 col-span-6" ref={dropdownRef}>
+                  <label className="block font-semibold mb-1">
+                    Search Violation
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-2 border rounded-[5px]"
+                    placeholder="Search by violation name..."
+                    value={searchTerm}
+                    onChange={(e) => handleSearchChange(idx, e)} // <- idx is passed here
+                    onFocus={() => setShowDropdown(true)}
+                  />
+
+                  {showDropdown && searchResults.length > 0 && (
+                    <ul className="absolute z-10 w-full bg-white border mt-1 max-h-60 overflow-y-auto rounded shadow-md">
+                      {searchResults.map((violationOption) => (
+                        <li
+                          key={violationOption.id}
+                          onClick={() =>
+                            handleSelectViolation(idx, violationOption)
+                          }
+                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer border-gray-700"
+                        >
+                          {violationOption.violation_name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
                 {/* Violation Code */}
                 <div>
                   <Label htmlFor={`violationCode-${idx}`}>Violation Code</Label>
                   <Input
                     id={`violationCode-${idx}`}
                     value={violation.code || ''}
-                    onChange={(e) =>
+                    onChange={(e) => updateCodeInput(e.target.value, idx)} // only update local state
+                    onBlur={(e) =>
                       handleViolationCodeInput(
                         idx,
                         e.target.value,
-                        violation.offenseType || 'first',
+                        violation.offenseType || 'first_time',
                       )
-                    }
+                    } // fetch when user finishes typing and leaves input
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleViolationCodeInput(
+                          idx,
+                          e.target.value,
+                          violation.offenseType || 'first_time',
+                        );
+                      }
+                    }}
                     placeholder="Enter code"
-                    className="rounded-[5px]"
+                    className="rounded-[5px] border-gray-700"
                   />
                 </div>
 
                 {/* Offense Type */}
                 <div>
                   <Label htmlFor={`offenseType-${idx}`}>Offense Type</Label>
-                  <select
-                    id={`offenseType-${idx}`}
-                    value={violation.offenseType || 'first'}
+                  <Input
+                    type="text"
+                    value={violation.offenseType || ''}
                     onChange={(e) =>
-                      handleOffenseTypeChange(idx, e.target.value)
+                      handleViolationChange(idx, 'offenseType', e.target.value)
                     }
-                    className="rounded-[5px] w-full h-[40px] border px-2"
-                  >
-                    <option value="first">First-time</option>
-                    <option value="second">Second-time</option>
-                  </select>
+                    placeholder="Enter offense type (e.g., first_time, repeat)"
+                    className="border px-4 py-2 rounded-[5px] border-gray-700"
+                  />
                 </div>
 
                 {/* Violation Type - text input */}
@@ -427,23 +547,27 @@ const Fine = () => {
                       handleViolationChange(idx, 'type', e.target.value)
                     }
                     placeholder="Enter type"
-                    className="rounded-[5px]"
+                    className="rounded-[5px] border-gray-700"
                   />
                 </div>
-
-                {/* Description */}
-                <div>
-                  <Label htmlFor={`violationDesc-${idx}`}>
-                    Violation {idx + 1} Law
-                  </Label>
-                  <Input
-                    id={`violationDesc-${idx}`}
-                    value={violation.description || ''}
+                {/* demerit point */}
+                <div className="mb-4">
+                  <label
+                    htmlFor={`violationDemerit-${idx}`}
+                    className="block font-semibold"
+                  >
+                    Demerit Point
+                  </label>
+                  <input
+                    type="text" // <-- changed from number to text
+                    id={`violationDemerit-${idx}`}
+                    value={violation.demeritPoint || ''}
                     onChange={(e) =>
-                      handleViolationChange(idx, 'description', e.target.value)
+                      handleViolationChange(idx, 'demeritPoint', e.target.value)
                     }
-                    placeholder="Search or enter description"
-                    className="rounded-[5px]"
+                    min="0"
+                    className="w-full px-4 py-2 border rounded-[5px] border-gray-700"
+                    placeholder="Enter demerit points"
                   />
                 </div>
 
@@ -460,7 +584,22 @@ const Fine = () => {
                       handleViolationChange(idx, 'amount', e.target.value)
                     }
                     min="0"
-                    className="rounded-[5px]"
+                    className="rounded-[5px] border-gray-700"
+                  />
+                </div>
+                {/* Description */}
+                <div className="col-span-4">
+                  <Label htmlFor={`violationDesc-${idx}`}>
+                    Violation {idx + 1} Law
+                  </Label>
+                  <Input
+                    id={`violationDesc-${idx}`}
+                    value={violation.violationName || ''}
+                    onChange={(e) =>
+                      handleViolationChange(idx, 'description', e.target.value)
+                    }
+                    placeholder="Search or enter description"
+                    className="rounded-[5px] border-gray-700"
                   />
                 </div>
 
@@ -520,7 +659,11 @@ const Fine = () => {
             <div className="p-4 border rounded-[5px] mb-4">
               <Label>Total Fine Amount</Label>
               <div className="mt-1 text-xl font-bold">
-                ${formData.totalFineAmount}
+                $
+                {violations.reduce(
+                  (sum, item) => sum + Number(item.amount || 0),
+                  0,
+                )}
               </div>
             </div>
           </div>

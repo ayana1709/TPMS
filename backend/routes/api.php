@@ -147,6 +147,10 @@ Route::get('/checkpoints', [CheckpointController::class, 'index']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/import-violations', [ViolationController::class, 'import']);
     Route::get('/violations', [ViolationController::class, 'index']);
+    Route::get('/violations/code/{code}', [ViolationController::class, 'getByCode']);
+    Route::get('/violations/search', [ViolationController::class, 'searchByName']);
+
+
 });
 
 //violation routes and  payement for penalty routes

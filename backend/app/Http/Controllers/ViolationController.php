@@ -35,60 +35,7 @@ class ViolationController extends Controller
         return response()->json(Violations::all());
     }
 
-    /**
-     * Issue a new violation.
-     */
-    public function issue(IssueViolationRequest $request)
-    {
-        $law = TrafficLaw::findOrFail($request->law_number);
-        $penalty = $law->penalty_amount;
-
-        $violation = Violations::create([
-            'driver_id' => $request->driver_id,
-            'car_id' => $request->car_id,
-            'law_number' => $request->law_number,
-            'officer_id' => Auth::id(),
-            'penalty_amount' => $penalty,
-            'signed' => false,
-            'signed_at' => null,
-            'paid' => false,
-            'paid_at' => null,
-        ]);
-
-        return response()->json([
-            'message' => 'Violation issued successfully',
-            'violation' => $violation,
-        ], 201);
-    }
-
-    /**
-     * Pay a violation.
-     */
-    public function pay(PayViolationRequest $request)
-    {
-        $violation = Violations::findOrFail($request->violation_id);
-
-        $violation->update([
-            'paid' => true,
-            'paid_at' => now(),
-        ]);
-
-        return response()->json(['message' => 'Violation paid']);
-    }
-
-    /**
-     * List violations for the authenticated driver (optional).
-     */
-    public function driverViolations()
-    {
-        $driverId = Auth::id();
-
-        $violations = Violations::with('law', 'car', 'officer')
-            ->where('driver_id', $driverId)
-            ->get();
-
-        return response()->json($violations);
-    }
+   
 
     public function update(Request $request, $id)
 {
@@ -108,6 +55,46 @@ class ViolationController extends Controller
 
     return response()->json(['message' => 'Violation updated successfully', 'data' => $violation]);
 }
+
+/**
+ * Fetch violation details by code.
+ */
+public function getByCode($code)
+{
+    $violation = Violations::where('code', $code)->first(); // fetch by code only
+
+    if (!$violation) {
+        return response()->json(['message' => 'Violation not found.'], 404);
+    }
+
+    return response()->json([
+        'code' => $violation->code,
+        'category' => $violation->category,
+        'description' => $violation->violation_name,
+        'fine_birr' => $violation->fine_birr,
+        'demerit_points' => $violation->demerit_points,
+        'offense_type' => $violation->offence_type, // return offense_type from database
+    ]);
+}
+
+
+
+
+
+
+
+public function searchByName(Request $request)
+{
+    $query = $request->query('name');
+    $violations = Violations::where('violation_name', 'like', "%$query%")
+        ->limit(10)
+        ->get();
+
+    return response()->json($violations);
+}
+
+
+
 
 public function destroy($id)
 {
