@@ -10,38 +10,106 @@ const DriverRegistrationForm = () => {
     region: "",
     zone: "",
     wereda: "",
-    dateOfBirth: "",
     password: "",
     confirmPassword: "",
+    driverLicense: null,
+    licenseNumber: "",
+
     carPlateNumber: "",
     vin: "",
     carModel: "",
     ChasisNumber: "",
-    driverLicense: null,
     carOwnership: null,
     carBollo: null,
   });
 
   const [loading, setLoading] = useState(false);
   const [regions, setRegions] = useState([]);
-  const [regionsLoading, setRegionsLoading] = useState(true);
+  const [zones, setZones] = useState([]);
+  const [woredas, setWoredas] = useState([]);
+
+  const [selectedRegion, setSelectedRegion] = useState("");
+  const [selectedZone, setSelectedZone] = useState("");
+  const [selectedWoreda, setSelectedWoreda] = useState("");
+
   const [darkMode, setDarkMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Fetch regions
   useEffect(() => {
-    const fetchRegions = async () => {
-      try {
-        const response = await api.get("/fetch-regions");
-        setRegions(response.data); // Assuming API returns an array of regions
-      } catch (error) {
-        console.error("Failed to fetch regions:", error);
-      } finally {
-        setRegionsLoading(false);
-      }
-    };
-    fetchRegions();
+    api
+      .get("/fetch-regions")
+      .then((response) => setRegions(response.data))
+      .catch((error) => console.error("Error fetching regions:", error));
   }, []);
+
+  // Fetch zones when region changes
+  useEffect(() => {
+    if (selectedRegion) {
+      api
+        .get(`/fetch-zones/${selectedRegion}`)
+        .then((response) => setZones(response.data))
+        .catch((error) => console.error("Error fetching zones:", error));
+    } else {
+      setZones([]);
+      setWoredas([]);
+    }
+  }, [selectedRegion]);
+
+  // Fetch woredas when zone changes
+  useEffect(() => {
+    if (selectedZone) {
+      api
+        .get(`/fetch-woredas/${selectedZone}`)
+        .then((response) => setWoredas(response.data))
+        .catch((error) => console.error("Error fetching woredas:", error));
+    } else {
+      setWoredas([]);
+    }
+  }, [selectedZone]);
+
+  // Handle region select
+  const handleRegionChange = (value) => {
+    const selectedRegionObj = regions.find(
+      (region) => region.osm_id.toString() === value
+    );
+    setSelectedRegion(value);
+
+    setFormData((prev) => ({
+      ...prev,
+      region: selectedRegionObj ? selectedRegionObj.name : "",
+      zone: "",
+      woreda: "",
+    }));
+  };
+
+  // Handle zone select
+  const handleZoneChange = (value) => {
+    const selectedZoneObj = zones.find(
+      (zone) => zone.osm_id.toString() === value
+    );
+    setSelectedZone(value);
+
+    setFormData((prev) => ({
+      ...prev,
+      zone: selectedZoneObj ? selectedZoneObj.name : "",
+      woreda: "",
+    }));
+  };
+
+  // Handle woreda select
+  const handleWoredaChange = (value) => {
+    const selectedWoredaObj = woredas.find(
+      (woreda) => woreda.osm_id.toString() === value
+    );
+    setSelectedWoreda(value);
+
+    setFormData((prev) => ({
+      ...prev,
+      woreda: selectedWoredaObj ? selectedWoredaObj.name : "",
+    }));
+  };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -67,21 +135,54 @@ const DriverRegistrationForm = () => {
     setLoading(true);
 
     try {
-      const data = new FormData();
-      for (const key in formData) {
-        if (formData[key] !== null) {
-          data.append(key, formData[key]);
-        }
+      // Prepare driver data
+      const driverData = new FormData();
+      driverData.append("fullName", formData.fullName);
+      driverData.append("phoneNumber", formData.phoneNumber);
+      driverData.append("email", formData.email);
+      driverData.append("region", formData.region);
+      driverData.append("zone", formData.zone);
+      driverData.append("wereda", formData.wereda);
+      driverData.append("password", formData.password);
+      driverData.append("driverLicense", formData.driverLicense);
+      driverData.append("licenseNumber", formData.licenseNumber);
+
+      // Prepare car data
+      const carData = new FormData();
+      carData.append("carPlateNumber", formData.carPlateNumber);
+      carData.append("vin", formData.vin);
+      carData.append("carModel", formData.carModel);
+      carData.append("ChasisNumber", formData.ChasisNumber);
+      if (formData.carOwnership) {
+        carData.append("carOwnership", formData.carOwnership);
+      }
+      if (formData.carBollo) {
+        carData.append("carBollo", formData.carBollo);
       }
 
-      const response = await api.post("/api/register-driver", data, {
+      // Send driver info
+      const driverResponse = await api.post(
+        "/api/register-driver",
+        driverData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("Driver Registered:", driverResponse.data);
+
+      // Send car info
+      const carResponse = await api.post("/api/register-car", carData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      console.log(response.data);
-      alert("Driver registered successfully!");
+      console.log("Car Registered:", carResponse.data);
+
+      alert("Driver and Car registered successfully!");
     } catch (error) {
       console.error(error);
       alert("Something went wrong during registration!");
@@ -175,26 +276,45 @@ const DriverRegistrationForm = () => {
                 Address
               </h4>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <Select
-                  name="region"
-                  placeholder="Select Region"
-                  onChange={handleChange}
-                  options={regions}
-                  loading={regionsLoading}
-                  required
-                />
-                <Input
-                  name="zone"
-                  placeholder="Zone"
-                  onChange={handleChange}
-                  required
-                />
-                <Input
-                  name="wereda"
-                  placeholder="Wereda"
-                  onChange={handleChange}
-                  required
-                />
+                <select
+                  value={selectedRegion}
+                  onChange={(e) => handleRegionChange(e.target.value)}
+                >
+                  <option value="">Select Region</option>
+                  {regions.map((region) => (
+                    <option key={region.osm_id} value={region.osm_id}>
+                      {region.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Zone Select */}
+                <select
+                  value={selectedZone}
+                  onChange={(e) => handleZoneChange(e.target.value)}
+                  disabled={!zones.length}
+                >
+                  <option value="">Select Zone</option>
+                  {zones.map((zone) => (
+                    <option key={zone.osm_id} value={zone.osm_id}>
+                      {zone.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Woreda Select */}
+                <select
+                  value={selectedWoreda}
+                  onChange={(e) => handleWoredaChange(e.target.value)}
+                  disabled={!woredas.length}
+                >
+                  <option value="">Select Woreda</option>
+                  {woredas.map((woreda) => (
+                    <option key={woreda.osm_id} value={woreda.osm_id}>
+                      {woreda.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </section>
