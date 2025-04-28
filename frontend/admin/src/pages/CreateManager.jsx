@@ -90,18 +90,6 @@ export default function CreateManager() {
     }
   }, [selectedZone]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "username") {
-      setIsUsernameValid(/^[a-zA-Z0-9_]{4,20}$/.test(value));
-    }
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   // Update selected region & formData
   const handleRegionChange = (value) => {
     const selectedRegionObj = regions.find(
@@ -187,7 +175,17 @@ export default function CreateManager() {
       console.log(error);
     }
   };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "username") {
+      setIsUsernameValid(/^[a-zA-Z0-9_]{4,20}$/.test(value));
+    }
 
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
   const generatePassword = () => {
     const newPassword = Math.random().toString(36).slice(-10); // Generate a 10-character password
     setFormData((prevData) => ({ ...prevData, password: newPassword }));

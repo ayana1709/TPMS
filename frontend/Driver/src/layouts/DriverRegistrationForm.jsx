@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-// import axios from "axios";
-import { Sun, Moon, Eye, EyeOff } from "lucide-react"; // using lucide icons
+import React, { useState, useEffect } from "react";
+import { Sun, Moon, Eye, EyeOff } from "lucide-react";
 import api from "api";
 
 const DriverRegistrationForm = () => {
@@ -8,7 +7,9 @@ const DriverRegistrationForm = () => {
     fullName: "",
     phoneNumber: "",
     email: "",
-    address: "",
+    region: "",
+    zone: "",
+    wereda: "",
     dateOfBirth: "",
     password: "",
     confirmPassword: "",
@@ -22,9 +23,25 @@ const DriverRegistrationForm = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [regions, setRegions] = useState([]);
+  const [regionsLoading, setRegionsLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  useEffect(() => {
+    const fetchRegions = async () => {
+      try {
+        const response = await api.get("/fetch-regions");
+        setRegions(response.data); // Assuming API returns an array of regions
+      } catch (error) {
+        console.error("Failed to fetch regions:", error);
+      } finally {
+        setRegionsLoading(false);
+      }
+    };
+    fetchRegions();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -37,8 +54,13 @@ const DriverRegistrationForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
+      return;
+    }
+    if (!formData.driverLicense) {
+      alert("Driver License is required!");
       return;
     }
 
@@ -74,7 +96,7 @@ const DriverRegistrationForm = () => {
         darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
       } min-h-screen transition-all duration-500`}
     >
-      {/* Dark Mode Icon Toggle */}
+      {/* Dark Mode Toggle */}
       <div className="flex justify-end p-6">
         <button onClick={() => setDarkMode(!darkMode)} className="text-2xl">
           {darkMode ? (
@@ -117,19 +139,7 @@ const DriverRegistrationForm = () => {
               placeholder="Email Address"
               onChange={handleChange}
             />
-            <Input
-              name="address"
-              placeholder="Residential Address"
-              onChange={handleChange}
-            />
-            <Input
-              type="date"
-              name="dateOfBirth"
-              placeholder="Date of Birth"
-              onChange={handleChange}
-            />
 
-            {/* Password field with toggle */}
             <PasswordInput
               name="password"
               placeholder="Password"
@@ -146,12 +156,47 @@ const DriverRegistrationForm = () => {
               show={showConfirmPassword}
               setShow={setShowConfirmPassword}
             />
-
-            <Upload
-              name="driverLicense"
-              label="Upload Driver License"
+            <Input
+              type="text"
+              name="licenseNumber"
+              placeholder="Driver License Number"
               onChange={handleChange}
             />
+            <Upload
+              name="driverLicense"
+              label="Upload Driver License (Required)"
+              onChange={handleChange}
+              required
+            />
+
+            {/* Grouped Address Fields */}
+            <div className="rounded-lg border border-gray-300 p-4 dark:border-gray-700">
+              <h4 className="mb-2 text-lg font-semibold text-blue-600 dark:text-blue-400">
+                Address
+              </h4>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <Select
+                  name="region"
+                  placeholder="Select Region"
+                  onChange={handleChange}
+                  options={regions}
+                  loading={regionsLoading}
+                  required
+                />
+                <Input
+                  name="zone"
+                  placeholder="Zone"
+                  onChange={handleChange}
+                  required
+                />
+                <Input
+                  name="wereda"
+                  placeholder="Wereda"
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
           </section>
 
           {/* Right Side: Car Info */}
@@ -195,7 +240,7 @@ const DriverRegistrationForm = () => {
             />
           </section>
 
-          {/* Submit and Login */}
+          {/* Submit Button */}
           <div className="col-span-1 mt-8 space-y-4 text-center md:col-span-2">
             <button
               type="submit"
@@ -221,7 +266,7 @@ const DriverRegistrationForm = () => {
   );
 };
 
-// General Input
+// Reusable Input component
 const Input = ({
   type = "text",
   name,
@@ -248,8 +293,8 @@ const Input = ({
   </div>
 );
 
-// Upload Input
-const Upload = ({ name, label, onChange }) => (
+// Reusable Upload component
+const Upload = ({ name, label, onChange, required = false }) => (
   <div className="flex flex-col">
     <label
       htmlFor={name}
@@ -263,13 +308,13 @@ const Upload = ({ name, label, onChange }) => (
       id={name}
       accept="image/*,.pdf"
       onChange={onChange}
+      required={required}
       className="rounded-md border border-gray-400 bg-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 dark:border-gray-600 dark:bg-gray-800"
-      required
     />
   </div>
 );
 
-// Password Input with Eye Toggle
+// Password input with show/hide
 const PasswordInput = ({
   name,
   placeholder,
@@ -300,6 +345,41 @@ const PasswordInput = ({
     >
       {show ? <EyeOff size={18} /> : <Eye size={18} />}
     </div>
+  </div>
+);
+
+// Select component for Region
+const Select = ({
+  name,
+  placeholder,
+  onChange,
+  options = [],
+  loading,
+  required = false,
+}) => (
+  <div className="flex flex-col">
+    <label
+      htmlFor={name}
+      className="mb-1 text-sm font-bold text-gray-700 dark:text-gray-300"
+    >
+      {placeholder}
+    </label>
+    <select
+      name={name}
+      id={name}
+      onChange={onChange}
+      required={required}
+      className="rounded-md border border-gray-400 bg-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 dark:border-gray-600 dark:bg-gray-800"
+    >
+      <option value="">
+        {loading ? "Loading..." : `Select ${placeholder}`}
+      </option>
+      {options.map((region) => (
+        <option key={region.id} value={region.name}>
+          {region.name}
+        </option>
+      ))}
+    </select>
   </div>
 );
 
