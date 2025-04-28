@@ -13,6 +13,7 @@ use App\Http\Controllers\CheckpointController;
 use App\Http\Controllers\ShiftAssignmentController;
 use App\Http\Controllers\TrafficLawController;
 use App\Http\Controllers\ViolationController;
+use App\Http\Controllers\FineController;
 
 // use Illuminate\Support\Facades\Route;
 /*
@@ -172,4 +173,12 @@ Route::middleware( 'auth:sanctum')->group(function () {
     Route::post('/violations', [ViolationController::class, 'issue']);
     Route::get('/violations', [ViolationController::class, 'index']);
     Route::post('/violations/pay', [ViolationController::class, 'pay']);
+});
+
+// Fine routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/fines', [FineController::class, 'store']);
+    Route::get('/fines/{id}', [FineController::class, 'show']);
+    Route::get('/fines/driver/{license}', [FineController::class, 'getByDriver']);
+    Route::post('/fines/mark-paid', [FineController::class, 'markAsPaid']);
 });

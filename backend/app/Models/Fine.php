@@ -10,8 +10,30 @@ class Fine extends Model
     use HasFactory;
 
     protected $fillable = [
-        'driver_id', 'traffic_officer_id', 'car_id',
-        'violation_type', 'amount', 'paid', 'signature'
+        'full_name',
+        'address',
+        'contact_number',
+        'drivers_license_number',
+        'vehicle_registration_number',
+        'vehicle_type',
+        'date_of_offense',
+        'time_of_offense',
+        'location',
+        'incident_description',
+        'total_fine_amount',
+        'due_date',
+        'officer_name',
+        'badge_number',
+        'police_station',
+        'is_paid'
+    ];
+
+    protected $casts = [
+        'date_of_offense' => 'date',
+        'time_of_offense' => 'datetime',
+        'due_date' => 'date',
+        'is_paid' => 'boolean',
+        'total_fine_amount' => 'decimal:2'
     ];
 
     public function driver() {
@@ -28,7 +50,7 @@ class Fine extends Model
 
     public function violations()
     {
-        return $this->belongsToMany(Violation::class, 'fine_violation');
+        return $this->hasMany(FineViolation::class, 'fine_id');
     }
     
 }

@@ -52,7 +52,7 @@ const Fine = () => {
     officerSignature: '',
   });
 
-  // console.log(formData);
+  console.log(user.badge_number);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -173,16 +173,16 @@ const Fine = () => {
     });
   };
 
-  const calculateTotalFine = () => {
-    const violation1 = parseFloat(formData.violation1Amount) || 0;
-    const violation2 = parseFloat(formData.violation2Amount) || 0;
-    const additional = parseFloat(formData.additionalFees) || 0;
-    const total = violation1 + violation2 + additional;
-    setFormData((prev) => ({
-      ...prev,
-      totalFineAmount: total.toFixed(2),
-    }));
-  };
+  // const calculateTotalFine = () => {
+  //   const violation1 = parseFloat(formData.violation1Amount) || 0;
+  //   const violation2 = parseFloat(formData.violation2Amount) || 0;
+  //   const additional = parseFloat(formData.additionalFees) || 0;
+  //   const total = violation1 + violation2 + additional;
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     totalFineAmount: total.toFixed(2),
+  //   }));
+  // };
 
   const handleViolationCodeInput = async (idx, code) => {
     const trimmedCode = code.trim();
@@ -206,7 +206,7 @@ const Fine = () => {
 
       updated[idx].code = newCode;
       updated[idx].type = category;
-      updated[idx].description = description;
+      updated[idx].violationName = description;
       updated[idx].amount = fine_birr;
       updated[idx].demeritPoint = demerit_points;
       updated[idx].offenseType = offense_type; // coming from database
@@ -220,6 +220,8 @@ const Fine = () => {
 
     setViolations(updated);
   };
+
+  console.log(violations);
 
   const updateCodeInput = (value, idx) => {
     const updated = [...violations];
@@ -263,15 +265,37 @@ const Fine = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Add violations array to the form data before sending
+    // Format the data according to the backend requirements
     const data = {
-      ...formData,
-      violations, // append the violations array here
+      full_name: formData.fullName,
+      address: formData.address,
+      contact_number: formData.contactNumber,
+      drivers_license_number: formData.driversLicenseNumber,
+      vehicle_registration_number: formData.vehicleRegistrationNumber,
+      vehicle_type: formData.vehicleType,
+      date_of_offense: formData.dateOfOffense,
+      time_of_offense: formData.timeOfOffense,
+      location: formData.location,
+      incident_description: formData.incidentDescription,
+      total_fine_amount: violations.reduce(
+        (sum, v) => sum + (parseFloat(v.amount) || 0),
+        0,
+      ),
+      due_date: formData.dueDate,
+      officer_name: formData.officerName,
+      badge_number: formData.badgeNumber,
+      police_station: formData.policeStation,
+      violations: violations.map((violation) => ({
+        code: violation.code,
+        type: violation.type,
+        amount: parseFloat(violation.amount) || 0,
+        description: violation.violationName,
+        demeritPoint: parseInt(violation.demeritPoint) || 0,
+      })),
     };
-    console.log(data);
 
     try {
-      const response = await api.post('/violations', data);
+      const response = await api.post('/fines', data);
 
       if (response.data.status === 'success') {
         toast.success('Fine recorded successfully');
@@ -279,6 +303,7 @@ const Fine = () => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to record fine');
+      console.error('Error recording fine:', error);
     } finally {
       setLoading(false);
     }
