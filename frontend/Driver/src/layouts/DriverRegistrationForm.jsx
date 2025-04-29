@@ -127,6 +127,7 @@ const DriverRegistrationForm = () => {
       alert("Passwords do not match!");
       return;
     }
+
     if (!formData.driverLicense) {
       alert("Driver License is required!");
       return;
@@ -135,53 +136,39 @@ const DriverRegistrationForm = () => {
     setLoading(true);
 
     try {
-      // Prepare driver data
-      const driverData = new FormData();
-      driverData.append("fullName", formData.fullName);
-      driverData.append("phoneNumber", formData.phoneNumber);
-      driverData.append("email", formData.email);
-      driverData.append("region", formData.region);
-      driverData.append("zone", formData.zone);
-      driverData.append("wereda", formData.wereda);
-      driverData.append("password", formData.password);
-      driverData.append("driverLicense", formData.driverLicense);
-      driverData.append("licenseNumber", formData.licenseNumber);
+      const data = new FormData();
+      // Driver fields
+      data.append("fullName", formData.fullName);
+      data.append("phoneNumber", formData.phoneNumber);
+      data.append("email", formData.email);
+      data.append("region", formData.region);
+      data.append("zone", formData.zone);
+      data.append("wereda", formData.wereda);
+      data.append("password", formData.password);
+      data.append("driverLicense", formData.driverLicense);
+      data.append("licenseNumber", formData.licenseNumber);
 
-      // Prepare car data
-      const carData = new FormData();
-      carData.append("carPlateNumber", formData.carPlateNumber);
-      carData.append("vin", formData.vin);
-      carData.append("carModel", formData.carModel);
-      carData.append("ChasisNumber", formData.ChasisNumber);
+      // Car fields
+      data.append("carPlateNumber", formData.carPlateNumber);
+      data.append("vin", formData.vin);
+      data.append("carModel", formData.carModel);
+      data.append("ChasisNumber", formData.ChasisNumber);
+
       if (formData.carOwnership) {
-        carData.append("carOwnership", formData.carOwnership);
+        data.append("carOwnership", formData.carOwnership);
       }
       if (formData.carBollo) {
-        carData.append("carBollo", formData.carBollo);
+        data.append("carBollo", formData.carBollo);
       }
 
-      // Send driver info
-      const driverResponse = await api.post(
-        "/api/register-driver",
-        driverData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      console.log("Driver Registered:", driverResponse.data);
-
-      // Send car info
-      const carResponse = await api.post("/api/register-car", carData, {
+      // Send combined request
+      const response = await api.post("/register-driver", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      console.log("Car Registered:", carResponse.data);
-
+      console.log("Response:", response.data);
       alert("Driver and Car registered successfully!");
     } catch (error) {
       console.error(error);

@@ -13,6 +13,8 @@ use App\Http\Controllers\CheckpointController;
 use App\Http\Controllers\ShiftAssignmentController;
 use App\Http\Controllers\TrafficLawController;
 use App\Http\Controllers\ViolationController;
+use App\Http\Controllers\DriverRegistrationController;
+
 
 // use Illuminate\Support\Facades\Route;
 /*
@@ -173,3 +175,9 @@ Route::middleware( 'auth:sanctum')->group(function () {
     Route::get('/violations', [ViolationController::class, 'index']);
     Route::post('/violations/pay', [ViolationController::class, 'pay']);
 });
+
+
+
+// Driver Registration Routes 
+
+Route::post('/register-driver', [DriverRegistrationController::class, 'store']);
