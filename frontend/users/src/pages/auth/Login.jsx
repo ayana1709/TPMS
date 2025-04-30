@@ -41,14 +41,14 @@ export default function Login({ onSuccess }) {
   };
 
   return (
-    <div className="min-h-screen w-screen flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center relative overflow-x-hidden overflow-y-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-slate-950">
         <div className="absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px]"></div>
       </div>
 
       {/* Content */}
-      <div className="relative w-full max-w-md mx-4">
+      <div className="relative w-full max-w-md mx-4 overflow-x-hidden">
         <div className="bg-slate-900/80 backdrop-blur-lg p-8 rounded-2xl shadow-2xl border border-slate-800">
           <div className="mb-8 text-center">
             <h2 className="text-4xl font-bold text-white">Welcome back</h2>
