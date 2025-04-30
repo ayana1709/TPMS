@@ -237,9 +237,9 @@ export default function LandingPage() {
                 <h2 className="text-2xl font-bold text-white">Login</h2>
                 <button
                   onClick={() => setShowLoginModal(false)}
-                  className="text-slate-400 hover:text-white"
+                  className="text-white bg-gray-900 hover:text-red-500 transition-all duration-300"
                 >
-                  ✕
+                  <span className="text-2xl"> ✕</span>
                 </button>
               </div>
               <Login onSuccess={handleLoginSuccess} />
@@ -250,7 +250,7 @@ export default function LandingPage() {
                     setShowLoginModal(false);
                     setShowRegisterModal(true);
                   }}
-                  className="text-indigo-400 hover:text-indigo-300"
+                  className="ml-4 px-10 bg-slate-800 text-indigo-400 hover:text-indigo-300"
                 >
                   Sign up
                 </button>
