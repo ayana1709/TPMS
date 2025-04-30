@@ -9,12 +9,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Layout from "./components/Layout";
+import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/dashboard/Dashboard";
 import ReportAccident from "./pages/dashboard/ReportAccident";
 import SubmitComplaint from "./pages/dashboard/SubmitComplaint";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
-import "./App.css";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -22,7 +22,7 @@ const queryClient = new QueryClient();
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  return isAuthenticated ? children : <Navigate to="/" />;
 };
 
 function App() {
@@ -33,12 +33,13 @@ function App() {
           <div className="min-h-screen bg-gray-50">
             <Routes>
               {/* Public Routes */}
+              <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
 
               {/* Protected Routes */}
               <Route
-                path="/"
+                path="/dashboard"
                 element={
                   <ProtectedRoute>
                     <Layout>

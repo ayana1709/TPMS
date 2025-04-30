@@ -6,7 +6,7 @@ import { loginSchema } from "../../lib/schemas";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-hot-toast";
 
-export default function Login() {
+export default function Login({ onSuccess }) {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -25,7 +25,11 @@ export default function Login() {
       const result = await login(data);
       if (result.success) {
         toast.success("Login successful!");
-        navigate("/");
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          navigate("/");
+        }
       } else {
         toast.error(result.error || "Login failed");
       }
