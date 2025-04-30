@@ -144,7 +144,7 @@ export default function LandingPage() {
         {/* Features Section */}
         <section className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="glass-effect p-8 rounded-2xl shadow-2xl border border-slate-800">
+            <div className="glass-effect bg-black/30 p-8 rounded-2xl shadow-2xl border border-slate-800">
               <div className="text-indigo-400 mb-4">
                 <svg
                   className="w-12 h-12"
@@ -169,7 +169,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="glass-effect p-8 rounded-2xl shadow-2xl border border-slate-800">
+            <div className="glass-effect bg-black/30 p-8 rounded-2xl shadow-2xl border border-slate-800">
               <div className="text-indigo-400 mb-4">
                 <svg
                   className="w-12 h-12"
@@ -194,7 +194,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="glass-effect p-8 rounded-2xl shadow-2xl border border-slate-800">
+            <div className="glass-effect bg-black/30 p-8 rounded-2xl shadow-2xl border border-slate-800">
               <div className="text-indigo-400 mb-4">
                 <svg
                   className="w-12 h-12"
