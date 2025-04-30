@@ -260,8 +260,8 @@ export default function LandingPage() {
         )}
 
         {showRegisterModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="glass-effect p-8 rounded-2xl shadow-2xl border border-slate-800 max-w-md w-full mx-4">
+          <div className="fixed w-full inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="glass-effect p-8 rounded-2xl shadow-2xl border border-slate-800 w-1/2 h-[90%] my-auto mx-4">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-white">Register</h2>
                 <button

@@ -6,7 +6,6 @@ import { loginSchema } from "../../lib/schemas";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-hot-toast";
 import { Check } from "lucide-react";
-// import { Check } from "lucide-react";
 
 export default function Login({ onSuccess }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -98,7 +97,7 @@ export default function Login({ onSuccess }) {
         <div className="flex items-center">
           <label className="inline-flex items-center cursor-pointer">
             <input type="checkbox" className="sr-only peer" />
-            <div className="w-5 h-5 flex items-center justify-center rounded border border-slate-700 transition-colors duration-150">
+            <div className="w-5 h-5 flex items-center justify-center rounded border border-slate-700 bg-slate-800 peer-checked:bg-indigo-600 transition-colors duration-150">
               <Check className="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200" />
             </div>
             <span className="ml-2 text-sm text-gray-200">Remember me</span>
