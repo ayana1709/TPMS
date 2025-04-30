@@ -51,7 +51,7 @@ export default function Register({ onSuccess }) {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 overflow-y-auto bg-slate-700">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 bg-slate-800 rounded-xl">
       <div className="max-w-5xl w-full space-y-8 ">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-100">
@@ -70,7 +70,7 @@ export default function Register({ onSuccess }) {
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="space-y-6 bg-slate-900/95 backdrop-blur-lg p-8 rounded-xl border border-slate-800 overflow-y-auto max-h-[80vh] scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800 scrollbar-thumb-rounded-lg"
+          className="space-y-6 bg-slate-900/95 backdrop-blur-lg p-8 rounded-xl border border-slate-800 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800 scrollbar-thumb-rounded-lg"
         >
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -353,11 +353,11 @@ export default function Register({ onSuccess }) {
         </form>
 
         <div className="text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-100">
             Already have an account?{" "}
             <a
               href="/login"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
+              className="font-medium text-blue-500 hover:text-indigo-500"
             >
               Login here
             </a>
