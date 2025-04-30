@@ -1,28 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Sun, Moon, Eye, EyeOff } from "lucide-react";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+
 import api from "api";
 
 const DriverRegistrationForm = () => {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    phoneNumber: "",
-    email: "",
-    region: "",
-    zone: "",
-    wereda: "",
-    password: "",
-    confirmPassword: "",
-    driverLicense: null,
-    licenseNumber: "",
-
-    carPlateNumber: "",
-    vin: "",
-    carModel: "",
-    ChasisNumber: "",
-    carOwnership: null,
-    carBollo: null,
-  });
-
   const [loading, setLoading] = useState(false);
   const [regions, setRegions] = useState([]);
   const [zones, setZones] = useState([]);
@@ -35,6 +18,125 @@ const DriverRegistrationForm = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    fullName: "",
+    phoneNumber: "",
+    email: "",
+    region: "",
+    zone: "",
+    woreda: "",
+    password: "",
+    confirmPassword: "",
+    driverLicense: null,
+    licenseNumber: "",
+
+    carPlateNumber: "",
+    vin: "",
+    carModel: "",
+    ChasisNumber: "",
+    carOwnership: null,
+    carBollo: null,
+  });
+  // handle submit function
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      Swal.fire("Error", "Passwords do not match!", "error");
+      return;
+    }
+
+    if (!formData.driverLicense) {
+      Swal.fire("Error", "Driver License is required!", "error");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const data = new FormData();
+      // Driver fields
+      data.append("fullName", formData.fullName);
+      data.append("phoneNumber", formData.phoneNumber);
+      data.append("email", formData.email);
+      data.append("region", formData.region);
+      data.append("zone", formData.zone);
+      data.append("wereda", formData.wereda);
+      data.append("password", formData.password);
+      data.append("driverLicense", formData.driverLicense);
+      data.append("licenseNumber", formData.licenseNumber);
+
+      // Car fields
+      data.append("carPlateNumber", formData.carPlateNumber);
+      if (formData.vin) data.append("vin", formData.vin);
+      if (formData.carModel) data.append("carModel", formData.carModel);
+      if (formData.ChasisNumber)
+        data.append("ChasisNumber", formData.ChasisNumber);
+      if (formData.carOwnership)
+        data.append("carOwnership", formData.carOwnership);
+      if (formData.carBollo) data.append("carBollo", formData.carBollo);
+
+      const response = await api.post("/register-driver", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("Response:", response.data);
+
+      // Show success popup
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Driver and Car registered successfully!",
+        confirmButtonText: "Go to Dashboard",
+      }).then(() => {
+        // Navigate and clear form
+        setFormData({
+          fullName: "",
+          phoneNumber: "",
+          email: "",
+          region: "",
+          zone: "",
+          wereda: "",
+          password: "",
+          confirmPassword: "",
+          driverLicense: null,
+          licenseNumber: "",
+          carPlateNumber: "",
+          vin: "",
+          carModel: "",
+          ChasisNumber: "",
+          carOwnership: null,
+          carBollo: null,
+        });
+
+        navigate("/dashboard"); // Replace with your actual dashboard route
+      });
+    } catch (error) {
+      console.error(error);
+
+      if (error.response && error.response.status === 422) {
+        const errors = error.response.data.errors;
+        let errorMessages = Object.values(errors).flat().join("<br>");
+        Swal.fire({
+          icon: "error",
+          title: "Validation Error",
+          html: errorMessages,
+        });
+      } else {
+        Swal.fire(
+          "Error",
+          "Something went wrong during registration!",
+          "error"
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Fetch regions
   useEffect(() => {
@@ -117,64 +219,6 @@ const DriverRegistrationForm = () => {
       setFormData((prev) => ({ ...prev, [name]: files[0] }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-
-    if (!formData.driverLicense) {
-      alert("Driver License is required!");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const data = new FormData();
-      // Driver fields
-      data.append("fullName", formData.fullName);
-      data.append("phoneNumber", formData.phoneNumber);
-      data.append("email", formData.email);
-      data.append("region", formData.region);
-      data.append("zone", formData.zone);
-      data.append("wereda", formData.wereda);
-      data.append("password", formData.password);
-      data.append("driverLicense", formData.driverLicense);
-      data.append("licenseNumber", formData.licenseNumber);
-
-      // Car fields
-      data.append("carPlateNumber", formData.carPlateNumber);
-      data.append("vin", formData.vin);
-      data.append("carModel", formData.carModel);
-      data.append("ChasisNumber", formData.ChasisNumber);
-
-      if (formData.carOwnership) {
-        data.append("carOwnership", formData.carOwnership);
-      }
-      if (formData.carBollo) {
-        data.append("carBollo", formData.carBollo);
-      }
-
-      // Send combined request
-      const response = await api.post("/register-driver", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      console.log("Response:", response.data);
-      alert("Driver and Car registered successfully!");
-    } catch (error) {
-      console.error(error);
-      alert("Something went wrong during registration!");
-    } finally {
-      setLoading(false);
     }
   };
 
