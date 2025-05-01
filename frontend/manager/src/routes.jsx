@@ -26,6 +26,7 @@ import AssignShiftForm from "./pages/dashboard/Attendance/AssignShiftForm";
 import ShiftAssignmentTable from "./pages/dashboard/Attendance/ShiftAssignmentTable";
 import CreateAccountingUser from "./pages/dashboard/CreateAccountingCheacker";
 import CreateAccountingCheacker from "./pages/dashboard/CreateAccountingCheacker";
+import CheackerTable from "./pages/dashboard/CheackerTable";
 
 
 const icon = {
@@ -74,9 +75,9 @@ export const routes = [
       },
       {
         icon: <BellAlertIcon {...icon} />,
-        name: "Cheacker Account",
+        name: "Cheacker",
         path: "/complain",
-        element: <CreateAccountingCheacker/>,
+        element: <CheackerTable/>,
       },
       {
         icon: <ExclamationTriangleIcon {...icon} />,
@@ -137,6 +138,11 @@ export const routes = [
         // name: "",
         path: "assign-traffic-officer",
         element: <AssignShiftForm />,
+      },
+      {
+        // name: "",
+        path: "create-cheacker",
+        element: <CreateAccountingCheacker />,
       },
     ],
   },

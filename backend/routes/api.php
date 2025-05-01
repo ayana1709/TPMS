@@ -14,6 +14,8 @@ use App\Http\Controllers\ShiftAssignmentController;
 use App\Http\Controllers\TrafficLawController;
 use App\Http\Controllers\ViolationController;
 use App\Http\Controllers\DriverRegistrationController;
+use App\Http\Controllers\CheackerController;
+
 
 
 // use Illuminate\Support\Facades\Route;
@@ -181,3 +183,12 @@ Route::middleware( 'auth:sanctum')->group(function () {
 // Driver Registration Routes 
 
 Route::post('/register-driver', [DriverRegistrationController::class, 'store']);
+
+Route::prefix('cheackers')->group(function () {
+    Route::get('/', [CheackerController::class, 'index']);            // List all cheackers
+    Route::post('/', [CheackerController::class, 'store']);           // Create new cheacker
+    Route::get('/{id}', [CheackerController::class, 'show']);         // Get single cheacker
+    Route::put('/{id}', [CheackerController::class, 'update']);       // Update cheacker
+    Route::delete('/{id}', [CheackerController::class, 'destroy']);   // Delete cheacker
+});
+Route::post('/cheacker/login', [CheackerController::class, 'login']);

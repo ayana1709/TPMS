@@ -1,15 +1,17 @@
+import api from "@/api";
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 // import api from "../utils/api"; // Uncomment and adjust path when using real API
 
 const CreateAccountingCheacker = () => {
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     username: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    password_confirmation: "", // <-- Laravel expects this exact name
   });
+  
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -25,20 +27,21 @@ const CreateAccountingCheacker = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.password_confirmation) {
       Swal.fire("Error", "Passwords do not match!", "error");
       return;
     }
+    
 
     try {
-      // const response = await api.post("/create-accounting-user", formData);
+      const response = await api.post("/cheackers", formData);
       Swal.fire("Success", "Accounting user created!", "success");
       setFormData({
-        fullName: "",
+        name: "",
         username: "",
         email: "",
         password: "",
-        confirmPassword: "",
+        password_confirmation: "",
       });
     } catch (error) {
       console.error(error);
@@ -60,8 +63,8 @@ const CreateAccountingCheacker = () => {
           <label className="block text-sm font-medium text-gray-700">Full Name</label>
           <input
             type="text"
-            name="fullName"
-            value={formData.fullName}
+            name="name"
+            value={formData.name}
             onChange={handleChange}
             required
             placeholder="John Doe"
@@ -72,6 +75,7 @@ const CreateAccountingCheacker = () => {
           <label className="block text-sm font-medium text-gray-700">Username</label>
           <input
             type="text"
+
             name="username"
             value={formData.username}
             onChange={handleChange}
@@ -116,15 +120,16 @@ const CreateAccountingCheacker = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
           <div className="relative">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-              placeholder="********"
-              className="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
+          <input
+  type={showConfirmPassword ? "text" : "password"}
+  name="password_confirmation"
+  value={formData.password_confirmation}
+  onChange={handleChange}
+  required
+  placeholder="********"
+  className="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+/>
+
             <button
               type="button"
               onClick={toggleConfirmPassword}
