@@ -91,7 +91,7 @@ const DriverRegistrationForm = () => {
         icon: "success",
         title: "Success",
         text: "Driver and Car registered successfully!",
-        confirmButtonText: "Go to Dashboard",
+        confirmButtonText: "Ok",
       }).then(() => {
         // Navigate and clear form
         setFormData({
@@ -113,7 +113,7 @@ const DriverRegistrationForm = () => {
           carBollo: null,
         });
 
-        navigate("/dashboard"); // Replace with your actual dashboard route
+        navigate("/waiting-Approval"); // Replace with your actual dashboard route
       });
     } catch (error) {
       console.error(error);
