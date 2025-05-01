@@ -78,4 +78,23 @@ class DriverRegistrationController extends Controller
             ], 500);
         }
     }
+
+    public function index()
+{
+    try {
+        // Eager load related car information
+        $drivers = Driver::with('car')->latest()->get();
+
+        return response()->json([
+            'message' => 'Drivers with cars fetched successfully',
+            'data' => $drivers,
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Failed to fetch driver-car data',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
 }

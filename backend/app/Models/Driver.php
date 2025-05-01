@@ -26,8 +26,12 @@ class Driver extends Model
         'password',
     ];
 
-    public function cars()
+    // public function cars()
+    // {
+    //     return $this->hasMany(Car::class);
+    // }
+    public function car()
     {
-        return $this->hasMany(Car::class);
-    }
+        return $this->hasOne(Car::class);
+}
 }

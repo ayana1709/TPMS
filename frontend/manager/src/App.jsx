@@ -13,6 +13,7 @@ import 'leaflet/dist/leaflet.css';
 import { useEffect, useState } from "react";
 import api from "./api";
 import Loading from "./pages/components/Loading";
+import CheckerDriverTable from "./pages/dashboard/CheckerDriverTable";
 
 // Manager protected route
 const ProtectedRoute = ({ children }) => {
@@ -77,9 +78,11 @@ function App() {
       <Route path="/create-account" element={<TrafficAccount />} />
       <Route path="/welcome" element={<ManagerWelcome />} />
       <Route path="/manager/waiting" element={<ManagerWaiting />} />
+      <Route path="/cheack-driver" element={<CheckerDriverTable />} />
+
 
       {/* Catch-all: redirect all unknown routes to / */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
     </Routes>
   );
 }

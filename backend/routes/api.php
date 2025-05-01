@@ -183,6 +183,8 @@ Route::middleware( 'auth:sanctum')->group(function () {
 // Driver Registration Routes 
 
 Route::post('/register-driver', [DriverRegistrationController::class, 'store']);
+Route::get('/drivers', [DriverRegistrationController::class, 'index']);
+
 
 Route::prefix('cheackers')->group(function () {
     Route::get('/', [CheackerController::class, 'index']);            // List all cheackers

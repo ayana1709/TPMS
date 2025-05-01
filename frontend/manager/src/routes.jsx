@@ -27,6 +27,7 @@ import ShiftAssignmentTable from "./pages/dashboard/Attendance/ShiftAssignmentTa
 import CreateAccountingUser from "./pages/dashboard/CreateAccountingCheacker";
 import CreateAccountingCheacker from "./pages/dashboard/CreateAccountingCheacker";
 import CheackerTable from "./pages/dashboard/CheackerTable";
+import CheckerDriverTable from "./pages/dashboard/CheckerDriverTable";
 
 
 const icon = {
@@ -143,6 +144,11 @@ export const routes = [
         // name: "",
         path: "create-cheacker",
         element: <CreateAccountingCheacker />,
+      },
+      {
+        // name: "",
+        path: "cheack-driver",
+        element: <CheckerDriverTable />,
       },
     ],
   },
