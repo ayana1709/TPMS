@@ -10,16 +10,15 @@ const DriverRegistrationForm = () => {
   const [regions, setRegions] = useState([]);
   const [zones, setZones] = useState([]);
   const [woredas, setWoredas] = useState([]);
-
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedZone, setSelectedZone] = useState("");
   const [selectedWoreda, setSelectedWoreda] = useState("");
-
   const [darkMode, setDarkMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
+  // form
   const [formData, setFormData] = useState({
     fullName: "",
     phoneNumber: "",
@@ -77,14 +76,17 @@ const DriverRegistrationForm = () => {
       if (formData.carOwnership)
         data.append("carOwnership", formData.carOwnership);
       if (formData.carBollo) data.append("carBollo", formData.carBollo);
-
       const response = await api.post("/register-driver", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
       console.log("Response:", response.data);
+      // Store token and user info
+      const { token, driver } = response.data;
+      localStorage.setItem("driver_token", token);
+      localStorage.setItem("driver_id", driver.id);
+      localStorage.setItem("driver_name", driver.fullName);
 
       // Show success popup
       Swal.fire({

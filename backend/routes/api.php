@@ -189,6 +189,9 @@ Route::put('/drivers/{id}', [DriverRegistrationController::class, 'update']);
 Route::delete('/drivers/{id}', [DriverRegistrationController::class, 'destroy']);
 Route::patch('/drivers/{id}/approve', [DriverRegistrationController::class, 'approve']);
 Route::patch('/drivers/{id}/reject', [DriverRegistrationController::class, 'reject']);
+Route::get('/drivers/{id}/status', [DriverRegistrationController::class, 'checkStatus']);
+
+
 
 
 

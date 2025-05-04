@@ -149,39 +149,49 @@ public function show($id)
         ], 500);
     }
 }
-//
-public function activate(Driver $driver)
-{
-    $driver->status = 'activated'; // or 'approved'
-    $driver->save();
 
-    return response()->json([
-        'message' => 'Driver status updated successfully.',
-        'driver' => $driver
-    ]);
-}
 //
 public function destroy($id)
     {
         Driver::destroy($id);
         return response()->json(['message' => 'Driver deleted successfully.']);
     }
+//
 
     public function approve($id)
     {
         $driver = Driver::findOrFail($id);
-        $driver->status = 'approved';
+        $driver->status = 'active';
         $driver->save();
-        return response()->json(['message' => 'Driver approved.']);
+        return response()->json(['message' => 'Driver activated.']);
     }
+
 //
+
     public function reject($id)
     {
         $driver = Driver::findOrFail($id);
-        $driver->status = 'rejected';
+        $driver->status = 'inactive';
         $driver->save();
         return response()->json(['message' => 'Driver rejected.']);
     }
+
+    public function checkStatus($id)
+{
+    try {
+        $driver = Driver::findOrFail($id);
+
+        return response()->json([
+            'message' => 'Driver status fetched successfully.',
+            'status' => $driver->status,
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Failed to fetch driver status.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
 
 
 }

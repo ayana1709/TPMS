@@ -26,14 +26,10 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/api';
 import Swal from 'sweetalert2';
 
-// import api from './api'; // Adjust the import path as needed
-
 const fetchDrivers = async () => {
   const response = await api.get('/drivers');
-  console.log(response.data.data); // Log to confirm
-  return response.data.data; // Return only the driver list
+  return response.data.data;
 };
-
 
 const DriversWithCarsTable = () => {
   const queryClient = useQueryClient();
@@ -66,7 +62,7 @@ const DriversWithCarsTable = () => {
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Yes, delete it!',
     });
-  
+
     if (result.isConfirmed) {
       try {
         await api.delete(`/drivers/${id}`);
@@ -78,8 +74,6 @@ const DriversWithCarsTable = () => {
       }
     }
   };
-  
- 
 
   const handleApprove = async (id) => {
     const result = await Swal.fire({
@@ -90,7 +84,7 @@ const DriversWithCarsTable = () => {
       confirmButtonText: 'Approve',
       cancelButtonText: 'Cancel',
     });
-  
+
     if (result.isConfirmed) {
       try {
         await api.patch(`/drivers/${id}/approve`);
@@ -102,7 +96,6 @@ const DriversWithCarsTable = () => {
       }
     }
   };
-  
 
   const handleReject = async (id) => {
     const result = await Swal.fire({
@@ -113,7 +106,7 @@ const DriversWithCarsTable = () => {
       confirmButtonText: 'Reject',
       cancelButtonText: 'Cancel',
     });
-  
+
     if (result.isConfirmed) {
       try {
         await api.patch(`/drivers/${id}/reject`);
@@ -125,7 +118,6 @@ const DriversWithCarsTable = () => {
       }
     }
   };
-  
 
   const handleSaveEdit = async () => {
     try {
@@ -137,58 +129,53 @@ const DriversWithCarsTable = () => {
     }
   };
 
-  const columns = useMemo(
-    () => [
-      {accessorkey: 'id', header: 'ID'},
-      { accessorKey: 'full_name', header: 'Full Name' },
-      { accessorKey: 'email', header: 'Email' },
-      { accessorKey: 'phone_number', header: 'Phone' },
-      { accessorKey: 'region', header: 'Region' },
-      { accessorKey: 'zone', header: 'Zone' },
-      { accessorKey: 'wereda', header: 'Wereda' },
-      { accessorKey: 'license_number', header: 'License Number' },
-      { accessorKey: 'car.plate_number', header: 'Car Plate' },
-      { accessorKey: 'car.model', header: 'Car Model' },
-      {
-        header: 'Actions',
-        id: 'actions',
-        Cell: ({ row }) => (
-          <Box sx={{ display: 'flex', gap: '0.5rem' }}>
-            <Tooltip title="Approve">
-              <IconButton color="success" onClick={() => handleApprove(row.original.id)}>
-                <CheckIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Reject">
-              <IconButton color="error" onClick={() => handleReject(row.original.id)}>
-                <ClearIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="View">
-              <IconButton color="primary" onClick={() => handleView(row.original)}>
-                <VisibilityIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Edit">
-              <IconButton color="secondary" onClick={() => handleEdit(row.original)}>
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete">
-              <IconButton color="error" onClick={() => handleDelete(row.original.id)}>
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        ),
-      },
-    ],
-    []
-  );
+  const columns = useMemo(() => [
+    { accessorKey: 'id', header: 'ID' },
+    { accessorKey: 'full_name', header: 'Full Name' },
+    { accessorKey: 'email', header: 'Email' },
+    { accessorKey: 'phone_number', header: 'Phone' },
+    { accessorKey: 'region', header: 'Region' },
+    { accessorKey: 'zone', header: 'Zone' },
+    { accessorKey: 'wereda', header: 'Wereda' },
+    { accessorKey: 'license_number', header: 'License Number' },
+    { accessorKey: 'car.plate_number', header: 'Car Plate' },
+    { accessorKey: 'car.model', header: 'Car Model' },
+    { accessorKey: 'status', header: 'Status' },
+    {
+      header: 'Actions',
+      id: 'actions',
+      Cell: ({ row }) => (
+        <Box sx={{ display: 'flex', gap: '0.5rem' }}>
+          <Tooltip title="Approve">
+            <IconButton color="success" onClick={() => handleApprove(row.original.id)}>
+              <CheckIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Reject">
+            <IconButton color="error" onClick={() => handleReject(row.original.id)}>
+              <ClearIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="View">
+            <IconButton color="primary" onClick={() => handleView(row.original)}>
+              <VisibilityIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Edit">
+            <IconButton color="secondary" onClick={() => handleEdit(row.original)}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton color="error" onClick={() => handleDelete(row.original.id)}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
+    },
+  ], []);
 
- 
-  
-// Material react table setup 
   const table = useMaterialReactTable({
     columns,
     data: data || [],
@@ -210,35 +197,41 @@ const DriversWithCarsTable = () => {
 
       {/* View Dialog */}
       <Dialog open={viewDialogOpen} onClose={() => setViewDialogOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Driver and Car Information</DialogTitle>
-        <DialogContent dividers>
-          {selectedDriver && (
-            <>
-              <Typography variant="h6" gutterBottom>
-                Driver Info
-              </Typography>
-              <Typography><strong>Name:</strong> {selectedDriver.full_name}</Typography>
-              <Typography><strong>Email:</strong> {selectedDriver.email}</Typography>
-              <Typography><strong>Phone:</strong> {selectedDriver.phone_number}</Typography>
-              <Typography><strong>Region:</strong> {selectedDriver.region}</Typography>
-              <Typography><strong>Zone:</strong> {selectedDriver.zone}</Typography>
-              <Typography><strong>Wereda:</strong> {selectedDriver.wereda}</Typography>
-              <Typography><strong>License Number:</strong> {selectedDriver.license_number}</Typography>
+  <DialogTitle>Driver and Car Information</DialogTitle>
+  <DialogContent dividers>
+    {selectedDriver && (
+      <>
+        <Typography variant="h6">Driver Info</Typography>
+        <Typography><strong>ID:</strong> {selectedDriver.id}</Typography>
+        <Typography><strong>Title:</strong> {selectedDriver.title}</Typography>
+        <Typography><strong>Name:</strong> {selectedDriver.full_name}</Typography>
+        <Typography><strong>Email:</strong> {selectedDriver.email}</Typography>
+        <Typography><strong>Phone:</strong> {selectedDriver.phone_number}</Typography>
+        <Typography><strong>Status:</strong> {selectedDriver.status}</Typography>
+        <Typography><strong>Region:</strong> {selectedDriver.region}</Typography>
+        <Typography><strong>Zone:</strong> {selectedDriver.zone}</Typography>
+        <Typography><strong>Wereda:</strong> {selectedDriver.wereda}</Typography>
+        <Typography><strong>License Number:</strong> {selectedDriver.license_number}</Typography>
+        <Typography><strong>Birthdate:</strong> {selectedDriver.birthdate}</Typography>
+        <Typography><strong>Experience (Years):</strong> {selectedDriver.experience_years}</Typography>
+        <Typography><strong>Address:</strong> {selectedDriver.address}</Typography>
 
-              <Typography variant="h6" mt={2} gutterBottom>
-                Car Info
-              </Typography>
-              <Typography><strong>Plate Number:</strong> {selectedDriver.car?.plate_number}</Typography>
-              <Typography><strong>Model:</strong> {selectedDriver.car?.model}</Typography>
-            </>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setViewDialogOpen(false)} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+        <Typography variant="h6" mt={2}>Car Info</Typography>
+        <Typography><strong>Plate Number:</strong> {selectedDriver.car?.plate_number}</Typography>
+        <Typography><strong>Model:</strong> {selectedDriver.car?.model}</Typography>
+        <Typography><strong>Color:</strong> {selectedDriver.car?.color}</Typography>
+        <Typography><strong>Year:</strong> {selectedDriver.car?.year}</Typography>
+        <Typography><strong>Type:</strong> {selectedDriver.car?.type}</Typography>
+        <Typography><strong>Ownership Status:</strong> {selectedDriver.car?.ownership_status}</Typography>
+        <Typography><strong>Insurance Status:</strong> {selectedDriver.car?.insurance_status}</Typography>
+      </>
+    )}
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setViewDialogOpen(false)} color="primary">Close</Button>
+  </DialogActions>
+</Dialog>
+
 
       {/* Edit Dialog */}
       <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="sm" fullWidth>
@@ -247,93 +240,65 @@ const DriversWithCarsTable = () => {
           {selectedDriver && (
             <>
               <TextField
+                label="Title"
+                value={selectedDriver.title || ''}
+                onChange={(e) => setSelectedDriver({ ...selectedDriver, title: e.target.value })}
+                fullWidth margin="normal"
+              />
+              <TextField
                 label="Full Name"
                 value={selectedDriver.full_name}
                 onChange={(e) => setSelectedDriver({ ...selectedDriver, full_name: e.target.value })}
-                fullWidth
-                margin="normal"
+                fullWidth margin="normal"
               />
-               <TextField
+              <TextField
                 label="Email"
                 value={selectedDriver.email}
                 onChange={(e) => setSelectedDriver({ ...selectedDriver, email: e.target.value })}
-                fullWidth
-                margin="normal"
+                fullWidth margin="normal"
               />
               <TextField
                 label="Phone Number"
                 value={selectedDriver.phone_number}
                 onChange={(e) => setSelectedDriver({ ...selectedDriver, phone_number: e.target.value })}
-                fullWidth
-                margin="normal"
+                fullWidth margin="normal"
               />
               <TextField
                 label="Region"
                 value={selectedDriver.region}
                 onChange={(e) => setSelectedDriver({ ...selectedDriver, region: e.target.value })}
-                fullWidth
-                margin="normal"
+                fullWidth margin="normal"
               />
               <TextField
                 label="Zone"
                 value={selectedDriver.zone}
                 onChange={(e) => setSelectedDriver({ ...selectedDriver, zone: e.target.value })}
-                fullWidth
-                margin="normal"
+                fullWidth margin="normal"
               />
               <TextField
                 label="Wereda"
                 value={selectedDriver.wereda}
                 onChange={(e) => setSelectedDriver({ ...selectedDriver, wereda: e.target.value })}
-                fullWidth
-                margin="normal"
+                fullWidth margin="normal"
               />
               <TextField
                 label="License Number"
                 value={selectedDriver.license_number}
                 onChange={(e) => setSelectedDriver({ ...selectedDriver, license_number: e.target.value })}
-                fullWidth
-                margin="normal"
+                fullWidth margin="normal"
               />
-              {/* Optional: Edit car info too */}
-              {selectedDriver.car && (
-                <>
-                  <TextField
-                    label="Car Plate Number"
-                    value={selectedDriver.car.plate_number}
-                    onChange={(e) =>
-                      setSelectedDriver({
-                        ...selectedDriver,
-                        car: { ...selectedDriver.car, plate_number: e.target.value },
-                      })
-                    }
-                    fullWidth
-                    margin="normal"
-                  />
-                  <TextField
-                    label="Car Model"
-                    value={selectedDriver.car.model}
-                    onChange={(e) =>
-                      setSelectedDriver({
-                        ...selectedDriver,
-                        car: { ...selectedDriver.car, model: e.target.value },
-                      })
-                    }
-                    fullWidth
-                    margin="normal"
-                  />
-                </>
-              )}
+              <TextField
+                label="Status"
+                value={selectedDriver.status || ''}
+                onChange={(e) => setSelectedDriver({ ...selectedDriver, status: e.target.value })}
+                fullWidth margin="normal"
+              />
             </>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleSaveEdit} color="primary" variant="contained">
-            Save Changes
-          </Button>
+          <Button onClick={handleSaveEdit} variant="contained" color="primary">Save</Button>
+          <Button onClick={() => setEditDialogOpen(false)} color="secondary">Cancel</Button>
         </DialogActions>
       </Dialog>
     </>
