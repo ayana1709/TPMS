@@ -24,6 +24,8 @@ import {
 } from '@mui/icons-material';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/api';
+import Swal from 'sweetalert2';
+
 // import api from './api'; // Adjust the import path as needed
 
 const fetchDrivers = async () => {
@@ -55,31 +57,75 @@ const DriversWithCarsTable = () => {
   };
 
   const handleDelete = async (id) => {
-    try {
-      await api.delete(`/drivers/${id}`);
-      queryClient.invalidateQueries({ queryKey: ['drivers'] });
-    } catch (error) {
-      console.error('Delete error:', error);
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "This action will delete the driver.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        await api.delete(`/drivers/${id}`);
+        queryClient.invalidateQueries({ queryKey: ['drivers'] });
+        Swal.fire('Deleted!', 'Driver has been deleted.', 'success');
+      } catch (error) {
+        console.error('Delete error:', error);
+        Swal.fire('Error!', 'Something went wrong.', 'error');
+      }
     }
   };
+  
+ 
 
   const handleApprove = async (id) => {
-    try {
-      await api.patch(`/drivers/${id}/approve`);
-      queryClient.invalidateQueries({ queryKey: ['drivers'] });
-    } catch (error) {
-      console.error('Approve error:', error);
+    const result = await Swal.fire({
+      title: 'Approve Driver?',
+      text: 'This will approve the driver.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Approve',
+      cancelButtonText: 'Cancel',
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        await api.patch(`/drivers/${id}/approve`);
+        queryClient.invalidateQueries({ queryKey: ['drivers'] });
+        Swal.fire('Approved!', 'Driver approved successfully.', 'success');
+      } catch (error) {
+        console.error('Approve error:', error);
+        Swal.fire('Error!', 'Approval failed.', 'error');
+      }
     }
   };
+  
 
   const handleReject = async (id) => {
-    try {
-      await api.patch(`/drivers/${id}/reject`);
-      queryClient.invalidateQueries({ queryKey: ['drivers'] });
-    } catch (error) {
-      console.error('Reject error:', error);
+    const result = await Swal.fire({
+      title: 'Reject Driver?',
+      text: 'This will reject the driver.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Reject',
+      cancelButtonText: 'Cancel',
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        await api.patch(`/drivers/${id}/reject`);
+        queryClient.invalidateQueries({ queryKey: ['drivers'] });
+        Swal.fire('Rejected!', 'Driver rejected successfully.', 'success');
+      } catch (error) {
+        console.error('Reject error:', error);
+        Swal.fire('Error!', 'Rejection failed.', 'error');
+      }
     }
   };
+  
 
   const handleSaveEdit = async () => {
     try {
@@ -93,6 +139,7 @@ const DriversWithCarsTable = () => {
 
   const columns = useMemo(
     () => [
+      {accessorkey: 'id', header: 'ID'},
       { accessorKey: 'full_name', header: 'Full Name' },
       { accessorKey: 'email', header: 'Email' },
       { accessorKey: 'phone_number', header: 'Phone' },
