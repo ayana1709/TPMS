@@ -184,6 +184,13 @@ Route::middleware( 'auth:sanctum')->group(function () {
 
 Route::post('/register-driver', [DriverRegistrationController::class, 'store']);
 Route::get('/drivers', [DriverRegistrationController::class, 'index']);
+Route::get('/drivers/{id}', [DriverRegistrationController::class, 'show']);
+Route::put('/drivers/{id}', [DriverRegistrationController::class, 'update']);
+Route::delete('/drivers/{id}', [DriverRegistrationController::class, 'destroy']);
+Route::patch('/drivers/{id}/approve', [DriverRegistrationController::class, 'approve']);
+Route::patch('/drivers/{id}/reject', [DriverRegistrationController::class, 'reject']);
+
+
 
 
 Route::prefix('cheackers')->group(function () {

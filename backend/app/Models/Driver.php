@@ -20,6 +20,7 @@ class Driver extends Model
         'password',
         'license_number',
         'driver_license_path',
+        'status',
     ];
 
     protected $hidden = [
