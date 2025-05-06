@@ -15,8 +15,7 @@ use App\Http\Controllers\TrafficLawController;
 use App\Http\Controllers\ViolationController;
 use App\Http\Controllers\DriverRegistrationController;
 use App\Http\Controllers\CheackerController;
-
-
+use App\Models\Driver;
 
 // use Illuminate\Support\Facades\Route;
 /*
@@ -190,8 +189,11 @@ Route::delete('/drivers/{id}', [DriverRegistrationController::class, 'destroy'])
 Route::patch('/drivers/{id}/approve', [DriverRegistrationController::class, 'approve']);
 Route::patch('/drivers/{id}/reject', [DriverRegistrationController::class, 'reject']);
 Route::get('/drivers/{id}/status', [DriverRegistrationController::class, 'checkStatus']);
+Route::post('/driver-login', [DriverRegistrationController::class, 'driverLogin']);
 
 
+Route::post('/driver-login', [DriverRegistrationController::class, 'driverLogin']);
+Route::middleware('auth:sanctum')->post('/logout', [DriverRegistrationController::class, 'logout']);
 
 
 
@@ -204,3 +206,21 @@ Route::prefix('cheackers')->group(function () {
     Route::delete('/{id}', [CheackerController::class, 'destroy']);   // Delete cheacker
 });
 Route::post('/cheacker/login', [CheackerController::class, 'login']);
+
+
+//test for driver authentication 
+Route::post('/driver-authenticate', function (Request $request) {
+    $driver = Driver::find($request->driver_id);
+
+    if (!$driver || $driver->status !== 'active') {
+        return response()->json(['message' => 'Not approved'], 403);
+    }
+
+    // return Sanctum token
+    $token = $driver->createToken('driver_token')->plainTextToken;
+
+    return response()->json([
+        'token' => $token,
+        'driver_id' => $driver->id
+    ]);
+});

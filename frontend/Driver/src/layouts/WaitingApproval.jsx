@@ -1,4 +1,3 @@
-// import api from "../utils/api"; // Adjust path as needed
 import api from "api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -26,14 +25,33 @@ const WaitingApproval = () => {
         if (status.toLowerCase() === "active") {
           clearInterval(interval);
           setChecking(false);
-          if (isMounted) {
-            Swal.fire(
-              "Approved!",
-              "You can now access the dashboard.",
-              "success"
-            ).then(() => {
-              navigate("/admin/*");
+
+          // ✅ Authenticate and store token
+          try {
+            const authResponse = await api.post("/driver-authenticate", {
+              driver_id: driverId,
             });
+
+            const { token, driver_id } = authResponse.data;
+            localStorage.setItem("driver_token", token);
+            localStorage.setItem("driver_id", driver_id);
+
+            if (isMounted) {
+              Swal.fire(
+                "Approved!",
+                "You can now access the dashboard.",
+                "success"
+              ).then(() => {
+                navigate("/admin/default");
+              });
+            }
+          } catch (authError) {
+            console.error("Token fetch failed", authError);
+            Swal.fire(
+              "Error",
+              "Failed to authenticate after approval.",
+              "error"
+            );
           }
         } else if (status.toLowerCase() === "rejected") {
           clearInterval(interval);

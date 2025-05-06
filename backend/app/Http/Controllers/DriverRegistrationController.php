@@ -7,6 +7,9 @@ use App\Models\Driver;
 use App\Models\Car;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+
+
 
 class DriverRegistrationController extends Controller
 {
@@ -192,6 +195,55 @@ public function destroy($id)
         ], 500);
     }
 }
+
+
+
+
+
+
+public function driverLogin(Request $request)
+{
+    $request->validate([
+        'phone_number' => 'required|string',
+        'password' => 'required|string',
+    ]);
+
+    $driver = Driver::where('phone_number', $request->phone_number)->first();
+
+    if (!$driver || !Hash::check($request->password, $driver->password)) {
+        return response()->json(['message' => 'Invalid credentials'], 401);
+    }
+
+    if ($driver->status !== 'active') {
+        return response()->json([
+            'message' => 'Account not yet approved',
+            'status' => $driver->status,
+            'id' => $driver->id,
+        ], 403);
+    }
+
+    // Auth::login($driver);
+
+    $token = $driver->createToken('driver_token')->plainTextToken;
+
+    return response()->json([
+        'message' => 'Login successful',
+        'status' => $driver->status,
+        'id' => $driver->id,
+        'token' => $token,
+    ]);
+}
+
+
+public function logout(Request $request)
+{
+    $request->user()->currentAccessToken()->delete();
+
+    return response()->json(['message' => 'Logged out successfully']);
+}
+
+
+
 
 
 }
