@@ -24,6 +24,10 @@ import CheckpointsList from "./pages/dashboard/location/CheckpointsList";
 import AssignOfficer from "./pages/dashboard/Attendance/AssignShiftForm";
 import AssignShiftForm from "./pages/dashboard/Attendance/AssignShiftForm";
 import ShiftAssignmentTable from "./pages/dashboard/Attendance/ShiftAssignmentTable";
+import CreateAccountingUser from "./pages/dashboard/CreateAccountingCheacker";
+import CreateAccountingCheacker from "./pages/dashboard/CreateAccountingCheacker";
+import CheackerTable from "./pages/dashboard/CheackerTable";
+import CheckerDriverTable from "./pages/dashboard/CheckerDriverTable";
 
 
 const icon = {
@@ -72,9 +76,9 @@ export const routes = [
       },
       {
         icon: <BellAlertIcon {...icon} />,
-        name: "Complaint",
+        name: "Cheacker",
         path: "/complain",
-        element: <Notifications />,
+        element: <CheackerTable/>,
       },
       {
         icon: <ExclamationTriangleIcon {...icon} />,
@@ -135,6 +139,16 @@ export const routes = [
         // name: "",
         path: "assign-traffic-officer",
         element: <AssignShiftForm />,
+      },
+      {
+        // name: "",
+        path: "create-cheacker",
+        element: <CreateAccountingCheacker />,
+      },
+      {
+        // name: "",
+        path: "cheack-driver",
+        element: <CheckerDriverTable />,
       },
     ],
   },

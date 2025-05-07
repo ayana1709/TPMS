@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     {
     
         $this->call([
-            DriverSeeder::class,
+            // DriverSeeder::class,
         ]);
 
 

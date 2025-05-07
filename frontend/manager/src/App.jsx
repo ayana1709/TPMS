@@ -1,16 +1,21 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { Dashboard, Auth } from "@/layouts";
+import { Dashboard } from "@/layouts";
+
 import TrafficAccount from "./pages/dashboard/TrafficAccount";
 import ManagerLogin from "./pages/ManagerLogin";
 import ManagerWelcome from "./pages/ManagerWelcome";
-import 'leaflet/dist/leaflet.css';
 import ManagerWaiting from "./pages/ManagerWaiting";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import api from "./api";
-import Loading from "./pages/components/Loading";
+import CheackerLogin from "./pages/CheackerLogin";
 import ShiftCreate from "./pages/dashboard/shift/ShiftCreate";
 
+import 'leaflet/dist/leaflet.css';
+
+import { useEffect, useState } from "react";
+import api from "./api";
+import Loading from "./pages/components/Loading";
+import CheckerDriverTable from "./pages/dashboard/CheckerDriverTable";
+
+// Manager protected route
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("manager_token");
   const [isAllowed, setIsAllowed] = useState(null);
@@ -30,13 +35,13 @@ const ProtectedRoute = ({ children }) => {
         });
 
         if (response.data.status === "Active") {
-          setIsAllowed(true); // ✅ can access dashboard
+          setIsAllowed(true);
         } else {
-          window.location.href = "/welcome"; // ❌ send to welcome if not active
+          window.location.href = "/welcome";
         }
       } catch (error) {
         console.error("Auth check failed", error);
-        setIsAllowed(false); // ❌ no access
+        setIsAllowed(false);
       }
     };
 
@@ -44,7 +49,7 @@ const ProtectedRoute = ({ children }) => {
   }, [token]);
 
   if (isAllowed === null) {
-    return <div> <Loading/></div>; // ⏳ loading state
+    return <div><Loading /></div>;
   }
 
   return isAllowed ? children : <Navigate to="/" replace />;
@@ -53,7 +58,13 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   return (
     <Routes>
-      {/* Protected Routes */}
+      {/* Default Manager Login */}
+      <Route path="/" element={<ManagerLogin />} />
+
+      {/* Cheacker Login */}
+      <Route path="/cheacker/login" element={<CheackerLogin />} />
+
+      {/* Manager dashboard (protected) */}
       <Route
         path="/dashboard/*"
         element={
@@ -63,26 +74,17 @@ function App() {
         }
       />
 
-      {/* Auth Pages */}
-      <Route path="/auth/*" element={<Auth />} />
-
-      {/* Public Pages */}
-      <Route path="/" element={<ManagerLogin />} /> 
+      {/* Other Public Routes */}
       <Route path="/create-account" element={<TrafficAccount />} />
       <Route path="/welcome" element={<ManagerWelcome />} />
       <Route path="/manager/waiting" element={<ManagerWaiting />} />
-      {/* <Route path="/shifts/create" element={<ShiftCreate />} /> */}
+      <Route path="/cheack-driver" element={<CheckerDriverTable />} />
 
 
-       {/* Default Redirect */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-      
-      
+      {/* Catch-all: redirect all unknown routes to / */}
+      {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
     </Routes>
   );
 }
 
 export default App;
-
-
-

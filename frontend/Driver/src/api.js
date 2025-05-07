@@ -9,13 +9,12 @@ const api = axios.create({
   },
 });
 
-// If token is required:
-// api.interceptors.request.use((config) => {
-//   const token = localStorage.getItem("manager_token");
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("driver_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 export default api;

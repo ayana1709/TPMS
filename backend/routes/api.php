@@ -14,6 +14,9 @@ use App\Http\Controllers\ShiftAssignmentController;
 use App\Http\Controllers\TrafficLawController;
 use App\Http\Controllers\ViolationController;
 use App\Http\Controllers\FineController;
+use App\Http\Controllers\DriverRegistrationController;
+use App\Http\Controllers\CheackerController;
+use App\Models\Driver;
 
 // use Illuminate\Support\Facades\Route;
 /*
@@ -173,6 +176,54 @@ Route::middleware( 'auth:sanctum')->group(function () {
     Route::post('/violations', [ViolationController::class, 'issue']);
     Route::get('/violations', [ViolationController::class, 'index']);
     Route::post('/violations/pay', [ViolationController::class, 'pay']);
+});
+
+
+
+// Driver Registration Routes 
+
+Route::post('/register-driver', [DriverRegistrationController::class, 'store']);
+Route::get('/drivers', [DriverRegistrationController::class, 'index']);
+Route::get('/drivers/{id}', [DriverRegistrationController::class, 'show']);
+Route::put('/drivers/{id}', [DriverRegistrationController::class, 'update']);
+Route::delete('/drivers/{id}', [DriverRegistrationController::class, 'destroy']);
+Route::patch('/drivers/{id}/approve', [DriverRegistrationController::class, 'approve']);
+Route::patch('/drivers/{id}/reject', [DriverRegistrationController::class, 'reject']);
+Route::get('/drivers/{id}/status', [DriverRegistrationController::class, 'checkStatus']);
+Route::post('/driver-login', [DriverRegistrationController::class, 'driverLogin']);
+
+
+Route::post('/driver-login', [DriverRegistrationController::class, 'driverLogin']);
+Route::middleware('auth:sanctum')->post('/logout', [DriverRegistrationController::class, 'logout']);
+
+
+
+
+Route::prefix('cheackers')->group(function () {
+    Route::get('/', [CheackerController::class, 'index']);            // List all cheackers
+    Route::post('/', [CheackerController::class, 'store']);           // Create new cheacker
+    Route::get('/{id}', [CheackerController::class, 'show']);         // Get single cheacker
+    Route::put('/{id}', [CheackerController::class, 'update']);       // Update cheacker
+    Route::delete('/{id}', [CheackerController::class, 'destroy']);   // Delete cheacker
+});
+Route::post('/cheacker/login', [CheackerController::class, 'login']);
+
+
+//test for driver authentication 
+Route::post('/driver-authenticate', function (Request $request) {
+    $driver = Driver::find($request->driver_id);
+
+    if (!$driver || $driver->status !== 'active') {
+        return response()->json(['message' => 'Not approved'], 403);
+    }
+
+    // return Sanctum token
+    $token = $driver->createToken('driver_token')->plainTextToken;
+
+    return response()->json([
+        'token' => $token,
+        'driver_id' => $driver->id
+    ]);
 });
 
 // Fine routes

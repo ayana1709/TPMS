@@ -1,30 +1,219 @@
-import React, { useState } from "react";
-// import axios from "axios";
-import { Sun, Moon, Eye, EyeOff } from "lucide-react"; // using lucide icons
+import React, { useState, useEffect } from "react";
+import { Sun, Moon, Eye, EyeOff } from "lucide-react";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+
 import api from "api";
 
 const DriverRegistrationForm = () => {
+  const [loading, setLoading] = useState(false);
+  const [regions, setRegions] = useState([]);
+  const [zones, setZones] = useState([]);
+  const [woredas, setWoredas] = useState([]);
+  const [selectedRegion, setSelectedRegion] = useState("");
+  const [selectedZone, setSelectedZone] = useState("");
+  const [selectedWoreda, setSelectedWoreda] = useState("");
+  const [darkMode, setDarkMode] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
+
+  // form
   const [formData, setFormData] = useState({
     fullName: "",
     phoneNumber: "",
     email: "",
-    address: "",
-    dateOfBirth: "",
+    region: "",
+    zone: "",
+    woreda: "",
     password: "",
     confirmPassword: "",
+    driverLicense: null,
+    licenseNumber: "",
+
     carPlateNumber: "",
     vin: "",
     carModel: "",
     ChasisNumber: "",
-    driverLicense: null,
     carOwnership: null,
     carBollo: null,
   });
+  // handle submit function
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const [loading, setLoading] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    if (formData.password !== formData.confirmPassword) {
+      Swal.fire("Error", "Passwords do not match!", "error");
+      return;
+    }
+
+    if (!formData.driverLicense) {
+      Swal.fire("Error", "Driver License is required!", "error");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const data = new FormData();
+      // Driver fields
+      data.append("fullName", formData.fullName);
+      data.append("phoneNumber", formData.phoneNumber);
+      data.append("email", formData.email);
+      data.append("region", formData.region);
+      data.append("zone", formData.zone);
+      data.append("wereda", formData.wereda);
+      data.append("password", formData.password);
+      data.append("driverLicense", formData.driverLicense);
+      data.append("licenseNumber", formData.licenseNumber);
+
+      // Car fields
+      data.append("carPlateNumber", formData.carPlateNumber);
+      if (formData.vin) data.append("vin", formData.vin);
+      if (formData.carModel) data.append("carModel", formData.carModel);
+      if (formData.ChasisNumber)
+        data.append("ChasisNumber", formData.ChasisNumber);
+      if (formData.carOwnership)
+        data.append("carOwnership", formData.carOwnership);
+      if (formData.carBollo) data.append("carBollo", formData.carBollo);
+      const response = await api.post("/register-driver", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("Response:", response.data);
+      // Store token and user info
+      const { token, driver } = response.data;
+      localStorage.setItem("driver_token", token);
+      localStorage.setItem("driver_id", driver.id);
+      localStorage.setItem("driver_name", driver.fullName);
+
+      // Show success popup
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Driver and Car registered successfully!",
+        confirmButtonText: "Ok",
+      }).then(() => {
+        // Navigate and clear form
+        setFormData({
+          fullName: "",
+          phoneNumber: "",
+          email: "",
+          region: "",
+          zone: "",
+          wereda: "",
+          password: "",
+          confirmPassword: "",
+          driverLicense: null,
+          licenseNumber: "",
+          carPlateNumber: "",
+          vin: "",
+          carModel: "",
+          ChasisNumber: "",
+          carOwnership: null,
+          carBollo: null,
+        });
+
+        navigate("/waiting-Approval"); // Replace with your actual dashboard route
+      });
+    } catch (error) {
+      console.error(error);
+
+      if (error.response && error.response.status === 422) {
+        const errors = error.response.data.errors;
+        let errorMessages = Object.values(errors).flat().join("<br>");
+        Swal.fire({
+          icon: "error",
+          title: "Validation Error",
+          html: errorMessages,
+        });
+      } else {
+        Swal.fire(
+          "Error",
+          "Something went wrong during registration!",
+          "error"
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch regions
+  useEffect(() => {
+    api
+      .get("/fetch-regions")
+      .then((response) => setRegions(response.data))
+      .catch((error) => console.error("Error fetching regions:", error));
+  }, []);
+
+  // Fetch zones when region changes
+  useEffect(() => {
+    if (selectedRegion) {
+      api
+        .get(`/fetch-zones/${selectedRegion}`)
+        .then((response) => setZones(response.data))
+        .catch((error) => console.error("Error fetching zones:", error));
+    } else {
+      setZones([]);
+      setWoredas([]);
+    }
+  }, [selectedRegion]);
+
+  // Fetch woredas when zone changes
+  useEffect(() => {
+    if (selectedZone) {
+      api
+        .get(`/fetch-woredas/${selectedZone}`)
+        .then((response) => setWoredas(response.data))
+        .catch((error) => console.error("Error fetching woredas:", error));
+    } else {
+      setWoredas([]);
+    }
+  }, [selectedZone]);
+
+  // Handle region select
+  const handleRegionChange = (value) => {
+    const selectedRegionObj = regions.find(
+      (region) => region.osm_id.toString() === value
+    );
+    setSelectedRegion(value);
+
+    setFormData((prev) => ({
+      ...prev,
+      region: selectedRegionObj ? selectedRegionObj.name : "",
+      zone: "",
+      woreda: "",
+    }));
+  };
+
+  // Handle zone select
+  const handleZoneChange = (value) => {
+    const selectedZoneObj = zones.find(
+      (zone) => zone.osm_id.toString() === value
+    );
+    setSelectedZone(value);
+
+    setFormData((prev) => ({
+      ...prev,
+      zone: selectedZoneObj ? selectedZoneObj.name : "",
+      woreda: "",
+    }));
+  };
+
+  // Handle woreda select
+  const handleWoredaChange = (value) => {
+    const selectedWoredaObj = woredas.find(
+      (woreda) => woreda.osm_id.toString() === value
+    );
+    setSelectedWoreda(value);
+
+    setFormData((prev) => ({
+      ...prev,
+      woreda: selectedWoredaObj ? selectedWoredaObj.name : "",
+    }));
+  };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -35,46 +224,13 @@ const DriverRegistrationForm = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const data = new FormData();
-      for (const key in formData) {
-        if (formData[key] !== null) {
-          data.append(key, formData[key]);
-        }
-      }
-
-      const response = await api.post("/api/register-driver", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      console.log(response.data);
-      alert("Driver registered successfully!");
-    } catch (error) {
-      console.error(error);
-      alert("Something went wrong during registration!");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div
       className={`${
         darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
       } min-h-screen transition-all duration-500`}
     >
-      {/* Dark Mode Icon Toggle */}
+      {/* Dark Mode Toggle */}
       <div className="flex justify-end p-6">
         <button onClick={() => setDarkMode(!darkMode)} className="text-2xl">
           {darkMode ? (
@@ -117,19 +273,7 @@ const DriverRegistrationForm = () => {
               placeholder="Email Address"
               onChange={handleChange}
             />
-            <Input
-              name="address"
-              placeholder="Residential Address"
-              onChange={handleChange}
-            />
-            <Input
-              type="date"
-              name="dateOfBirth"
-              placeholder="Date of Birth"
-              onChange={handleChange}
-            />
 
-            {/* Password field with toggle */}
             <PasswordInput
               name="password"
               placeholder="Password"
@@ -146,12 +290,66 @@ const DriverRegistrationForm = () => {
               show={showConfirmPassword}
               setShow={setShowConfirmPassword}
             />
-
-            <Upload
-              name="driverLicense"
-              label="Upload Driver License"
+            <Input
+              type="text"
+              name="licenseNumber"
+              placeholder="Driver License Number"
               onChange={handleChange}
             />
+            <Upload
+              name="driverLicense"
+              label="Upload Driver License (Required)"
+              onChange={handleChange}
+              required
+            />
+
+            {/* Grouped Address Fields */}
+            <div className="rounded-lg border border-gray-300 p-4 dark:border-gray-700">
+              <h4 className="mb-2 text-lg font-semibold text-blue-600 dark:text-blue-400">
+                Address
+              </h4>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <select
+                  value={selectedRegion}
+                  onChange={(e) => handleRegionChange(e.target.value)}
+                >
+                  <option value="">Select Region</option>
+                  {regions.map((region) => (
+                    <option key={region.osm_id} value={region.osm_id}>
+                      {region.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Zone Select */}
+                <select
+                  value={selectedZone}
+                  onChange={(e) => handleZoneChange(e.target.value)}
+                  disabled={!zones.length}
+                >
+                  <option value="">Select Zone</option>
+                  {zones.map((zone) => (
+                    <option key={zone.osm_id} value={zone.osm_id}>
+                      {zone.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Woreda Select */}
+                <select
+                  value={selectedWoreda}
+                  onChange={(e) => handleWoredaChange(e.target.value)}
+                  disabled={!woredas.length}
+                >
+                  <option value="">Select Woreda</option>
+                  {woredas.map((woreda) => (
+                    <option key={woreda.osm_id} value={woreda.osm_id}>
+                      {woreda.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </section>
 
           {/* Right Side: Car Info */}
@@ -195,7 +393,7 @@ const DriverRegistrationForm = () => {
             />
           </section>
 
-          {/* Submit and Login */}
+          {/* Submit Button */}
           <div className="col-span-1 mt-8 space-y-4 text-center md:col-span-2">
             <button
               type="submit"
@@ -221,7 +419,7 @@ const DriverRegistrationForm = () => {
   );
 };
 
-// General Input
+// Reusable Input component
 const Input = ({
   type = "text",
   name,
@@ -248,8 +446,8 @@ const Input = ({
   </div>
 );
 
-// Upload Input
-const Upload = ({ name, label, onChange }) => (
+// Reusable Upload component
+const Upload = ({ name, label, onChange, required = false }) => (
   <div className="flex flex-col">
     <label
       htmlFor={name}
@@ -263,13 +461,13 @@ const Upload = ({ name, label, onChange }) => (
       id={name}
       accept="image/*,.pdf"
       onChange={onChange}
+      required={required}
       className="rounded-md border border-gray-400 bg-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 dark:border-gray-600 dark:bg-gray-800"
-      required
     />
   </div>
 );
 
-// Password Input with Eye Toggle
+// Password input with show/hide
 const PasswordInput = ({
   name,
   placeholder,
@@ -300,6 +498,41 @@ const PasswordInput = ({
     >
       {show ? <EyeOff size={18} /> : <Eye size={18} />}
     </div>
+  </div>
+);
+
+// Select component for Region
+const Select = ({
+  name,
+  placeholder,
+  onChange,
+  options = [],
+  loading,
+  required = false,
+}) => (
+  <div className="flex flex-col">
+    <label
+      htmlFor={name}
+      className="mb-1 text-sm font-bold text-gray-700 dark:text-gray-300"
+    >
+      {placeholder}
+    </label>
+    <select
+      name={name}
+      id={name}
+      onChange={onChange}
+      required={required}
+      className="rounded-md border border-gray-400 bg-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 dark:border-gray-600 dark:bg-gray-800"
+    >
+      <option value="">
+        {loading ? "Loading..." : `Select ${placeholder}`}
+      </option>
+      {options.map((region) => (
+        <option key={region.id} value={region.name}>
+          {region.name}
+        </option>
+      ))}
+    </select>
   </div>
 );
 
