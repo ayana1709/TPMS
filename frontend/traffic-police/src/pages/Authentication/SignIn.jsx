@@ -47,6 +47,7 @@ const SignIn = () => {
     setError('');
 
     try {
+<<<<<<< HEAD
       const response = await api.post('/traffic-user/login', {
         username,
         password,
@@ -64,6 +65,15 @@ const SignIn = () => {
         } else {
           navigate('/traffic-welcome');
         }
+=======
+      const user = await login(username, password);
+      console.log(user);
+      console.log(user.status);
+      if (user.status === 'Active') {
+        navigate('/dashboard');
+      } else {
+        navigate('/traffic-welcome');
+>>>>>>> cbbb2671d8a955c21d8caba03f545a42fa4efb6c
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
