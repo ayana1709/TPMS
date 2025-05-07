@@ -47,11 +47,23 @@ const SignIn = () => {
     setError('');
 
     try {
-      const user = await login(username, password);
-      if (user.status === 'Active') {
-        navigate('/dashboard');
-      } else {
-        navigate('/traffic-welcome');
+      const response = await api.post('/traffic-user/login', {
+        username,
+        password,
+      });
+
+      if (response.data.status === 'success') {
+        const { token, user } = response.data;
+
+        // Optional: store the token for authenticated requests
+        localStorage.setItem('traffic-user-token', token);
+
+        // Navigate based on user status
+        if (user.status === 'Active') {
+          navigate('/dashboard');
+        } else {
+          navigate('/traffic-welcome');
+        }
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
