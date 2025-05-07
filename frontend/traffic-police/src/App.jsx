@@ -14,6 +14,7 @@ import SignIn from './pages/Authentication/SignIn';
 import SignUp from './pages/Authentication/SignUp';
 import TrafficLaws from './pages/TrafficLaws';
 import Layout from './components/Layout';
+import TrafficWelcome from './pages/Authentication/TrafficWelcome';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -45,6 +46,7 @@ function App() {
         >
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="traffic-welcome" element={<TrafficWelcome />} />
           <Route path="fine" element={<Fine />} />
           <Route path="penalty-checking" element={<PenaltyChecking />} />
           <Route path="work-assignment" element={<WorkAssignment />} />
@@ -56,7 +58,7 @@ function App() {
         </Route>
 
         {/* Catch all route */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        {/* <Route path="*" element={<Navigate to="/dashboard" replace />} /> */}
       </Routes>
     </AuthProvider>
   );

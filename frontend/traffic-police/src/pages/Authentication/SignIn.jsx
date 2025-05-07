@@ -47,6 +47,8 @@ const SignIn = () => {
 
     try {
       const user = await login(username, password);
+      console.log(user);
+      console.log(user.status);
       if (user.status === 'Active') {
         navigate('/dashboard');
       } else {
