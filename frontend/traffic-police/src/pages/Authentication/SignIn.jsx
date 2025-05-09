@@ -53,19 +53,8 @@ const SignIn = () => {
     }
 
     try {
-      const response = await api.post('/traffic-user/login', {
-        username,
-        password,
-      });
-
-      if (response.data.status === 'success') {
-        const { token, user } = response.data;
-
-        localStorage.setItem('token', token);
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-        navigate(user.status === 'Active' ? '/dashboard' : '/traffic-welcome');
-      }
+      const user = await login(username, password);
+      navigate(user.status === 'Active' ? '/dashboard' : '/traffic-welcome');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     } finally {

@@ -150,10 +150,12 @@ Route::get('/assigned-traffic-users', [ShiftAssignmentController::class, 'getAss
 Route::get('/assigned-traffic-users-for-checkpoint', [ShiftAssignmentController::class, 'getAssignedTrafficUsersForCheckpoint']);
 
 // view shift and location from the  traffic side 
-Route::middleware(['auth:traffic_user'])->get('/traffic-user/assignments', [ShiftAssignmentController::class, 'getMyAssignments']);
-Route::middleware(['auth:traffic'])->group(function () {
-    Route::get('/traffic-user/assignments', [ShiftAssignmentController::class, 'getMyAssignments']);
-});
+// Route::middleware(['auth:traffic_user'])->get('/traffic-user/assignments', [ShiftAssignmentController::class, 'getMyAssignments']);
+// Route::middleware(['auth:traffic'])->group(function () {
+// });
+// Route::get('/traffic-user/assignments', [ShiftAssignmentController::class, 'getMyAssignments']);
+Route::get('/assignments/by-user', [ShiftAssignmentController::class, 'getAssignmentsByUser']);
+
 
 
 
