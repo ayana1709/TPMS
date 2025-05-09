@@ -1,9 +1,9 @@
 import React from 'react';
-import { useAuth } from '../context/AuthContext';
+// import { useAuth } from '../context/AuthContext';
 import DashboardCard14 from '../components/DashboardCard14';
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  // const { user } = useAuth();
 
   return (
     <div className="p-4 md:p-6 2xl:p-10">

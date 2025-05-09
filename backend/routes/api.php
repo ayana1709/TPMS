@@ -114,6 +114,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
+
+
+
+
+
+
+
+
 Route::get('/manager/pending-activations', [TrafficUserController::class, 'getPendingActivations']);  //manger get all pending activations from traffic
 Route::post('/manager/activate/{username}', [TrafficUserController::class, 'activate']);// admin activate  manager 
 Route::delete('/manager/delete/{username}', [TrafficUserController::class, 'deny']); // admin deny activation request
@@ -141,6 +149,11 @@ Route::get('/shift-assignments/by-shift/{shiftId}', [ShiftAssignmentController::
 Route::get('/assigned-traffic-users', [ShiftAssignmentController::class, 'getAssignedTrafficUsers']);
 Route::get('/assigned-traffic-users-for-checkpoint', [ShiftAssignmentController::class, 'getAssignedTrafficUsersForCheckpoint']);
 
+// view shift and location from the  traffic side 
+Route::middleware(['auth:traffic_user'])->get('/traffic-user/assignments', [ShiftAssignmentController::class, 'getMyAssignments']);
+Route::middleware(['auth:traffic'])->group(function () {
+    Route::get('/traffic-user/assignments', [ShiftAssignmentController::class, 'getMyAssignments']);
+});
 
 
 

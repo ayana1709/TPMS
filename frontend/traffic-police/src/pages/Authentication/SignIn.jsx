@@ -46,6 +46,12 @@ const SignIn = () => {
     setLoading(true);
     setError('');
 
+    if (!username || !password) {
+      setError('Please enter both username and password');
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await api.post('/traffic-user/login', {
         username,
@@ -55,22 +61,10 @@ const SignIn = () => {
       if (response.data.status === 'success') {
         const { token, user } = response.data;
 
-        // Optional: store the token for authenticated requests
-        localStorage.setItem('traffic-user-token', token);
+        localStorage.setItem('token', token);
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-        // Navigate based on user status
-        if (user.status === 'Active') {
-          navigate('/dashboard');
-        } else {
-          navigate('/traffic-welcome');
-        }
-      const user = await login(username, password);
-      console.log(user);
-      console.log(user.status);
-      if (user.status === 'Active') {
-        navigate('/dashboard');
-      } else {
-        navigate('/traffic-welcome');
+        navigate(user.status === 'Active' ? '/dashboard' : '/traffic-welcome');
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
