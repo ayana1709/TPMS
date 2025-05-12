@@ -11,6 +11,8 @@ import api from '../../api';
 const SignIn = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  // const { username } = useAuth();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');

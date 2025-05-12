@@ -10,7 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 
 const TrafficWelcome = () => {
-  const username = localStorage.getItem('traffic_username') || '';
+  const username = localStorage.getItem('username') || '';
+  console.log(username);
   const name = localStorage.getItem('traffic_name') || 'Traffic User';
 
   const [oldPassword, setOldPassword] = useState('');

@@ -245,6 +245,7 @@ Route::post('/driver-authenticate', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/fines', [FineController::class, 'store']);
     Route::get('/fines/{id}', [FineController::class, 'show']);
-    Route::get('/fines/driver/{license}', [FineController::class, 'getByDriver']);
     Route::post('/fines/mark-paid', [FineController::class, 'markAsPaid']);
 });
+    Route::get('/fines', [FineController::class, 'index']);
+    Route::get('/fines/driver/{license}', [FineController::class, 'getByDriver']);

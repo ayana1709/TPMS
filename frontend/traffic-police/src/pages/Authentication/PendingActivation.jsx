@@ -7,7 +7,7 @@ import api from '../../api';
 const PendingActivation = () => {
   const navigate = useNavigate();
   const name = localStorage.getItem('traffic_name') || 'User';
-  const username = localStorage.getItem('traffic_username') || '';
+  const username = localStorage.getItem('username') || '';
 
   const checkActivationStatus = async () => {
     try {

@@ -10,6 +10,18 @@ use Illuminate\Support\Facades\Log;
 
 class FineController extends Controller
 {
+
+    public function index()
+{
+    $fines = Fine::with('violations')->latest()->get();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Fines fetched successfully',
+        'data' => $fines
+    ]);
+}
+
     public function store(Request $request)
     {
         try {
