@@ -15,6 +15,7 @@ import SignUp from './pages/Authentication/SignUp';
 import TrafficLaws from './pages/TrafficLaws';
 import Layout from './components/Layout';
 import TrafficWelcome from './pages/Authentication/TrafficWelcome';
+import PendingActivation from './pages/Authentication/PendingActivation';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -35,6 +36,8 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="traffic-welcome" element={<TrafficWelcome />} />
+        <Route path="pending-activation" element={<PendingActivation />} />
+
         {/* Protected Routes */}
         <Route
           path="/"
@@ -56,7 +59,6 @@ function App() {
           <Route path="register-accident" element={<RegisterAccident />} />
           <Route path="traffic-laws" element={<TrafficLaws />} />
         </Route>
-
         {/* Catch all route */}
         {/* <Route path="*" element={<Navigate to="/dashboard" replace />} /> */}
       </Routes>

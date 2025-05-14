@@ -52,6 +52,8 @@ export const AuthProvider = ({ children }) => {
       if (response.data.status === 'success') {
         const { token, user } = response.data;
         localStorage.setItem('token', token);
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
         setUser(user);
         setError(null);
         return user;

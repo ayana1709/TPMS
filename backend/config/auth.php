@@ -34,21 +34,22 @@ return [
     | Supported: "session"
     |
     */
-
-   'guards' => [
+'guards' => [
     'web' => [
         'driver' => 'session',
         'provider' => 'users',
     ],
-
     'api' => [
         'driver' => 'sanctum',
         'provider' => 'users',
     ],
-
     'manager' => [
         'driver' => 'sanctum',
         'provider' => 'managers',
+    ],
+    'traffic' => [
+        'driver' => 'sanctum',
+        'provider' => 'traffic_users',
     ],
 ],
 
@@ -77,13 +78,15 @@ return [
         'driver' => 'eloquent',
         'model' => App\Models\User::class,
     ],
-
     'managers' => [
         'driver' => 'eloquent',
         'model' => App\Models\Manager::class,
     ],
+    'traffic_users' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\TrafficUser::class,
+    ],
 ],
-
 
 
     /*

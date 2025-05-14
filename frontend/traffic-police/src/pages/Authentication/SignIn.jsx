@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Switch } from '../../components/ui/switch';
+import api from '../../api';
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -45,15 +46,15 @@ const SignIn = () => {
     setLoading(true);
     setError('');
 
+    if (!username || !password) {
+      setError('Please enter both username and password');
+      setLoading(false);
+      return;
+    }
+
     try {
       const user = await login(username, password);
-      console.log(user);
-      console.log(user.status);
-      if (user.status === 'Active') {
-        navigate('/dashboard');
-      } else {
-        navigate('/traffic-welcome');
-      }
+      navigate(user.status === 'Active' ? '/dashboard' : '/traffic-welcome');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     } finally {

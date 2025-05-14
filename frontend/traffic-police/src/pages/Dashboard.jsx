@@ -1,9 +1,14 @@
 import React from 'react';
-import { useAuth } from '../context/AuthContext';
+// import { useAuth } from '../context/AuthContext';
 import DashboardCard14 from '../components/DashboardCard14';
+import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
   const { user } = useAuth();
+  // const { token } = useAuth();
+  console.log(user);
+  const token = localStorage.getItem('token');
+  console.log(token);
 
   return (
     <div className="p-4 md:p-6 2xl:p-10">

@@ -144,5 +144,25 @@ public function getAssignedTrafficUsersForCheckpoint(Request $request)
 
 
 
+public function getAssignmentsByUser(Request $request)
+{
+    $userId = $request->query('user_id'); // Get user_id from query param
+
+    if (!$userId) {
+        return response()->json(['error' => 'User ID is required'], 400);
+    }
+
+    $assignments = ShiftAssignment::with(['shift', 'checkpoint'])
+        ->where('traffic_user_id', $userId)
+        ->orderBy('assigned_date', 'desc')
+        ->get();
+
+    return response()->json([
+        'data' => $assignments
+    ]);
+}
+
+
+
 
 }
