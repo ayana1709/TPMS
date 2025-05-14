@@ -7,6 +7,7 @@ export default function Layout({ children }) {
 
   const navigation = [
     { name: "Dashboard", path: "/" },
+    { name: "View Information", path: "/information" },
     { name: "Report Accident", path: "/report-accident" },
     { name: "Submit Complaint", path: "/submit-complaint" },
   ];
