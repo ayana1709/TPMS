@@ -16,6 +16,7 @@ import SubmitComplaint from "./pages/dashboard/SubmitComplaint";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ViewInformation from "./pages/ViewInformation";
+import ComplaintForm from "./pages/ComplaintForm";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -55,7 +56,7 @@ function App() {
                 }
               />
               <Route path="/information" element={<ViewInformation />} />
-
+              <Route path="/complaint" element={<ComplaintForm />} />
               <Route
                 path="/report-accident"
                 element={

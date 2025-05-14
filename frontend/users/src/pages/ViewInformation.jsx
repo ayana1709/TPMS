@@ -15,6 +15,8 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { Route, Clock, Car, TrainFront, Plane } from "lucide-react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
@@ -165,102 +167,106 @@ const ViewInformation = () => {
   };
 
   return (
-    <div className="relative w-full h-screen bg-gray-950">
-      <div className="relative w-[98%] h-[95%] rounded-md">
-        <div className="absolute w-[90%] h-[80%] top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2">
-          <MapContainer
-            center={[9.03, 38.74]}
-            zoom={6}
-            scrollWheelZoom
-            className="w-full h-[90%] rounded-t-md"
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
-            />
+    <div>
+      <Header />
+      <div className="relative w-full h-screen bg-gray-950">
+        <div className="relative w-[98%] h-[95%] rounded-md">
+          <div className="absolute w-[90%] h-[80%] top-2 left-1/2 -translate-x-1/2">
+            <MapContainer
+              center={[9.03, 38.74]}
+              zoom={6}
+              scrollWheelZoom
+              className="w-full h-[90%] rounded-t-md"
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+              />
 
-            {/* 🔁 Move map to user location once it's available */}
-            {start && <SetMapCenter position={[start.lat, start.lng]} />}
+              {/* 🔁 Move map to user location once it's available */}
+              {start && <SetMapCenter position={[start.lat, start.lng]} />}
 
-            {/* 🎯 Allow user to click to set destination */}
-            <LocationMarker onSetDestination={setEnd} />
+              {/* 🎯 Allow user to click to set destination */}
+              <LocationMarker onSetDestination={setEnd} />
 
-            {/* 🏁 Start Marker */}
-            {start && (
-              <Marker position={[start.lat, start.lng]}>
-                {startLocation && (
-                  <Tooltip direction="top" offset={[0, -10]} permanent>
-                    Start: {startLocation}
-                  </Tooltip>
-                )}
-              </Marker>
-            )}
+              {/* 🏁 Start Marker */}
+              {start && (
+                <Marker position={[start.lat, start.lng]}>
+                  {startLocation && (
+                    <Tooltip direction="top" offset={[0, -10]} permanent>
+                      Start: {startLocation}
+                    </Tooltip>
+                  )}
+                </Marker>
+              )}
 
-            {/* 🛬 End Marker */}
-            {end && (
-              <Marker position={[end.lat, end.lng]}>
-                {endLocation && (
-                  <Tooltip direction="top" offset={[0, -10]} permanent>
-                    End: {endLocation}
-                  </Tooltip>
-                )}
-              </Marker>
-            )}
+              {/* 🛬 End Marker */}
+              {end && (
+                <Marker position={[end.lat, end.lng]}>
+                  {endLocation && (
+                    <Tooltip direction="top" offset={[0, -10]} permanent>
+                      End: {endLocation}
+                    </Tooltip>
+                  )}
+                </Marker>
+              )}
 
-            {/* 🚗 Route Line */}
-            {routeCoords.length > 0 && (
-              <Polyline positions={routeCoords} color="blue" />
-            )}
-          </MapContainer>
+              {/* 🚗 Route Line */}
+              {routeCoords.length > 0 && (
+                <Polyline positions={routeCoords} color="blue" />
+              )}
+            </MapContainer>
 
-          {/* 📊 Info Panel */}
-          <div style={{ padding: "1rem", background: "#f4f4f4" }}>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={getRoute}
-                disabled={!start || !end || isFetching}
-                className="bg-gray-950 text-gray-100"
-              >
-                {isFetching ? "Calculating..." : "Calculate Route & Tariff"}
-              </button>
-              <button
-                onClick={resetPoints}
-                className="bg-gray-950 text-gray-100"
-              >
-                Reset
-              </button>
+            {/* 📊 Info Panel */}
+            <div style={{ padding: "1rem", background: "#f4f4f4" }}>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={getRoute}
+                  disabled={!start || !end || isFetching}
+                  className="bg-gray-950 text-gray-100"
+                >
+                  {isFetching ? "Calculating..." : "Calculate Route & Tariff"}
+                </button>
+                <button
+                  onClick={resetPoints}
+                  className="bg-gray-950 text-gray-100"
+                >
+                  Reset
+                </button>
+              </div>
+
+              {startLocation && (
+                <div style={{ marginTop: "0.5rem" }}>
+                  <strong>Start Location:</strong> {startLocation}
+                </div>
+              )}
+              {endLocation && (
+                <div style={{ marginTop: "0.5rem" }}>
+                  <strong>End Location:</strong> {endLocation}
+                </div>
+              )}
+
+              {distance && duration && (
+                <div className="absolute top-1/2 -translate-y-[60%] right-10 z-[999] bg-gray-800 w-1/4 p-10 rounded-lg text-white flex flex-col gap-6 border border-white">
+                  <p className="flex items-center gap-2">
+                    <Route className="w-5 h-5" />
+                    <strong>Distance:</strong> {distance} km
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <Clock className="w-5 h-5" />
+                    <strong>Duration:</strong> {duration} minutes
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <Car className="w-5 h-5" />
+                    <strong>Car Tariff:</strong> {fares.car} birr
+                  </p>
+                </div>
+              )}
             </div>
-
-            {startLocation && (
-              <div style={{ marginTop: "0.5rem" }}>
-                <strong>Start Location:</strong> {startLocation}
-              </div>
-            )}
-            {endLocation && (
-              <div style={{ marginTop: "0.5rem" }}>
-                <strong>End Location:</strong> {endLocation}
-              </div>
-            )}
-
-            {distance && duration && (
-              <div className="absolute top-1/2 -translate-y-[60%] right-10 z-[999] bg-gray-800 w-1/4 p-10 rounded-lg text-white flex flex-col gap-6 border border-white">
-                <p className="flex items-center gap-2">
-                  <Route className="w-5 h-5" />
-                  <strong>Distance:</strong> {distance} km
-                </p>
-                <p className="flex items-center gap-2">
-                  <Clock className="w-5 h-5" />
-                  <strong>Duration:</strong> {duration} minutes
-                </p>
-                <p className="flex items-center gap-2">
-                  <Car className="w-5 h-5" />
-                  <strong>Car Tariff:</strong> {fares.car} birr
-                </p>
-              </div>
-            )}
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
