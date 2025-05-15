@@ -7,6 +7,9 @@ import AuthLayout from "layouts/auth";
 import DriverRegistrationForm from "layouts/DriverRegistrationForm";
 import WaitingApproval from "layouts/WaitingApproval";
 import DriverLogin from "layouts/DriverLogin";
+import ThankYou from "Pages/ThankYouPage";
+// import ThankYou from "./pages/ThankYou";
+
 const App = () => {
   return (
     <Routes>
@@ -15,10 +18,11 @@ const App = () => {
       <Route path="rtl/*" element={<RtlLayout />} />
       {/* <Route path="/" element={<Navigate to="/admin" replace />} /> */}
 
+      <Route path="/thank-you" element={<ThankYou />} />
+
       <Route path="/" element={<DriverRegistrationForm />} />
       {/* <Route path="/" element={<DriverRegistrationForm />} /> */}
       <Route path="/login" element={<DriverLogin />} />
-
       <Route path="/waiting-Approval" element={<WaitingApproval />} />
     </Routes>
   );

@@ -87,6 +87,7 @@ const DriverRegistrationForm = () => {
       localStorage.setItem("driver_token", token);
       localStorage.setItem("driver_id", driver.id);
       localStorage.setItem("driver_name", driver.fullName);
+      localStorage.setItem("license", driver.driverLicense);
 
       // Show success popup
       Swal.fire({
@@ -95,7 +96,7 @@ const DriverRegistrationForm = () => {
         text: "Driver and Car registered successfully!",
         confirmButtonText: "Ok",
       }).then(() => {
-        // Navigate and clear form
+        // Navigate and clear form`
         setFormData({
           fullName: "",
           phoneNumber: "",

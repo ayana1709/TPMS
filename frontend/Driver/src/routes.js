@@ -18,6 +18,7 @@ import {
   MdPerson,
   MdLock,
 } from "react-icons/md";
+import IncomingPenalty from "Pages/IncomingPenalty";
 
 const routes = [
   {
@@ -28,12 +29,19 @@ const routes = [
     component: <MainDashboard />,
   },
   {
-    name: "View Penality"
+    name: "NFT Marketplace",
     layout: "/admin",
     path: "nft-marketplace",
     icon: <MdOutlineShoppingCart className="h-6 w-6" />,
     component: <NFTMarketplace />,
     secondary: true,
+  },
+  {
+    name: "Incoming Penalty", // ✅ New Route
+    layout: "/admin",
+    path: "incoming-penalty", // URL will be /admin/incoming-penalty
+    icon: <MdOutlineShoppingCart className="h-6 w-6" />,
+    component: <IncomingPenalty />, // ✅ Your new page
   },
   {
     name: "Data Tables",

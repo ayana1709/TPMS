@@ -17,6 +17,8 @@ use App\Http\Controllers\FineController;
 use App\Http\Controllers\DriverRegistrationController;
 use App\Http\Controllers\CheackerController;
 use App\Models\Driver;
+use App\Http\Controllers\PaymentController;
+
 
 // use Illuminate\Support\Facades\Route;
 /*
@@ -249,3 +251,14 @@ Route::middleware('auth:sanctum')->group(function () {
 });
     Route::get('/fines', [FineController::class, 'index']);
     Route::get('/fines/driver/{license}', [FineController::class, 'getByDriver']);
+
+
+
+
+
+// Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('chapa.callback');
+// Route::post('/api/chapa/callback', [PaymentController::class, 'callback'])->name('chapa.callback');
+Route::post('/pay', [PaymentController::class, 'initialize']);
+Route::get('/payment/return', [PaymentController::class, 'return'])->name('chapa.return');
+Route::get('/payment/verify', [PaymentController::class, 'verifyFromFrontend']);
+Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('chapa.callback');

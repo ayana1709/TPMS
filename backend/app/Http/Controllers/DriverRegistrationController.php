@@ -231,6 +231,10 @@ public function driverLogin(Request $request)
         'status' => $driver->status,
         'id' => $driver->id,
         'token' => $token,
+        'email' => $driver->email,
+        'full_name'=>$driver->full_name,
+        'driver_license_number' => $driver->license_number, // ✅ add this
+
     ]);
 }
 
@@ -241,9 +245,6 @@ public function logout(Request $request)
 
     return response()->json(['message' => 'Logged out successfully']);
 }
-
-
-
 
 
 }

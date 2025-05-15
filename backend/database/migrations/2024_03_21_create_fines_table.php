@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('badge_number');
             $table->string('police_station');
             $table->boolean('is_paid')->default(false);
+            
             $table->timestamps();
         });
     }
