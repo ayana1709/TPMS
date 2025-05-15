@@ -175,14 +175,6 @@ public function callback(Request $request)
 
 
 
-
-
-
-
-
-
-    //return 
-
 public function return(Request $request)
 {
     $tx_ref = $request->query('tx_ref');

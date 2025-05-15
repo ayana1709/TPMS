@@ -15,6 +15,8 @@ import ReportAccident from "./pages/dashboard/ReportAccident";
 import SubmitComplaint from "./pages/dashboard/SubmitComplaint";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import ViewInformation from "./pages/ViewInformation";
+import ComplaintForm from "./pages/ComplaintForm";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -26,11 +28,16 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
+  const ProtectedRoute = ({ children }) => {
+    const { isAuthenticated } = useAuth();
+    return isAuthenticated ? children : <Navigate to="/" />;
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Router>
-          <div className="min-h-screen bg-gray-50 overflow-x-hidden overflow-y-hidden">
+          <div className="min-h-screen w-full bg-gray-50 overflow-x-hidden overflow-y-hidden">
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
@@ -48,6 +55,8 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/information" element={<ViewInformation />} />
+              <Route path="/complaint" element={<ComplaintForm />} />
               <Route
                 path="/report-accident"
                 element={
