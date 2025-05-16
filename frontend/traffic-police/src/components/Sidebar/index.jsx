@@ -15,6 +15,9 @@ import {
   HiOutlineBell,
   HiOutlineClipboardDocumentList,
   HiChevronDown,
+  HiOutlinePencilSquare,
+  HiOutlineUsers,
+  HiOutlineTruck,
 } from 'react-icons/hi2';
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
@@ -123,7 +126,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               <NavItem
                 to="/complaints/add"
                 label="Complain to Manager"
-                Icon={HiOutlineChatBubbleBottomCenterText}
+                Icon={HiOutlinePencilSquare}
                 className="text-sm px-2"
                 iconClassName="h-4 w-4"
                 textClassName="text-sm"
@@ -131,7 +134,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               <NavItem
                 to="/complaints/view"
                 label="Complaints from User"
-                Icon={HiOutlineChatBubbleBottomCenterText}
+                Icon={HiOutlineUsers}
                 className="text-sm px-2"
                 iconClassName="h-4 w-4"
                 textClassName="text-sm"
@@ -139,7 +142,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               <NavItem
                 to="/complaints/resolved"
                 label="Complaints from Driver"
-                Icon={HiOutlineChatBubbleBottomCenterText}
+                Icon={HiOutlineTruck}
                 className="text-sm px-2"
                 iconClassName="h-4 w-4"
                 textClassName="text-sm"
