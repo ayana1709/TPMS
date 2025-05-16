@@ -151,7 +151,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           )}
         </div>
         <NavItem
-          to="/manader-directives"
+          to="/manager-directives"
           label="Manager Directives"
           Icon={HiOutlineShoppingCart}
         />

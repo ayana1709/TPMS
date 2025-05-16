@@ -24,6 +24,7 @@ import PendingActivation from './pages/Authentication/PendingActivation';
 import ComplaintForm from './pages/Complain/ComplaintForm';
 import UserComplaintsTable from './pages/Complain/UserComplaintsTable';
 import DriverComplaintsTable from './pages/Complain/DriverComplaintsTable';
+import ManagerDirectivesPage from './pages/Order/ManagerDirectivesPage';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -61,11 +62,15 @@ function App() {
           <Route path="fine" element={<Fine />} />
           <Route path="penalty-checking" element={<PenaltyChecking />} />
           <Route path="work-assignment" element={<WorkAssignment />} />
-          <Route path="order" element={<Order />} />
-          {/* <Route path="complain" element={<Complain />} /> */}
+
           <Route path="complain-to-manager" element={<ComplaintForm />} />
           <Route path="user-complain" element={<UserComplaintsTable />} />
           <Route path="driver-complain" element={<DriverComplaintsTable />} />
+
+          <Route
+            path="manager-directives"
+            element={<ManagerDirectivesPage />}
+          />
 
           <Route path="report-accident" element={<ReportAccident />} />
           <Route path="register-accident" element={<RegisterAccident />} />
