@@ -18,6 +18,7 @@ import {
   HiOutlinePencilSquare,
   HiOutlineUsers,
   HiOutlineTruck,
+  HiOutlineCog6Tooth,
 } from 'react-icons/hi2';
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
@@ -153,17 +154,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
         <NavItem
           to="/manager-directives"
           label="Manager Directives"
-          Icon={HiOutlineShoppingCart}
+          Icon={HiOutlineClipboardDocumentList}
         />
         <NavItem
           to="/order-to-driver"
           label="Driver Enforcement "
-          Icon={HiOutlineShoppingCart}
+          Icon={HiOutlineClipboardDocumentCheck}
         />
         <NavItem
           to="/incident-alerts"
           label="Incident Alerts"
-          Icon={HiOutlineShoppingCart}
+          Icon={HiOutlineExclamationCircle}
         />
         <NavItem
           to="/list-of Accident"
@@ -185,11 +186,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           label="Notifications"
           Icon={HiOutlineBell}
         />
-        <NavItem
-          to="/settings"
-          label="Settings"
-          Icon={HiOutlineClipboardDocumentList}
-        />
+        <NavItem to="/settings" label="Settings" Icon={HiOutlineCog6Tooth} />
       </nav>
     </aside>
   );
