@@ -106,7 +106,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
         <div>
           <button
             onClick={() => setComplaintOpen(!complaintOpen)}
-            className="flex w-full items-center justify-between rounded px-3 py-2 text-sm font-medium hover:bg-gray-800"
+            className="flex w-full items-center justify-between rounded px-4 py-2 text-sm font-medium hover:bg-gray-800"
           >
             <span className="flex items-center gap-2">
               <HiOutlineChatBubbleBottomCenterText className="h-5 w-5" />
@@ -119,10 +119,31 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
             />
           </button>
           {complaintOpen && (
-            <div className="ml-6 mt-1 flex flex-col gap-1">
-              <NavItem to="/complaints/add" label="Complain t" />
-              <NavItem to="/complaints/view" label="View Complaints" />
-              <NavItem to="/complaints/resolved" label="Resolved Complaints" />
+            <div className="ml-4 mt-1 flex flex-col gap-1">
+              <NavItem
+                to="/complaints/add"
+                label="Complain to Manager"
+                Icon={HiOutlineChatBubbleBottomCenterText}
+                className="text-sm px-2"
+                iconClassName="h-4 w-4"
+                textClassName="text-sm"
+              />
+              <NavItem
+                to="/complaints/view"
+                label="Complaints from User"
+                Icon={HiOutlineChatBubbleBottomCenterText}
+                className="text-sm px-2"
+                iconClassName="h-4 w-4"
+                textClassName="text-sm"
+              />
+              <NavItem
+                to="/complaints/resolved"
+                label="Complaints from Driver"
+                Icon={HiOutlineChatBubbleBottomCenterText}
+                className="text-sm px-2"
+                iconClassName="h-4 w-4"
+                textClassName="text-sm"
+              />
             </div>
           )}
         </div>
