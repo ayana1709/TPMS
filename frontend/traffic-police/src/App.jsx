@@ -21,6 +21,9 @@ import TrafficLaws from './pages/TrafficLaws';
 import Layout from './components/Layout';
 import TrafficWelcome from './pages/Authentication/TrafficWelcome';
 import PendingActivation from './pages/Authentication/PendingActivation';
+import ComplaintForm from './pages/Complain/ComplaintForm';
+import UserComplaintsTable from './pages/Complain/UserComplaintsTable';
+import DriverComplaintsTable from './pages/Complain/DriverComplaintsTable';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -59,7 +62,11 @@ function App() {
           <Route path="penalty-checking" element={<PenaltyChecking />} />
           <Route path="work-assignment" element={<WorkAssignment />} />
           <Route path="order" element={<Order />} />
-          <Route path="complain" element={<Complain />} />
+          {/* <Route path="complain" element={<Complain />} /> */}
+          <Route path="complain-to-manager" element={<ComplaintForm />} />
+          <Route path="user-complain" element={<UserComplaintsTable />} />
+          <Route path="driver-complain" element={<DriverComplaintsTable />} />
+
           <Route path="report-accident" element={<ReportAccident />} />
           <Route path="register-accident" element={<RegisterAccident />} />
           <Route path="traffic-laws" element={<TrafficLaws />} />

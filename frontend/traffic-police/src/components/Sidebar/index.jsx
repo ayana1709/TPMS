@@ -109,7 +109,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
         <div>
           <button
             onClick={() => setComplaintOpen(!complaintOpen)}
-            className="flex w-full items-center justify-between rounded px-4 py-2 text-sm font-medium hover:bg-gray-800"
+            className="flex w-full items-center justify-between rounded px-5 py-2 text-sl font-medium hover:bg-gray-800"
           >
             <span className="flex items-center gap-2">
               <HiOutlineChatBubbleBottomCenterText className="h-5 w-5" />
@@ -124,7 +124,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           {complaintOpen && (
             <div className="ml-4 mt-1 flex flex-col gap-1">
               <NavItem
-                to="/complaints/add"
+                to="/complain-to-manager"
                 label="Complain to Manager"
                 Icon={HiOutlinePencilSquare}
                 className="text-sm px-2"
@@ -132,7 +132,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                 textClassName="text-sm"
               />
               <NavItem
-                to="/complaints/view"
+                to="/user-complain"
                 label="Complaints from User"
                 Icon={HiOutlineUsers}
                 className="text-sm px-2"
@@ -140,7 +140,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                 textClassName="text-sm"
               />
               <NavItem
-                to="/complaints/resolved"
+                to="/driver-complain"
                 label="Complaints from Driver"
                 Icon={HiOutlineTruck}
                 className="text-sm px-2"
@@ -150,7 +150,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
             </div>
           )}
         </div>
-        <NavItem to="/orders" label="Orders" Icon={HiOutlineShoppingCart} />
+        <NavItem
+          to="/manader-directives"
+          label="Manager Directives"
+          Icon={HiOutlineShoppingCart}
+        />
         <NavItem
           to="/accident-registration"
           label="Accident Register"
