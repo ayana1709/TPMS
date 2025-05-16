@@ -96,10 +96,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       {/* Nav Items */}
       <nav className="mt-6 space-y-2 px-4">
         <NavItem to="/dashboard" label="Dashboard" Icon={HiOutlineHome} />
-        <NavItem to="/fine" label="Fine" Icon={HiOutlineCurrencyDollar} />
+        <NavItem
+          to="/fine"
+          label="Fine Drivers"
+          Icon={HiOutlineCurrencyDollar}
+        />
         <NavItem
           to="/penalty-checking"
-          label="Penalty Checking"
+          label="List Of penality "
           Icon={HiOutlineExclamationCircle}
         />
         <NavItem
