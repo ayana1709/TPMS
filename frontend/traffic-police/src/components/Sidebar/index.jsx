@@ -156,23 +156,38 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           Icon={HiOutlineShoppingCart}
         />
         <NavItem
-          to="/accident-registration"
+          to="/order-to-driver"
+          label="Driver Enforcement "
+          Icon={HiOutlineShoppingCart}
+        />
+        <NavItem
+          to="/incident-alerts"
+          label="Incident Alerts"
+          Icon={HiOutlineShoppingCart}
+        />
+        <NavItem
+          to="/list-of Accident"
           label="Accident Register"
           Icon={HiOutlineClipboardDocumentCheck}
         />
         <NavItem
-          to="/post-announcement"
-          label="Post Announcement"
+          to="/post-info"
+          label="Post Information"
           Icon={HiOutlineMegaphone}
         />
         <NavItem
-          to="/notifications"
+          to="/traffic-laws"
+          label="Traffic laws"
+          Icon={HiOutlineClipboardDocumentList}
+        />
+        <NavItem
+          to="/notification"
           label="Notifications"
           Icon={HiOutlineBell}
         />
         <NavItem
-          to="/accident-reports"
-          label="Accident Reports"
+          to="/settings"
+          label="Settings"
           Icon={HiOutlineClipboardDocumentList}
         />
       </nav>
