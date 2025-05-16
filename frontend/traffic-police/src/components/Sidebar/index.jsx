@@ -14,6 +14,7 @@ import {
   HiOutlineMegaphone,
   HiOutlineBell,
   HiOutlineClipboardDocumentList,
+  HiChevronDown,
 } from 'react-icons/hi2';
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
@@ -24,6 +25,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const [sidebarExpanded, setSidebarExpanded] = useState(
     localStorage.getItem('sidebar-expanded') === 'true',
   );
+  const [complaintOpen, setComplaintOpen] = useState(false); // Add this inside your component
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -97,15 +99,33 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           Icon={HiOutlineExclamationCircle}
         />
         <NavItem
-          to="/shift-location"
+          to="/work-assignment"
           label="Shift & Location"
           Icon={HiOutlineMapPin}
         />
-        <NavItem
-          to="/complaints"
-          label="Complaints"
-          Icon={HiOutlineChatBubbleBottomCenterText}
-        />
+        <div>
+          <button
+            onClick={() => setComplaintOpen(!complaintOpen)}
+            className="flex w-full items-center justify-between rounded px-3 py-2 text-sm font-medium hover:bg-gray-800"
+          >
+            <span className="flex items-center gap-2">
+              <HiOutlineChatBubbleBottomCenterText className="h-5 w-5" />
+              Complaints
+            </span>
+            <HiChevronDown
+              className={`h-4 w-4 transition-transform duration-200 ${
+                complaintOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
+          {complaintOpen && (
+            <div className="ml-6 mt-1 flex flex-col gap-1">
+              <NavItem to="/complaints/add" label="Complain t" />
+              <NavItem to="/complaints/view" label="View Complaints" />
+              <NavItem to="/complaints/resolved" label="Resolved Complaints" />
+            </div>
+          )}
+        </div>
         <NavItem to="/orders" label="Orders" Icon={HiOutlineShoppingCart} />
         <NavItem
           to="/accident-registration"

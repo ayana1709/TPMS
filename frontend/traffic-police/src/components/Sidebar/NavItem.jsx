@@ -13,7 +13,7 @@ const NavItem = ({ to, label, Icon }) => {
         }`
       }
     >
-      <Icon className="h-5 w-5" />
+      {Icon && <Icon className="h-5 w-5" />}
       <span>{label}</span>
     </NavLink>
   );
