@@ -184,8 +184,15 @@ public function return(Request $request)
         return redirect(config('services.chapa.return_url') . '?error=missing_tx_ref');
     }
 
-    return redirect(config('services.chapa.return_url') . '?tx_ref=' . $tx_ref);
+    $payment = \App\Models\Payment::where('tx_ref', $tx_ref)->first();
+
+    if (!$payment) {
+        return redirect(config('services.chapa.return_url') . '?error=payment_not_found');
+    }
+
+    return redirect(config('services.chapa.return_url') . '?tx_ref=' . $tx_ref . '&license=' . $payment->license . '&fine_id=' . $payment->fine_id);
 }
+
 
 
 

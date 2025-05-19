@@ -249,9 +249,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/fines/{id}', [FineController::class, 'show']);
     Route::post('/fines/mark-paid', [FineController::class, 'markAsPaid']);
 });
+
     Route::get('/fines', [FineController::class, 'index']);
     Route::get('/fines/driver/{license}', [FineController::class, 'getByDriver']);
 
+// Route::put('/fines/pay/{license}', [FineController::class, 'updateByLicense']);
+
+Route::put('/fines/pay', [FineController::class, 'updateFine']);
 
 
 

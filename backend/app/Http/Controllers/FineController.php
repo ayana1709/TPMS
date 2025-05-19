@@ -26,7 +26,6 @@ class FineController extends Controller
     {
         try {
             DB::beginTransaction();
-
             // Validate the incoming request data
             $validatedData = $request->validate([
                 'full_name' => 'required|string|max:255',
@@ -51,10 +50,8 @@ class FineController extends Controller
                 'violations.*.description' => 'required|string',
                 'violations.*.demeritPoint' => 'required|integer|min:0',
             ]);
-
             // Create the fine
             $fine = Fine::create($validatedData);
-
             // Create violations
             foreach ($request->violations as $violationData) {
                 $fine->violations()->create([
@@ -91,6 +88,58 @@ class FineController extends Controller
         }
     }
 
+
+
+public function updateFine(Request $request)
+{
+    try {
+        $license = $request->input('license');
+        $fineId = $request->input('fine_id');
+
+        if (!$license && !$fineId) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'License or Fine ID is required',
+            ], 400);
+        }
+
+        $fine = null;
+
+        if ($fineId) {
+            $fine = Fine::find($fineId);
+        } elseif ($license) {
+            $fine = Fine::where('drivers_license_number', $license)->first();
+        }
+
+        if (!$fine) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Fine not found',
+            ], 404);
+        }
+
+        $fine->is_paid = true;
+        $fine->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Fine marked as paid successfully',
+            'data' => $fine->fresh()
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('Error updating fine: ' . $e->getMessage());
+        return response()->json([
+            'status' => 'error',
+            'message' => 'An error occurred while updating the fine',
+        ], 500);
+    }
+}
+
+
+
+
+
+
     public function show($id)
     {
         $fine = Fine::with('violations')->findOrFail($id);
@@ -108,6 +157,7 @@ class FineController extends Controller
             'fines' => $fines
         ]);
     }
+
 
     public function markAsPaid(Request $request)
     {
