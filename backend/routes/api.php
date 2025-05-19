@@ -18,6 +18,8 @@ use App\Http\Controllers\DriverRegistrationController;
 use App\Http\Controllers\CheackerController;
 use App\Models\Driver;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\AttendanceController;
+
 
 
 // use Illuminate\Support\Facades\Route;
@@ -266,3 +268,7 @@ Route::post('/pay', [PaymentController::class, 'initialize']);
 Route::get('/payment/return', [PaymentController::class, 'return'])->name('chapa.return');
 Route::get('/payment/verify', [PaymentController::class, 'verifyFromFrontend']);
 Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('chapa.callback');
+
+
+
+Route::post('/attendance/record', [AttendanceController::class, 'record']);

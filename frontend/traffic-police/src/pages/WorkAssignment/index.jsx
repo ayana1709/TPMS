@@ -67,6 +67,7 @@ const RoutingMachine = ({ from, to, onDistanceCalculated }) => {
 
 const WorkAssignment = () => {
   const [assignments, setAssignments] = useState([]);
+  console.log(assignments);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { user } = useAuth();
@@ -74,6 +75,151 @@ const WorkAssignment = () => {
   const token = localStorage.getItem('token');
   const [currentPosition, setCurrentPosition] = useState(null);
   const [activeAssignment, setActiveAssignment] = useState(null);
+  const [isWorking, setIsWorking] = useState(false);
+  const [attendanceStatus, setAttendanceStatus] = useState(null);
+
+  const [startTime, setStartTime] = useState(null);
+
+  // Utility: Parse local time string to Date
+  const parseLocalTime = (dateString, timeString) => {
+    const [hours, minutes, seconds] = timeString.split(':');
+    const date = new Date(dateString);
+    date.setHours(
+      parseInt(hours),
+      parseInt(minutes),
+      parseInt(seconds || '0'),
+      0,
+    );
+    return date;
+  };
+
+  const handleStartWork = async () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation not supported!');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const currentLat = position.coords.latitude;
+        const currentLng = position.coords.longitude;
+        const now = new Date();
+        const today = now.toISOString().split('T')[0];
+
+        // 🔁 Sort assignments by assigned_date DESC
+        const sorted = [...assignments].sort(
+          (a, b) => new Date(b.assigned_date) - new Date(a.assigned_date),
+        );
+
+        // ✅ Pick today's or latest assignment
+        const assignment =
+          sorted.find((a) => a.assigned_date === today) || sorted[0];
+
+        if (!assignment) {
+          alert('No assignment available.');
+          return;
+        }
+
+        const shiftStart = parseLocalTime(
+          assignment.assigned_date,
+          assignment.shift.start_time,
+        );
+        const shiftEnd = parseLocalTime(
+          assignment.assigned_date,
+          assignment.shift.end_time,
+        );
+
+        if (shiftEnd <= shiftStart) shiftEnd.setDate(shiftEnd.getDate() + 1);
+
+        if (now < shiftStart || now > shiftEnd) {
+          alert("You're not within the shift time!");
+          return;
+        }
+
+        // ✅ Location check (Haversine formula)
+        const checkpointLat = parseFloat(assignment.checkpoint.latitude);
+        const checkpointLng = parseFloat(assignment.checkpoint.longitude);
+        const radius = parseFloat(assignment.checkpoint.radius) || 50;
+
+        const toRad = (value) => (value * Math.PI) / 180;
+        const R = 6371e3; // meters
+        const φ1 = toRad(currentLat);
+        const φ2 = toRad(checkpointLat);
+        const Δφ = toRad(checkpointLat - currentLat);
+        const Δλ = toRad(checkpointLng - currentLng);
+
+        const a =
+          Math.sin(Δφ / 2) ** 2 +
+          Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c;
+
+        if (distance > radius) {
+          alert('You are not at the assigned checkpoint location.');
+          return;
+        }
+
+        // ✅ Everything valid: mark as working
+        setIsWorking(true);
+        setStartTime(now);
+        setActiveAssignment(assignment);
+        setAttendanceStatus('Present');
+
+        try {
+          await api.post(
+            '/attendance/record',
+            {
+              traffic_user_id: userId,
+              shift_assignment_id: assignment.id,
+              status: 'Present',
+            },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
+
+          alert('Attendance recorded!');
+        } catch (err) {
+          console.error(err);
+          alert('Failed to record attendance');
+        }
+      },
+      (err) => {
+        console.error(err);
+        alert('Failed to get your location.');
+      },
+    );
+  };
+
+  const handleStopWork = async () => {
+    const endTime = new Date();
+    const durationMs = endTime - startTime;
+    const durationMinutes = Math.floor(durationMs / 60000);
+    const hours = Math.floor(durationMinutes / 60);
+    const minutes = durationMinutes % 60;
+
+    try {
+      await api.post(
+        '/attendance/complete',
+        {
+          shift_assignment_id: activeAssignment.id,
+          traffic_user_id: userId,
+          time_worked: `${hours}h ${minutes}m`,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      alert(`Work stopped. Time worked: ${hours}h ${minutes}m`);
+      setIsWorking(false);
+      setStartTime(null);
+      setActiveAssignment(null);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to stop work.');
+    }
+  };
 
   const fetchAssignmentsById = async (id) => {
     try {
@@ -305,6 +451,23 @@ const WorkAssignment = () => {
       <h2 className="text-3xl font-bold mb-8 text-center text-blue-700">
         📋 My Assigned Shifts
       </h2>
+      <div className="flex justify-end items-center p-4">
+        {!isWorking ? (
+          <button
+            onClick={handleStartWork}
+            className="bg-green-600 text-white px-4 py-2 rounded"
+          >
+            Start Work
+          </button>
+        ) : (
+          <button
+            onClick={handleStopWork}
+            className="bg-red-600 text-white px-4 py-2 rounded"
+          >
+            Stop Work
+          </button>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {assignments.map((assignment, index) => (

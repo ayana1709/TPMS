@@ -22,10 +22,15 @@ const ShiftCreate = () => {
   };
 
   const formatFormData = () => ({
-    ...form,
-    start_time: form.start_time.length === 5 ? `${form.start_time}:00` : form.start_time,
-    end_time: form.end_time.length === 5 ? `${form.end_time}:00` : form.end_time,
-  });
+  ...form,
+  start_time: form.start_time && form.start_time.length === 5
+    ? `${form.start_time}:00`
+    : form.start_time || "00:00:00",
+  end_time: form.end_time && form.end_time.length === 5
+    ? `${form.end_time}:00`
+    : form.end_time || "00:00:00",
+});
+
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -36,7 +41,6 @@ const ShiftCreate = () => {
       await api.post("/shifts", data);
       setForm(initialFormState);
 
-      // ✅ Sweet Alert Success
       Swal.fire({
         title: "✅ Shift Created!",
         text: "Shift has been successfully registered.",
@@ -76,6 +80,8 @@ const ShiftCreate = () => {
               field.includes("time") ? "time" :
               field.includes("date") ? "date" : "text"
             }
+            min={field.includes("time") ? "00:00" : undefined}
+            max={field.includes("time") ? "12:00" : undefined}
             className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
             value={form[field] || ""}
             onChange={handleChange}
