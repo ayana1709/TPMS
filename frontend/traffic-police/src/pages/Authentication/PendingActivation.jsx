@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import echo from '../../echo';
 import api from '../../api';
+import { useAuth } from '../../context/AuthContext';
 
 const PendingActivation = () => {
   const navigate = useNavigate();
-  const name = localStorage.getItem('traffic_name') || 'User';
-  const username = localStorage.getItem('traffic_username') || '';
+  const { user } = useAuth();
+  const username = user.username;
 
   const checkActivationStatus = async () => {
     try {

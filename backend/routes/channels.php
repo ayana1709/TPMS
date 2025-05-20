@@ -26,3 +26,9 @@ Broadcast::channel('traffic-activations', function () {
 Broadcast::channel('traffic-activation-status', function () {
     return true;
 });
+Broadcast::channel('complaints', function ($user) {
+    // For general access
+    return true; // Allow all authenticated users (use only for testing)
+
+});
+

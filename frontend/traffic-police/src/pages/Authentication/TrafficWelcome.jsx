@@ -8,10 +8,11 @@ import {
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
+import { useAuth } from '../../context/AuthContext';
 
 const TrafficWelcome = () => {
-  const username = localStorage.getItem('traffic_username') || '';
-  const name = localStorage.getItem('traffic_name') || 'Traffic User';
+  const { user } = useAuth();
+  const username = user.username;
 
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -21,6 +22,8 @@ const TrafficWelcome = () => {
   const [updated, setUpdated] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  console.log(username);
 
   const handlePasswordUpdate = async (e) => {
     e.preventDefault();

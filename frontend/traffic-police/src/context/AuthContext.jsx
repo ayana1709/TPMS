@@ -48,10 +48,11 @@ export const AuthProvider = ({ children }) => {
         username,
         password,
       });
+      // console.log(response);
 
       if (response.data.status === 'success') {
         const { token, user } = response.data;
-        localStorage.setItem('token', token);
+        localStorage.setItem('traficToken', token);
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
         setUser(user);

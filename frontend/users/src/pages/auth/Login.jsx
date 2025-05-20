@@ -22,7 +22,13 @@ export default function Login({ onSuccess }) {
   const onSubmit = async (data) => {
     try {
       setIsLoading(true);
-      const result = await login(data);
+      // Convert to snake_case for backend
+      const submitData = {
+        phone_number: data.phoneNumber,
+        password: data.password,
+      };
+      console.log(submitData);
+      const result = await login(submitData);
       if (result.success) {
         toast.success("Login successful!");
         if (onSuccess) {
@@ -32,7 +38,7 @@ export default function Login({ onSuccess }) {
         toast.error(result.error || "Login failed");
       }
     } catch (error) {
-      toast.error("An error occurred during login");
+      toast.error(error, "An error occurred during login");
     } finally {
       setIsLoading(false);
     }

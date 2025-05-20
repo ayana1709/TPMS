@@ -27,4 +27,26 @@ public function assignments()
     return $this->hasMany(ShiftAssignment::class);
 }
 
+public function complaints()
+{
+    return $this->belongsToMany(Complaint::class, 'checkpoint_complaint');
+}
+
+public function trafficUsers()
+{
+    return $this->hasManyThrough(
+        \App\Models\TrafficUser::class,
+        \App\Models\ShiftAssignment::class,
+        'checkpoint_id', // Foreign key on ShiftAssignment
+        'id',            // Foreign key on TrafficUser
+        'id',            // Local key on Checkpoint
+        'traffic_user_id' // Local key on ShiftAssignment
+    );
+}
+
+public function accidents()
+{
+    return $this->belongsToMany(Accident::class, 'accident_checkpoint');
+}
+
 }
