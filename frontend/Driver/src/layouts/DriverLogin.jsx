@@ -22,6 +22,12 @@ const DriverLogin = () => {
       localStorage.setItem("driver_id", res.data.id);
       localStorage.setItem("driver_token", res.data.token);
 
+      // ✅ Save license number correctly
+      localStorage.setItem("license", res.data.driver_license_number);
+      localStorage.setItem("email", res.data.email);
+      localStorage.setItem("full_name", res.data.full_name);
+
+
       if (res.data.status === "active") {
         Swal.fire("Success", "Login successful", "success").then(() => {
           navigate("/admin/default");

@@ -71,45 +71,38 @@ export const routes = [
       {
         icon: <CalendarIcon {...icon} />,
         name: "Traffic Assignment",
-        path: "/attendance",
+        path: "/traffic-assignemnt",
         element: <ShiftAssignmentTable />,
       },
       {
-        icon: <BellAlertIcon {...icon} />,
-        name: "Cheacker",
-        path: "/complain",
-        element: <CheackerTable/>,
+        icon: <CalendarIcon {...icon} />,
+        name: "Attendance",
+        path: "/attendance",
+        element: <ShiftAssignmentTable />,
       },
+      
       {
         icon: <ExclamationTriangleIcon {...icon} />,
         name: "Accident",
         path: "/accident",
         element: <Notifications />,
       },
+      
       {
-        icon: <TruckIcon {...icon} />,
-        name: "List of Cars",
-        path: "/cars",
-        element: <Notifications />,
+        icon: <BellAlertIcon {...icon} />,
+        name: "cheacker Accounts",
+        path: "/complain",
+        element: <CheackerTable/>,
       },
       {
         icon: <IdentificationIcon {...icon} />,
         name: "List of Drivers",
-        path: "/drivers",
-        element: <Notifications />,
+        path: "/cheack-driver",
+        element: <CheckerDriverTable />,
+
       },
-      {
-        icon: <UserCircleIcon {...icon} />,
-        name: "profile",
-        path: "/profile",
-        element: <Profile />,
-      },
-      {
-        icon: <TableCellsIcon {...icon} />,
-        name: "tables",
-        path: "/tables",
-        element: <Tables />,
-      },
+      
+      
     ],
   },
   {

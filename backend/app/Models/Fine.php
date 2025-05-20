@@ -25,9 +25,9 @@ class Fine extends Model
         'officer_name',
         'badge_number',
         'police_station',
-        'is_paid'
+        'is_paid',
     ];
-
+ protected $guarded = [];
     protected $casts = [
         'date_of_offense' => 'date',
         'time_of_offense' => 'datetime',
@@ -51,6 +51,10 @@ class Fine extends Model
     public function violations()
     {
         return $this->hasMany(FineViolation::class, 'fine_id');
+    }
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
     
 }

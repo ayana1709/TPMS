@@ -30,5 +30,13 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+   'chapa' => [
+    'secret' => env('CHAPA_SECRET_KEY'),
+    'public' => env('CHAPA_PUBLIC_KEY'),
+    'callback_url' => env('CHAPA_CALLBACK_URL'),
+    'return_url' => env('CHAPA_RETURN_URL'),
+],
+
+
 
 ];

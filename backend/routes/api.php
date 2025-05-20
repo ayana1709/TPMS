@@ -21,6 +21,10 @@ use App\Http\Controllers\PublicUserController;
 use App\Http\Controllers\AccidentController;
 // use App\Http\Controllers\Auth\LoginRegisterController;
 use App\Models\Driver;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\AttendanceController;
+
+
 
 // use Illuminate\Support\Facades\Route;
 /*
@@ -249,9 +253,30 @@ Route::post('/driver-authenticate', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/fines', [FineController::class, 'store']);
     Route::get('/fines/{id}', [FineController::class, 'show']);
-    Route::get('/fines/driver/{license}', [FineController::class, 'getByDriver']);
     Route::post('/fines/mark-paid', [FineController::class, 'markAsPaid']);
 });
+
+    Route::get('/fines', [FineController::class, 'index']);
+    Route::get('/fines/driver/{license}', [FineController::class, 'getByDriver']);
+
+// Route::put('/fines/pay/{license}', [FineController::class, 'updateByLicense']);
+
+Route::put('/fines/pay', [FineController::class, 'updateFine']);
+
+
+
+
+// Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('chapa.callback');
+// Route::post('/api/chapa/callback', [PaymentController::class, 'callback'])->name('chapa.callback');
+Route::post('/pay', [PaymentController::class, 'initialize']);
+Route::get('/payment/return', [PaymentController::class, 'return'])->name('chapa.return');
+Route::get('/payment/verify', [PaymentController::class, 'verifyFromFrontend']);
+Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('chapa.callback');
+
+
+
+Route::post('/attendance/record', [AttendanceController::class, 'record']);
+
 
 
 //complaints routes
