@@ -178,7 +178,7 @@ public function callback(Request $request)
 public function return(Request $request)
 {
     $tx_ref = $request->query('tx_ref');
-    \Log::info("Return URL hit", ['tx_ref' => $tx_ref]);
+    Log::info("Return URL hit", ['tx_ref' => $tx_ref]);
 
     if (!$tx_ref) {
         return redirect(config('services.chapa.return_url') . '?error=missing_tx_ref');
