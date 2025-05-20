@@ -34,7 +34,9 @@ public function shiftAssignments()
     return $this->hasMany(ShiftAssignment::class);
 }
 
-
-
+public function complaints()
+{
+    return $this->belongsToMany(Complaint::class, 'complaint_traffic_user');
+}
 
 }

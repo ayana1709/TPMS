@@ -19,7 +19,7 @@ export default function LandingPage() {
       if (type === "report") {
         navigate("/report-accident");
       } else if (type === "complaint") {
-        navigate("/submit-complaint");
+        navigate("/complaint");
       }
     }
   };
@@ -29,7 +29,7 @@ export default function LandingPage() {
     if (actionType === "report") {
       navigate("/report-accident");
     } else if (actionType === "complaint") {
-      navigate("/submit-complaint");
+      navigate("/complaint");
     } else {
       navigate("/dashboard");
     }
@@ -272,10 +272,8 @@ export default function LandingPage() {
                 </button>
               </div>
               <Register
-                onSuccess={() => {
-                  setShowRegisterModal(false);
-                  setShowLoginModal(true);
-                }}
+                setShowLoginModal={setShowLoginModal}
+                setShowRegisterModal={setShowRegisterModal}
               />
             </div>
           </div>

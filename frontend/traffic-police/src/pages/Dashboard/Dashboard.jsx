@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CardDataStats from '../../components/CardDataStats';
 import ChartOne from '../../components/Charts/ChartOne';
 import ChartThree from '../../components/Charts/ChartThree';
@@ -6,6 +6,25 @@ import ChartTwo from '../../components/Charts/ChartTwo';
 import ChatCard from '../../components/Chat/ChatCard';
 import MapOne from '../../components/Maps/MapOne';
 import TableOne from '../../components/Tables/TableOne';
+
+function PoliceDashboard({ checkpointId }) {
+  useEffect(() => {
+    const channel = window.Echo.channel('checkpoint.' + checkpointId).listen(
+      'ComplaintCreated',
+      (e) => {
+        // Show notification or update state/UI
+        alert('New complaint: ' + e.description);
+      },
+    );
+
+    // Cleanup on unmount
+    return () => {
+      window.Echo.leave('checkpoint.' + checkpointId);
+    };
+  }, [checkpointId]);
+
+  return <div>{/* Your dashboard UI */}</div>;
+}
 
 const Dashboard = () => {
   return (

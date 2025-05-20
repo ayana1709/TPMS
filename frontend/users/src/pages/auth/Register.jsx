@@ -1,16 +1,21 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { registerSchema } from "../../lib/schemas";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-hot-toast";
 import { Check } from "lucide-react";
 
-export default function Register({ onSuccess }) {
+export default function Register({
+  onSuccess,
+  onShowLoginModal,
+  setShowLoginModal,
+  setShowRegisterModal,
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { register: registerUser } = useAuth();
 
   const {
@@ -25,26 +30,30 @@ export default function Register({ onSuccess }) {
     try {
       setIsLoading(true);
       setError("");
-
-      // Remove confirmPassword and terms from the data before sending
-      const { confirmPassword: _, terms: __, ...submitData } = data;
-
+      const submitData = {
+        first_name: data.firstName,
+        last_name: data.lastName,
+        phone_number: data.phoneNumber,
+        email: data.email,
+        password: data.password,
+        password_confirmation: data.password_confirmation || data.password,
+        city: data.city,
+        woreda: data.woreda,
+        house_number: data.houseNumber,
+        id_number: data.idNumber,
+      };
+      console.log(submitData);
       const result = await registerUser(submitData);
       if (result.success) {
-        toast.success("Registration successful!");
-        if (onSuccess) {
-          onSuccess();
-        }
-        navigate("/login", {
-          state: { message: "Account created successfully! Please login." },
-        });
+        toast.success("Registration successful! Please login.");
+        setShowLoginModal(true);
+        setShowRegisterModal(false);
+        if (onSuccess) onSuccess();
       } else {
-        toast.error(result.error || "Registration failed");
+        setError(result.error || "Registration failed");
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message || "An error occurred during registration"
-      );
+      setError(err, "An error occurred during registration");
     } finally {
       setIsLoading(false);
     }
@@ -355,12 +364,15 @@ export default function Register({ onSuccess }) {
         <div className="text-center">
           <p className="text-sm text-gray-100">
             Already have an account?{" "}
-            <a
-              href="/login"
-              className="font-medium text-blue-500 hover:text-indigo-500"
+            <button
+              onClick={() => {
+                setShowLoginModal(true);
+                setShowRegisterModal(false);
+              }}
+              className="ml-4 px-10 bg-slate-800 text-indigo-400 hover:text-indigo-300"
             >
-              Login here
-            </a>
+              Login
+            </button>
           </p>
         </div>
       </div>

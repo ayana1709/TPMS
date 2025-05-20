@@ -284,6 +284,13 @@ public function checkActivationStatus($username)
     ]);
 }
 
+// Fetch complaints for the authenticated user
+public function getComplaints()
+{
+    $complaints = auth()->user()->complaints()->latest()->get();
+    return response()->json($complaints);
+}
+
     
 
 }

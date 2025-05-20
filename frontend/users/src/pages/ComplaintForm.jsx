@@ -10,7 +10,7 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Header from "../components/Header";
-
+import axios from "axios";
 // Fix Leaflet's default icon issue with Webpack
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -33,6 +33,8 @@ const ComplaintForm = () => {
     contactInfo: "",
     files: [],
   });
+
+  console.log(formData);
 
   // Get user's current location
   useEffect(() => {
@@ -91,22 +93,53 @@ const ComplaintForm = () => {
     setFormData((prev) => ({ ...prev, files: Array.from(e.target.files) }));
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!startCoords || !destCoords) {
       alert("Please ensure both starting and destination points are set.");
       return;
     }
 
-    const submissionData = {
-      ...formData,
-      startCoords,
-      destCoords,
-    };
+    const formDataToSend = new FormData();
 
-    // Send submissionData to your backend here
-    console.log("Form submitted:", submissionData);
+    formDataToSend.append("type", formData.type);
+    formDataToSend.append("datetime", formData.datetime);
+    formDataToSend.append("description", formData.description);
+    formDataToSend.append("plateNumber", formData.plateNumber);
+    formDataToSend.append("contactInfo", formData.contactInfo);
+
+    // Append coordinates as JSON strings
+    formDataToSend.append("startCoords", JSON.stringify(startCoords));
+    formDataToSend.append("destCoords", JSON.stringify(destCoords));
+
+    // Append files
+    if (formData.files && formData.files.length > 0) {
+      for (let i = 0; i < formData.files.length; i++) {
+        formDataToSend.append("files[]", formData.files[i]);
+      }
+    }
+
+    try {
+      const response = await axios.post(
+        "/api/complaints", // ✅ Change to your actual endpoint
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("Complaint submitted successfully:", response.data);
+      alert("Complaint submitted successfully.");
+
+      // Optional: Reset form after submission
+      // resetForm();
+    } catch (error) {
+      console.error("Error submitting complaint:", error);
+      alert("There was an error submitting your complaint. Please try again.");
+    }
   };
 
   return (

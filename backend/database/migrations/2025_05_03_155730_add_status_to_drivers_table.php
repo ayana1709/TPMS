@@ -9,8 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('drivers', function (Blueprint $table) {
-            $table->enum('status', ['inactive', 'active'])->default('inactive')->after('driver_license_path');
-        });
+    $table->enum('status', ['inactive', 'active'])->default('inactive')->nullable(false);
+});
+
     }
 
     public function down(): void

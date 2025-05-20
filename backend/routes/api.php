@@ -16,6 +16,10 @@ use App\Http\Controllers\ViolationController;
 use App\Http\Controllers\FineController;
 use App\Http\Controllers\DriverRegistrationController;
 use App\Http\Controllers\CheackerController;
+use App\Http\Controllers\ComplaintController;
+use App\Http\Controllers\PublicUserController;
+use App\Http\Controllers\AccidentController;
+// use App\Http\Controllers\Auth\LoginRegisterController;
 use App\Models\Driver;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AttendanceController;
@@ -272,3 +276,25 @@ Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('c
 
 
 Route::post('/attendance/record', [AttendanceController::class, 'record']);
+
+
+
+//complaints routes
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/complaints', [ComplaintController::class, 'store']);
+    Route::get('/complaints', [ComplaintController::class, 'index']);
+
+});
+
+
+
+
+
+Route::post('/auth/register', [LoginRegisterController::class, 'register']);
+Route::post('/public-users/register', [PublicUserController::class, 'register']);
+Route::post('/public-users/login', [PublicUserController::class, 'login']);
+
+Route::post('/accidents', [AccidentController::class, 'store']);
+
