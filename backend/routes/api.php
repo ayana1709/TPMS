@@ -23,6 +23,7 @@ use App\Http\Controllers\AccidentController;
 use App\Models\Driver;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\DriverComplaintController;
 
 
 
@@ -288,6 +289,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
+Route::post('/driver-complaints', [DriverComplaintController::class, 'store']);
 
 
 
@@ -297,4 +299,5 @@ Route::post('/public-users/register', [PublicUserController::class, 'register'])
 Route::post('/public-users/login', [PublicUserController::class, 'login']);
 
 Route::post('/accidents', [AccidentController::class, 'store']);
+Route::post('/driver-accident', [AccidentController::class, 'store']);
 
