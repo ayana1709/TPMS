@@ -289,7 +289,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/complaints', [ComplaintController::class, 'index']);
 
-});
 
 Route::post('/driver-complaints', [DriverComplaintController::class, 'store']);
 
