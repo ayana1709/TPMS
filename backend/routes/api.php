@@ -23,7 +23,8 @@ use App\Http\Controllers\AccidentController;
 use App\Models\Driver;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AttendanceController;
-use App\Http\Controllers\ComplaintManager;
+// use App\Http\Controllers\ComplaintManager;
+use App\Http\Controllers\ComplaintManagerController;
 
 // use Illuminate\Support\Facades\Route;
 /*
@@ -298,4 +299,4 @@ Route::post('/public-users/login', [PublicUserController::class, 'login']);
 Route::post('/accidents', [AccidentController::class, 'store']);
 Route::get('/accidents', [AccidentController::class, 'index']);
 
-Route::post('/complaints/manager', [ComplaintManager::class, 'store']);
+Route::post('/complaints/manager', [ComplaintManagerController::class, 'store']);

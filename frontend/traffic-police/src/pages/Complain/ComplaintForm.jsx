@@ -1,3 +1,4 @@
+// src/components/ComplaintForm.jsx
 import api from '/src/api';
 import React, { useState } from 'react';
 
@@ -37,20 +38,22 @@ const ComplaintForm = () => {
         data.append('attachment', formData.attachment);
       }
 
-      const response = await api('/complaints/manager', {
-        method: 'POST',
-        body: data,
+      const response = await api.post('/complaints/manager', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
-      const result = await response.json();
+      const result = response.data;
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setSuccessMsg('Complaint sent successfully!');
         setFormData({ type: '', title: '', message: '', attachment: null });
       } else {
         setErrorMsg(result.message || 'Something went wrong.');
       }
     } catch (error) {
+      console.error('Error:', error);
       setErrorMsg('Network error. Please try again.');
     } finally {
       setLoading(false);

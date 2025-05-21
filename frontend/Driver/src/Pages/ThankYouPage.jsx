@@ -65,9 +65,9 @@ const ThankYou = () => {
 
         {!loading && status && (
           <>
-            <p className="font-medium text-green-700">{status}</p>
+            {/* <p className="font-medium text-green-700">{status}</p>
             <p className="mt-2 text-sm text-gray-600">License: {license}</p>
-            <p className="text-sm text-gray-600">Fine ID: {fineId}</p>
+            <p className="text-sm text-gray-600">Fine ID: {fineId}</p> */}
           </>
         )}
 

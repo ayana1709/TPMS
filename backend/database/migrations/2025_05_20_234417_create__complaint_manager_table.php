@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('_complaint_manager', function (Blueprint $table) {
+        Schema::create('complaint_manager', function (Blueprint $table) {
              $table->id();
     $table->enum('type', ['complaint', 'request']);
     $table->string('title');
