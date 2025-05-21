@@ -23,8 +23,7 @@ use App\Http\Controllers\AccidentController;
 use App\Models\Driver;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AttendanceController;
-
-
+use App\Http\Controllers\ComplaintManager;
 
 // use Illuminate\Support\Facades\Route;
 /*
@@ -284,10 +283,10 @@ Route::post('/attendance/record', [AttendanceController::class, 'record']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/complaints', [ComplaintController::class, 'store']);
-    Route::get('/complaints', [ComplaintController::class, 'index']);
 
 });
 
+    Route::get('/complaints', [ComplaintController::class, 'index']);
 
 
 
@@ -297,4 +296,6 @@ Route::post('/public-users/register', [PublicUserController::class, 'register'])
 Route::post('/public-users/login', [PublicUserController::class, 'login']);
 
 Route::post('/accidents', [AccidentController::class, 'store']);
+Route::get('/accidents', [AccidentController::class, 'index']);
 
+Route::post('/complaints/manager', [ComplaintManager::class, 'store']);

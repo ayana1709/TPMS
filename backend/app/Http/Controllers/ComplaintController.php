@@ -114,4 +114,19 @@ class ComplaintController extends Controller
         }
         return $points;
     }
+    public function index()
+{
+    $complaints = Complaint::all();
+
+    return response()->json($complaints);
+}
+
+// public function index()
+// {
+//     $complaints = Complaint::with(['checkpoints', 'trafficUsers'])->get();
+
+//     return response()->json($complaints);
+// }
+
+
 }

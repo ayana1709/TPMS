@@ -1,3 +1,4 @@
+import api from '/src/api';
 import React, { useState } from 'react';
 
 const ComplaintForm = () => {
@@ -8,6 +9,10 @@ const ComplaintForm = () => {
     attachment: null,
   });
 
+  const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === 'attachment') {
@@ -17,10 +22,39 @@ const ComplaintForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: handle form submission (send to backend)
-    console.log('Submitted:', formData);
+    setLoading(true);
+    setSuccessMsg('');
+    setErrorMsg('');
+
+    try {
+      const data = new FormData();
+      data.append('type', formData.type);
+      data.append('title', formData.title);
+      data.append('message', formData.message);
+      if (formData.attachment) {
+        data.append('attachment', formData.attachment);
+      }
+
+      const response = await api('/complaints/manager', {
+        method: 'POST',
+        body: data,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSuccessMsg('Complaint sent successfully!');
+        setFormData({ type: '', title: '', message: '', attachment: null });
+      } else {
+        setErrorMsg(result.message || 'Something went wrong.');
+      }
+    } catch (error) {
+      setErrorMsg('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -28,6 +62,10 @@ const ComplaintForm = () => {
       <h2 className="text-2xl font-bold text-gray-800 mb-6">
         Send Complaint or Request to Manager
       </h2>
+
+      {successMsg && <p className="text-green-600 mb-4">{successMsg}</p>}
+      {errorMsg && <p className="text-red-600 mb-4">{errorMsg}</p>}
+
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Type Select */}
         <div>
@@ -96,9 +134,14 @@ const ComplaintForm = () => {
         <div className="text-right">
           <button
             type="submit"
-            className="px-6 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition"
+            className={`px-6 py-2 text-white rounded-md shadow transition ${
+              loading
+                ? 'bg-indigo-400 cursor-not-allowed'
+                : 'bg-indigo-600 hover:bg-indigo-700'
+            }`}
+            disabled={loading}
           >
-            Send to Manager
+            {loading ? 'Sending...' : 'Send to Manager'}
           </button>
         </div>
       </form>

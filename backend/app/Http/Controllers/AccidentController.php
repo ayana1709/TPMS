@@ -66,4 +66,20 @@ class AccidentController extends Controller
         $c = 2 * atan2(sqrt($a), sqrt(1-$a));
         return $earth_radius * $c;
     }
+
+
+    public function index()
+{
+    $accidents = Accident::all();
+
+    return response()->json($accidents);
+}
+
+// public function index()
+// {
+//     $accidents = Accident::with('checkpoints')->get();
+
+//     return response()->json($accidents);
+// }
+
 }
