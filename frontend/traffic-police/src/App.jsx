@@ -74,7 +74,7 @@ function App() {
           <Route path="penalty-checking" element={<PenaltyChecking />} />
           <Route path="work-assignment" element={<WorkAssignment />} />
 
-          <Route path="complain-to-manager" element={<ComplaintForm />} />
+          {/* <Route path="complain-to-manager" element={<ComplaintForm />} /> */}
           <Route path="user-complain" element={<UserComplaintsTable />} />
           <Route path="driver-complain" element={<DriverComplaintsTable />} />
 
@@ -86,8 +86,8 @@ function App() {
           <Route path="incident-alerts" element={<IncidentAlerts />} />
           <Route path="register-accident" element={<AccidentRegistration />} />
           <Route path="list-of Accident" element={<AccidentList />} />
-          <Route path="post-info" element={<PostTrafficInfoForm />} />
-          <Route path="notification" element={<NotificationsPage />} />
+          {/* <Route path="post-info" element={<PostTrafficInfoForm />} /> */}
+          {/* <Route path="notification" element={<NotificationsPage />} /> */}
           <Route path="traffic-laws" element={<TrafficLaws />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
