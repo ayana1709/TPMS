@@ -49,7 +49,5 @@
 - 🌙 Dark mode & animated UI with Framer Motion
 - 📦 Separate React frontends for Admin and Manager
 
----
 
-## 📁 Project Structure
 
