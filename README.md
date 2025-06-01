@@ -1,49 +1,55 @@
 # 🚦 Traffic Penalty Management System (TPMS)
 
-The **Traffic Penalty Management System (TPMS)** is a full-stack web and mobile application designed to modernize and streamline the process of issuing, managing, and paying traffic penalties. It simplifies the workflow for traffic police, managers, and drivers, offering real-time communication and digital payment options.
+**TPMS** is a full-stack web and mobile application designed to digitize traffic penalty handling in Ethiopia. It helps traffic police issue fines, allows managers to oversee operations, and enables drivers to view and pay penalties online.
 
-## 🔧 Tech Stack
+---
 
-### Web App
+## 🛠 Tech Stack
+
+### 🌐 Web
 - **Backend:** Laravel
-- **Frontend:** React (JSX) + Tailwind CSS
+- **Frontend:** React (JSX), Tailwind CSS
 - **Database:** MySQL
 - **Real-time:** Laravel WebSockets
-- **Payment Integration:** Chapa
+- **Payments:** Chapa (ETB support)
 
-### Mobile App
+### 📱 Mobile
 - **Framework:** Flutter
-- **Backend Communication:** REST API (Laravel)
+- **API:** Laravel RESTful API
 
-## 👥 User Roles
+---
 
-### 🛡️ Admin
+## 👥 User Roles & Features
+
+### 🛡 Admin
 - Create and manage manager accounts
-- Approve or deny activation requests
-- View overall system metrics
+- View activation requests (card view)
+- Approve or deny manager access
 
-### 🧑‍💼 Manager
-- Log in using email credentials sent by admin
+### 👔 Manager
+- Login with credentials sent via email
 - Update profile and password
-- Request account activation from admin
-- Manage penalties and officer activity
+- Request admin activation
+- Manage penalties and traffic officers
 
-### 🚗 Driver
-- View active penalties
-- Pay penalties via Chapa
-- View penalty history in card or table format
+### 🚘 Driver
+- View penalties in **card** or **table** format
+- Pay penalties via **Chapa**
+- Access penalty history
 
-## ✨ Features
+---
 
-- 🔐 Secure login and role-based access
-- 🔄 Real-time updates using Laravel WebSockets
-- 📱 Mobile app for drivers
-- 🧾 Digital penalty tracking and payments
-- 📊 Toggle between card and table views (drivers)
-- 💳 Chapa payment integration
-- 📦 Modular frontend with separate apps for admin and manager
-- 🌑 Elegant dark mode (Projects section)
-- 🌀 Animated UI with Framer Motion
+## ✨ Key Features
+
+- 🔐 Secure login with role-based access
+- 🔄 Real-time updates via Laravel WebSockets
+- 💳 Seamless payment integration (Chapa)
+- 🧾 Toggleable penalty views (Card/Table)
+- 📲 Mobile-friendly driver app (Flutter)
+- 🌙 Dark mode & animated UI with Framer Motion
+- 📦 Separate React frontends for Admin and Manager
+
+---
 
 ## 📁 Project Structure
 
